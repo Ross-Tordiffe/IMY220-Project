@@ -1,0 +1,421 @@
+.splash-container
+{
+    padding-top: 2em;
+}
+
+/* ======== Splash Table ======== */
+
+.splash-table 
+{
+    width: 100%;
+    flex: 1;
+    padding: 0 5%;
+}
+
+.splash-table-outer 
+{
+    width: 100%;
+    height: calc(30em + 60px);
+    background-color: var(--bg-brown);
+
+    padding-left: 40px;
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 40px;
+
+    border-radius: 30px;
+    
+}
+
+.splash-table-inner 
+{
+    width: 100%;
+    height: 30em;
+    background-color: var(--bg-orange);
+    border-radius: 30px;
+}
+
+.splash-table-bottom
+{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 5%;
+}
+
+.splash-table-leg 
+{
+    width: 50px;
+    height: 200px;
+    background-color: var(--bg-brown);
+    border-radius: 0 0 90px 90px; 
+    position: relative;
+}
+
+.splash-table-leg-highlight
+{
+    width: 25px;
+    height: 100px;
+    background-color: var(--bg-orange);
+    border-radius: 90px 0 90px 0; 
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+/* -------- Splash Table Runners (Table Cloth) -------- */
+
+.splash-table-runner
+{
+    width: 100%;
+    /* height: 100%; */
+}
+
+.splash-table-runner-piece
+{
+    width: 70%;
+}
+
+
+.splash-table-runner-piece:nth-child(1)>div
+{
+    background-color: var(--bg-red);
+    height: calc(20px);
+}
+
+.splash-table-runner-piece:nth-child(2)>div
+{
+    background-color: var(--bg-redlight);
+    height: 30em;
+}
+
+.splash-table-runner-piece:nth-child(3)>div
+{
+    background-color: var(--bg-red);
+    height: calc(240px);
+    bottom: 0;
+}
+
+/* -------- Splash Table Left Side -------- */
+
+.splash-table-runner-piece:nth-child(2) div .splash-table-mat 
+{
+    background-color: var(--bg-darkgrey);
+    height: 20em;
+    width: 90%;
+    border-radius: 65px;
+    transform: rotate(17deg);   
+
+    left: 2em;
+    top: 4em;
+}
+
+.splash-logo 
+{
+    transform: rotate(-17deg); 
+    padding: 0 30px 30px 30px ;
+}
+
+/* -------- Splash Table Right Side -------- */
+
+.splash-text
+{
+    padding: 1em 3em;
+}
+
+.splash-lgsu-btn .btn
+{
+    border: solid 2px var(--bg-main);
+}
+
+.splash-lgsu-btn .btn:hover, .splash-lgsu-btn .btn:focus
+{
+    background-color: var(--bg-light);
+}
+
+
+.splash-btn-lg 
+{
+    background-color: var(--bg-orange);
+    color: var(--text-alt);
+    font-size: 2;
+}
+
+.splash-btn-su 
+{
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-size: 2;
+}
+
+.splash-btn-lg:hover, .splash-btn-lg:focus
+{
+    border-color: var(--bg-orange);
+    color: var(--bg-orange);
+}
+
+.splash-btn-su:hover, .splash-btn-su:focus
+{
+    color: var(--text-alt);
+}
+
+
+/* ======== Login & Signup ======== */
+
+.lgsu-container
+{
+    transition: all 0.5s ease-in-out;
+	opacity: 0;
+	transform: translateY(150px); 
+    padding: 1em;
+    width: 100%;
+}
+
+.lgsu-container.in-view {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.lgsu-runner
+{
+    padding:40px; position:relative;
+    width: 70%;
+    height: 100%;
+    background-color: var(--d-bg-red);
+    padding: 1em;
+}
+
+.card 
+{ 
+    width: 160px; 
+    top: 0; 
+    min-height: 65px; 
+    border-radius: 15px; 
+    z-index: 1; 
+}
+
+.splash-lg
+{ 
+    z-index: 1;
+    background-color: var(--bg-orange); 
+    border-radius: 20px;
+
+}
+
+.splash-su
+{ 
+    background-color: var(--bg-main); 
+    border-radius: 20px;
+}
+
+.card > div 
+{ 
+    padding: 50px; 
+}
+
+.card > div p 
+{ 
+    color: #fff; 
+    font-size: .8em; 
+    margin-bottom: 0;
+    text-align:center; 
+}
+
+.carousel-card .carousel-inner 
+{ 
+    position: relative; 
+    overflow: visible; 
+    width: 100%; 
+    left: 5em;
+}
+
+.carousel-card .carousel-inner .item:first-child 
+{ 
+    left: 0; 
+}
+
+.carousel-card .carousel-inner .item:nth-child(2) 
+{ 
+    left: 0px; 
+}
+
+.carousel-card .carousel-inner .item 
+{ 
+    /* transition-duration: 2s;  */
+    display: block; 
+    position: absolute; 
+    width: 50%; 
+}
+
+.carousel-card .carousel-inner .item.active 
+{ 
+    transition-duration: 800ms; 
+    z-index: 9; 
+    -webkit-animation: lgsu-swap 800ms ease; 
+    -moz-animation: lgsu-swap 800ms ease; 
+    animation: lgsu-swap 800ms ease; 
+}
+
+
+.carousel-card .carousel-inner .item:not(.active)
+{ 
+    left: 300px;
+    transform: rotate(13deg);
+    transition : transform 800ms ease, left 800ms ease;
+}
+
+.carousel-card .carousel-inner .item:not(.active):hover
+{ 
+    left:320px;
+    transform: rotate(15deg);
+}
+
+.carousel-card .carousel-inner .item:not(.active) input, 
+.carousel-card .carousel-inner .item:not(.active) button
+{ 
+    pointer-events: none;
+}
+
+@keyframes lgsu-swap 
+{
+    0% 
+    { 
+        left: 300px;
+        z-index: 0; 
+        -o-transform: rotate(15deg);
+        transform: rotate(15deg);
+    }
+    39% 
+    { 
+        left: 600px;
+        -o-transform:  rotate(17deg) scale(1.1); 
+        transform: rotate(17deg) scale(1.1);  
+    }
+    40% 
+    { 
+        left: 600px;
+        z-index: 9; 
+        -o-transform: rotate(17deg) scale(1.1); 
+        transform: rotate(17deg) scale(1.1); 
+    }
+    100% 
+    { 
+        left: 0;
+        z-index: 9; 
+        -o-transform: rotate(0deg) scale(1); 
+        transform: rotate(0deg) scale(1); 
+    }
+}
+
+/*-------- Login --------*/
+
+.lg-inputs 
+{
+    background-color: var(--bg-light);
+    border-radius: 20px 20px 0 0;
+
+}
+
+.lg-inputs .h1 {
+    color: var(--text-alt);
+    text-align: center;
+}
+
+.lg-inputs input
+{
+    background-color: var(--bg-light);
+    transition: border-radius 200ms ease-in-out;
+}
+
+.lg-inputs input + label 
+{
+    margin-left: 15px;
+    opacity: 1;
+    transform: translateY(-80px);
+    pointer-events: none;
+    transition: transform 200ms ease-out, opacity 200ms ease-out;
+}
+
+
+.lg-inputs input:focus + label
+{
+    opacity: 1;
+    transform: translateY(-80px);
+}
+
+.lg-inputs input:placeholder-shown + label
+{
+    opacity: 0.5;
+    transform: translateY(-40px);
+}
+
+.lg-inputs input:focus 
+{
+    border-radius: 10px;
+    border: 2px solid var(--bg-main);
+    box-shadow: none;
+}
+
+.lg-logo {
+    width: 100%;
+}
+
+.lg-logo img {
+    width: 50%;
+}
+
+/* -------- Signup -------- */
+
+.su-inputs 
+{
+    background-color: var(--bg-light);
+    border-radius: 20px 20px 0 0;
+
+}
+
+.su-inputs .h1 {
+    color: var(--text-alt);
+    text-align: center;
+}
+
+.su-inputs input
+{
+    background-color: var(--bg-light);
+    /* transition: border-radius 200ms ease-in-out; */
+}
+
+.su-inputs input + label 
+{
+    margin-left: 15px;
+    opacity: 1;
+    transform: translateY(-80px);
+    pointer-events: none;
+    transition: transform 200ms ease-out, opacity 200ms ease-out;
+}
+
+
+.su-inputs input:focus + label
+{
+    opacity: 1;
+    transform: translateY(-80px);
+}
+
+.su-inputs input:placeholder-shown + label
+{
+    opacity: 0.5;
+    transform: translateY(-40px);
+}
+
+.su-inputs input:focus 
+{
+    border-radius: 10px;
+    border: 2px solid var(--bg-main);
+    box-shadow: none;
+}
+
+.form-control 
+{
+    border-radius: 0px;
+    border: solid 2px var(--bg-main);
+    background-color: var(--bg-light);
+    color: var(--text-alt);
+}

@@ -1,0 +1,167 @@
+/* === Imports === */
+
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500&family=Montserrat&family=Poppins:wght@500&display=swap');
+
+/* === Colour and Variables === */
+:root {
+
+    --d-bg-main:     #0A2239;
+    --d-bg-secondary:#FDF0D5;
+    --d-bg-orange:   #FF8A00;
+    --d-bg-red:      #9F1618;
+    --d-bg-brown:    #743822;
+    --d-bg-lightred: #BA1B1D;
+
+    --l-bg-main:     #FDF0D5;
+    --l-bg-secondary:#0A2239;
+    --l-bg-orange:   #FFA53B;
+    --l-bg-red:      #CC3E45;
+    --l-bg-brown:    #734231;
+
+    --bg-light:      #FDF0D5;
+    --bg-light-alt: #C4BAA9
+    --bg-dark:      #0A2239;
+    --bg-darkgrey:  #1E1E1E;
+
+    --d-text:     #0A2239;
+    --l-text:#FDF0D5;
+
+}
+
+/* Dark mode (default) */
+.dark {
+
+    --bg-main:      var(--d-bg-main);
+    --bg-secondary: var(--d-bg-secondary);
+    --bg-orange:    var(--d-bg-orange);
+    --bg-red:       var(--d-bg-red);
+    --bg-redlight:  var(--d-bg-lightred);
+    --bg-brown:     var(--d-bg-brown);
+    
+    --text-main:         var(--l-text);
+    --text-alt:         var(--d-text);
+
+}
+
+/* Light mode */
+.light {
+
+    --bg-main:      var(--l-bg-main);
+    --bg-secondary: var(--l-bg-secondary);
+    --bg-orange:    var(--l-bg-orange);
+    --bg-red:       var(--l-bg-red);
+    --bg-brown:     var(--l-bg-brown);
+
+    --text-main:         var(--d-text);
+    --text-alt:        var(--l-text);
+}
+
+
+/* === Page Defaults === */
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+    color: var(--bg-light);
+}
+
+element {
+	height: auto;
+	background-color: none;
+}
+
+html {
+	margin: 0;
+	font-size: 20px;
+	min-height: 100%;
+	font-family: 'Montserrat', sans-serif;
+}
+
+label {
+    color: var(--text-alt);
+    opacity: 0.75;
+}
+
+body {
+	background: var(--d-bg-main);	
+    min-height: 50px;
+}
+
+/* ======== Browser Overrides ======== */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active
+{
+    -webkit-box-shadow: 0 0 0 30px var(--bg-light) inset !important;
+
+}
+
+input:autofill,
+input:autofill:hover, 
+input:autofill:focus, 
+input:autofill:active
+{
+    box-shadow: 0 0 0 30px var(--bg-light) inset !important;
+}
+
+
+/* === Bootstrap overrides === */
+
+/* .btn-outline-primary, .btn-outline-primary:hover, .btn-outline-primary:active, .btn-outline-primary:visited {
+    border-color: var(--bg-dark) !important;
+    border-width: 2px !important;
+    color: var(--bg-dark) !important;
+}
+
+.btn-outline-primary:focus {
+    background: var(--bg-dark) !important;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:active, .btn-outline-primary:visited{
+    background: var(--bg-dark) !important;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    border: none !important;
+    background-color: var(--bg-light) !important;
+    color: var(--bg-dark) !important;
+}
+.btn-primary:hover{
+    filter: brightness(1) !important;
+} */
+
+/* === Text & Typography ===  */
+h1, .h1 {
+    font-family: 'Kanit', sans-serif;
+    font-size: 3em;
+}
+
+
+h2 {
+    font-family: 'Poppins', sans-serif;
+
+}
+
+.btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    background-color: var(--bg-light);
+    border: solid 2px var(--bg-main);
+}
+
+.btn:hover {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    background-color: var(--bg-main);
+    border-color: var(--bg-main);
+}
+
+
+.text-std {
+    color: var(--text-main);
+    font-size: 20px;
+	font-family: 'Montserrat', sans-serif;
+}
