@@ -3,7 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500&family=Montserrat&family=Poppins:wght@500&display=swap');
 
 /* === Colour and Variables === */
-:root {
+:root 
+{
 
     --d-bg-main:     #0A2239;
     --d-bg-secondary:#FDF0D5;
@@ -11,17 +12,23 @@
     --d-bg-red:      #9F1618;
     --d-bg-brown:    #743822;
     --d-bg-lightred: #BA1B1D;
+    --d-logo-back:  #1E1E1E;
+    --d-bg-blue:    #0A2239;
 
     --l-bg-main:     #FDF0D5;
-    --l-bg-secondary:#0A2239;
+    --l-bg-secondary:#2C4E6B;
     --l-bg-orange:   #FFA53B;
     --l-bg-red:      #CC3E45;
     --l-bg-brown:    #734231;
+    --l-bg-lightred: #E54A51;
+    --l-logo-back:  #FFA53B;
+    --l-bg-blue:     #2C4E6B;
+
 
     --bg-light:      #FDF0D5;
     --bg-light-alt: #C4BAA9
     --bg-dark:      #0A2239;
-    --bg-darkgrey:  #1E1E1E;
+   
 
     --d-text:     #0A2239;
     --l-text:#FDF0D5;
@@ -29,7 +36,8 @@
 }
 
 /* Dark mode (default) */
-.dark {
+.dark 
+{
 
     --bg-main:      var(--d-bg-main);
     --bg-secondary: var(--d-bg-secondary);
@@ -37,6 +45,9 @@
     --bg-red:       var(--d-bg-red);
     --bg-redlight:  var(--d-bg-lightred);
     --bg-brown:     var(--d-bg-brown);
+    --bg-darkgrey:  #1E1E1E;
+    --bg-logo-back: var(--d-logo-back);
+    --bg-blue:      var(--d-bg-blue);
     
     --text-main:         var(--l-text);
     --text-alt:         var(--d-text);
@@ -44,48 +55,87 @@
 }
 
 /* Light mode */
-.light {
+.light 
+{
 
     --bg-main:      var(--l-bg-main);
     --bg-secondary: var(--l-bg-secondary);
     --bg-orange:    var(--l-bg-orange);
     --bg-red:       var(--l-bg-red);
+    --bg-redlight:  var(--l-bg-lightred);
     --bg-brown:     var(--l-bg-brown);
+    --bg-logo-back: var(--l-logo-back);
+    --bg-blue:      var(--l-bg-blue);
 
     --text-main:         var(--d-text);
     --text-alt:        var(--l-text);
 }
 
-
 /* === Page Defaults === */
 
-* {
+* 
+{
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-    color: var(--bg-light);
+    color: var(--text-main);
 }
 
-element {
+element 
+{
 	height: auto;
 	background-color: none;
 }
 
-html {
+html 
+{
 	margin: 0;
 	font-size: 20px;
 	min-height: 100%;
 	font-family: 'Montserrat', sans-serif;
 }
 
-label {
-    color: var(--text-alt);
+label 
+{
+    color: var(--bg-blue);
     opacity: 0.75;
 }
 
-body {
-	background: var(--d-bg-main);	
+body 
+{
+	background: var(--bg-main);	
     min-height: 50px;
+}
+
+/*======== Toast ========*/
+
+.toast-container{
+    left: 50%;
+    transform: translate(-50%, 0px);
+    z-index: 1061;
+}
+
+#error-message{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-red);
+    color: var(--bg-light);
+    text-align: center;
+    padding-top: 20%;
+}
+
+#warning-text{
+    font-size: 20px !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+#basicToast{
+    background-color: var(--bg-red) !important;
+    max-width: 500px;
+    width: 80vw;
 }
 
 /* ======== Browser Overrides ======== */
@@ -96,7 +146,7 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active
 {
     -webkit-box-shadow: 0 0 0 30px var(--bg-light) inset !important;
-
+    box-shadow: 0 0 0 30px var(--bg-light) inset !important;
 }
 
 input:autofill,
@@ -134,34 +184,115 @@ input:autofill:active
 } */
 
 /* === Text & Typography ===  */
-h1, .h1 {
+h1, .h1 
+{
     font-family: 'Kanit', sans-serif;
     font-size: 3em;
 }
 
 
-h2 {
+h2 
+{
     font-family: 'Poppins', sans-serif;
 
 }
 
-.btn {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem;
-    background-color: var(--bg-light);
-    border: solid 2px var(--bg-main);
-}
-
-.btn:hover {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem;
-    background-color: var(--bg-main);
-    border-color: var(--bg-main);
-}
-
-
-.text-std {
+.text-std 
+{
     color: var(--text-main);
     font-size: 20px;
 	font-family: 'Montserrat', sans-serif;
+}
+
+/* ======== Lists ======== */
+
+ul 
+{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ========= Links ======== */
+
+a 
+{
+    color: var(--l-bg-blue);
+    text-decoration: none !important;
+    transition: color 0.1s ease, transform 0.2s ease-in-out;
+}
+
+
+a:visited
+{
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+a:hover, a:active
+{
+    color: var(--text-alt);
+    text-decoration: none;
+    transform: translate(-6px, -7px);
+}
+
+/* ========= Buttons & Input ========= */
+
+.btn 
+{
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    background-color: var(--bg-light);
+    border: solid 2px var(--bg-blue);
+    color: var(--bg-blue);
+}
+
+.btn:hover 
+{
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    background-color: var(--bg-blue);
+    border-color: var(--bg-blue);
+    color: var(--l-text);
+}
+
+input
+{
+    background-color: var(--bg-light);
+    transition: border-radius 200ms ease-in-out;
+}
+
+input:focus 
+{
+    border-radius: 10px;
+    border: 2px solid var(--bg-blue) !important;
+    box-shadow: none !important;
+    color: var(--bg-blue) !important;
+}
+
+
+/* ======== Footer Styles ========= */
+
+.page-footer 
+{
+    background-color: var(--bg-orange);
+    color: var(--d-text);
+}
+
+.page-footer i {
+    color: var(--d-text);
+}
+
+.page-footer h5 
+{
+    color: var(--d-text);
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.page-footer small {
+    color: var(--d-text);
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
 }

@@ -3,11 +3,10 @@
     // Page setup variables
     $title = "- Welcome";
     $header_display = "d-none";
-    $scripts = "<script src='public_html\js\splash.js' defer></script>";
+    $scripts = "<script src='public_html/js/splash.js' defer></script><script src='public_html/js/vd-login.js' defer></script>";
     $styles = "<link rel='stylesheet' href='public_html/css/splash.css'>";
 
-    require_once 'resources\templates\header.php';
-
+    require_once 'resources/templates/header.php';
 ?>
 
         <main>
@@ -37,7 +36,7 @@
                             <div class="row align-items-center splash-table-runner-piece h-100">
                                 <div class="col position-relative d-flex justify-content-center">
                                     <div class="splash-table-mat position-absolute d-flex justify-content-center" >
-                                        <img src="public_html\img\page\DarkLogo.svg" alt="logo" class="img-fluid splash-logo">
+                                        <img src="public_html/img/page/<?=$logo_style?>.svg" alt="logo" class="img-fluid splash-logo">
                                     </div>
                                 </div>
                                 <div class="col splash-text d-flex flex-column justify-content-center">
@@ -56,14 +55,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="splash-container">
+                <div class="splash-container pt-3">
                     <div class="row">
-                        <div class="col-12 d-flex flex-column align-items-center">
+                        <div class="col-12 d-flex flex-column align-items-center py3">
                             <div class="row lgsu-runner">
                                 <div class="col-12 carousel carousel-card slide" data-ride="carousel">
                                     <div class="carousel-inner lgsu-container" role="listbox">
                                         <div class="lg-item item active">
-                                            <form action="resources\validation\vd-login.php" method="post" class="splash-lg p-2" autocomplete="off">
+                                            <form action="resources/validation/vd-login.php" method="post" class="splash-lg p-2" autocomplete="off">
                                                 <input autocomplete="false" name="hidden" type="text" style="display:none;">
                                                 <div class="lg-inputs d-flex flex-column justify-content-around p-5">
                                                     <h1 class="h1 p-4 pt-0">Login</h1>
@@ -80,12 +79,12 @@
                                                     <button type="submit" class="btn px-5">Continue</button>
                                                 </div>
                                                 <div class="lg-logo">
-                                                    <img src="public_html\img\page\LightLogo.svg" alt="logo" class="img-fluid lg-logo m-3 mt-0 rounded mx-auto d-block">
+                                                    <img src="public_html/img/page/LightLogo.svg" alt="logo" class="img-fluid lg-logo m-3 mt-0 rounded mx-auto d-block">
                                                 </div>
                                             </form>
                                         </div>
                                         <div class="su-item item">
-                                            <form action="resources\validation\vd-signup.php" method="post" class="splash-su p-2" autocomplete="off">
+                                            <form action="resources/validation/vd-signup.php" method="post" class="splash-su p-2" autocomplete="off">
                                                     <input autocomplete="false" name="hidden" type="text" style="display:none;">
                                                     <div class="su-inputs d-flex flex-column justify-content-around p-5 pb-4">
                                                         <h1 class="h1 p-4 pt-0">Signup</h1>
@@ -133,4 +132,16 @@
 
 <?php
     require_once 'resources/templates/footer.php';
+
+    if(isset($_GET['signup'])){
+        ?><script type='text/JavaScript' defer>
+            let item = (<?=$_GET['signup']?>) ? $('.su-item') : $('.lg-item');
+            $(".page-footer")[0].scrollIntoView();
+            if($(item).siblings(".item").hasClass("active")) {
+                $(item).siblings(".item").removeClass("active");
+                $(item).addClass("active");
+            }
+        </script>";<?php
+        unset($_GET['signup']);
+    }
 ?>

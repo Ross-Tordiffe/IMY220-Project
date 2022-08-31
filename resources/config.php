@@ -1,4 +1,13 @@
 <?php
+
+    //Display all error messages
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    ini_set('error_reporting', E_ALL);
+    error_reporting(E_ALL);
+
+
+
     //Boilerplate session code, change variables below to allow more user dat to be stored for a session
     if(!isset($_SESSION)){
         session_start();
@@ -14,20 +23,17 @@
 
     }
 
-
     // if($_SESSION["logged_in"] == false){
     //     header("Location: index.php");
     // }
     
-
-
     class Database{
         private static $instance = null;
         private $connection;
 
         private $servername = "localhost";
-        private $username = "root";
-        private $password = "";
+        private $username = "u21533572";
+        private $password = "drgdxgld";
         private $db = "u21533572"; 
 
         /**
@@ -67,42 +73,20 @@
             return $this->connection;
         }
 
-        /**
-         * Public method to add a user to the database
-         * @param $firstname
-         * @param $lastname
-         * @param $username
-         * @param $email
-         * @param $password
-         * @return bool || inserted id
-         */
-        public function addUser($firstname, $lastname, $username, $email, $password){
-            $stmt = $this->connection->prepare("INSERT INTO dbusers (`firstname`, ,`lastname` `username`, `email`, `password`) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssss", $firstname, $lastname, $username, $email, $password);
-
-            //If statement executed successfully
-            if($stmt->execute()){
-                return $this->getConnection()->insert_id;
-            }
-            else{
-                return false;
-            }
-        }
-
-        /**
-         * Public method to get user from DB with email and password
+         /**
+         * Method to get user from DB with email and password
          * @param $email - email of user
          * @param $password - password of user
          * @return bool || user object
          */
-        public function getUser($email, $password){
-            $stmt = $this->connection->prepare("SELECT * FROM dbusers WHERE email=?");
+        protected function getUser($email, $password){
+            $stmt = $this->connection->prepare("SELECT `user_password, user_salt` FROM db_users WHERE user_email=?");
             $stmt->bind_param("s", $email);
             if($stmt->execute()){
                 $result = $stmt->get_result();
                 if($result->num_rows > 0){
                     $row = $result->fetch_assoc();
-                    if($row["password"] === $password){
+                    if($row["user_password"] === $password){
                         return $row;
                     }
                     else{
@@ -117,5 +101,119 @@
                 return false;
             }
         }
+
+        /**
+         * Method to set the user session variables
+         * @param $email
+         * @param $password
+         * @return bool login the user or throw an error
+         */
+        protected function setUser($email, $password){
+            $user = $this->getUser($email, $password);
+            if($user){
+                $_SESSION["logged_in"] = true;
+                $_SESSION["user_role"] = $user["data"]["user_role"];
+                $_SESSION["user_id"] = $user["data"]["user_id"];
+                $_SESSION["user_email"] = $user["data"]["user_email"];
+                $_SESSION["user_firstname"] = $user["data"]["user_firstname"];
+                $_SESSION["user_lastname"] = $user["data"]["user_lastname"];
+                $_SESSION["user_username"] = $user["data"]["user_username"];
+                $_SESSION["user_theme"] = $user["data"]["user_theme"];
+            }
+            else{
+                header("Location: index.php/?error=There-was-an-error-logging-in");
+            }
+        }
+
+        /**
+         * Public method to add a user to the database
+         * @param $email
+         * @param $username
+         * @param $password
+         * @param $salt
+         * @param $firstname
+         * @param $lastname
+         * @param $theme
+         * @return bool || inserted id
+        */
+        protected function addUser($email, $username, $password, $firstname, $lastname, $theme){
+
+            //Prepare to add user to database
+            $stmt = $this->connection->prepare("INSERT INTO db_users (`user_email`, `user_username`, `user_password`, `user_salt` `user_firstname`, `user_lastname`, `user_theme`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            //Create a hashed password for the user
+            $salt = bin2hex(random_bytes(16));
+            $hashedPass = $this->generatePass($password, $salt);
+
+            $stmt->bind_param("sssssss", $email, $username, $hashedPass, $salt, $firstname, $lastname, $theme);
+            //If statement executed successfully
+            if($stmt->execute()){
+                $this->setUser($email, $password);
+                return $this->getConnection()->insert_id;
+            }
+            else{
+                return false;
+            }
+        }
+       
+
+        /**
+         * Method to insert a new event into the database
+         * @param $user_id
+         * @param $title
+         * @param $stime
+         * @param $etime
+         * @param $sdate
+         * @param $edate
+         * @param $location
+         * @param $img
+         * @param $user_count
+         * @param $description
+         * @param $category_id
+         */
+        public function addEvent($user_id, $title, $stime, $etime, $sdate, $edate, $location, $img, $user_count, $description, $category_id){
+            $stmt = $this->connection->prepare("INSERT INTO db_events (`event_user_id`, ,`lastname` `username`, `email`, `password`) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssss", $firstname, $lastname, $username, $email, $password);
+
+            //If statement executed successfully
+            if($stmt->execute()){
+                return $this->getConnection()->insert_id;
+            }
+            else{
+                return false;
+            }
+        }
+
+        protected function duplicateCheck($email){
+            $duplicate = $this->connection->prepare("SELECT * FROM `db_users` WHERE `user_email` = ?;");
+            if(!$duplicate->execute(array($email))){
+                $duplicate = null;
+
+                header("location: index.php?error=There-was-an-error-looking-for-duplicate-users.");
+                exit();
+            }
+
+            if($duplicate->num_rows() > 0)
+                $duplicate_result = false;
+            else
+                $duplicate_result = true;
+                
+            return $duplicate_result;
+        }
+
+        protected function generatePass($pass, $salt){
+        
+            if(isset($_SESSION["IVECTOR"]) == "cRfTjWnZr4u7x!A%")
+                $iv = $_SESSION["IVECTOR"];
+            else die("Session failed to start or IV not set");
+    
+            $algo = "aes-128-gcm";
+            $ivlen = openssl_cipher_iv_length($algo);
+            $hashedPass = openssl_encrypt($pass, $algo, $salt, $options=0, $iv, $tag);
+    
+            return $hashedPass;
+        }
     }
+
+    $db = Database::getInstance(); 
 ?>

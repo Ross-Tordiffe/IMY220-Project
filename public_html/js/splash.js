@@ -1,5 +1,5 @@
 // ======== Page setup ========
-$(".splash-container").css("height", $(".splash-table").height());
+$(".splash-container:nth-child(1)").css("height", $(".splash-table").height());
 $(".lgsu-runner").css("height", $(".item").height() + 200);
 
 // ======== Login/Signup Card Swap ========

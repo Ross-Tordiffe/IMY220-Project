@@ -99,7 +99,7 @@
 
 .splash-table-runner-piece:nth-child(2) div .splash-table-mat 
 {
-    background-color: var(--bg-darkgrey);
+    background-color: var(--bg-logo-back);
     height: 20em;
     width: 90%;
     border-radius: 65px;
@@ -136,14 +136,14 @@
 .splash-btn-lg 
 {
     background-color: var(--bg-orange);
-    color: var(--text-alt);
+    color: var(--d-text);
     font-size: 2;
 }
 
 .splash-btn-su 
 {
-    background-color: var(--bg-main);
-    color: var(--text-main);
+    background-color: var(--bg-blue);
+    color: var(--bg-light);
     font-size: 2;
 }
 
@@ -155,7 +155,8 @@
 
 .splash-btn-su:hover, .splash-btn-su:focus
 {
-    color: var(--text-alt);
+    color: var(--bg-blue);
+    border-color: var(--bg-blue);
 }
 
 
@@ -180,7 +181,7 @@
     padding:40px; position:relative;
     width: 70%;
     height: 100%;
-    background-color: var(--d-bg-red);
+    background-color: var(--bg-red);
     padding: 1em;
 }
 
@@ -203,7 +204,7 @@
 
 .splash-su
 { 
-    background-color: var(--bg-main); 
+    background-color: var(--bg-blue); 
     border-radius: 20px;
 }
 
@@ -316,7 +317,7 @@
 }
 
 .lg-inputs .h1 {
-    color: var(--text-alt);
+    color: var(--bg-blue);
     text-align: center;
 }
 
@@ -351,7 +352,7 @@
 .lg-inputs input:focus 
 {
     border-radius: 10px;
-    border: 2px solid var(--bg-main);
+    border: 2px solid var(--bg-blue);
     box-shadow: none;
 }
 
@@ -373,7 +374,7 @@
 }
 
 .su-inputs .h1 {
-    color: var(--text-alt);
+    color: var(--bg-blue);
     text-align: center;
 }
 
@@ -405,17 +406,10 @@
     transform: translateY(-40px);
 }
 
-.su-inputs input:focus 
-{
-    border-radius: 10px;
-    border: 2px solid var(--bg-main);
-    box-shadow: none;
-}
-
 .form-control 
 {
     border-radius: 0px;
-    border: solid 2px var(--bg-main);
+    border: solid 2px var(--bg-blue);
     background-color: var(--bg-light);
-    color: var(--text-alt);
+    color: var(--bg-blue);
 }
