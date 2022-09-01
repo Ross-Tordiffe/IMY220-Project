@@ -30,8 +30,8 @@
         private $connection;
 
         private $servername = "localhost";
-        private $username = "root";
-        private $password = "";
+        private $username = "u21533572";
+        private $password = "drgdxgld";
         private $db = "u21533572"; 
 
         /**

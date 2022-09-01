@@ -7,8 +7,9 @@
     $theme = $_SESSION['user_theme'] ?? "dark";
     $logo_style = ($theme == "dark") ? "DarkLogo" : "LightLogo";
     $icon_style = ($theme == "dark") ? "Icon-Dark" : "Icon-Light";
+    $content_offset = $content_offset ?? "col offset-3 table-main"; 
 
-    require_once 'resources\config.php';
+    require_once 'resources/config.php';
 
 ?>
 
@@ -37,14 +38,33 @@
 
     </head>
     <body class="<?=$theme?>">
-        <?php require_once 'resources\templates\toast.php'; ?>
-        <header class="<?=$header_display?>">
-            <nav>
-                <div class="sidebar-header">Here</div>
-            </nav>
-        </header>
-    
- <!-- ... Content  -->
+        <?php require_once 'resources/templates/toast.php'; ?>
+        <div class="container-fluid w-100 h-100 p-0 super-container">
+            <div class="row pa-0 w-100 h-100">
+                <header class="header col-xl-2 col-md-3 col-0 px-1 <?=$header_display?> sticky-sidebar"> <!-- Header -->
+                    <div class="hd-logo">
+                        <img src="public_html/img/page/<?=$logo_style?>.svg" alt="header logo" class="img-fluid">
+                    </div>
+                    <nav class="col hd-nav">
+                        <h2 class="hd-nav-link">
+                            <a href="home.php" class="nav-link">Home</a>
+                        </h2>
+                        <h2 class="hd-nav-link">
+                            <a href="explore.php" class="nav-link">Explore</a>
+                        </h2>
+                        <h2 class="hd-nav-link">
+                            <a href="profile.php" class="nav-link">Profile</a>
+                        </h2>
+                    </nav>
+                    <div class="hd-other">
+                        <?= $hd_other ?>
+                    </div>
+                    
+                </header>
+                <footer class="<?=$header_display?> hd-footer col-xl-2 col-md-3 col-0 px-1">
+                </footer>
+                    <div class="<?=$content_offset?>">
+                        <!-- ... Content  -->
 <?php
     if(isset($_GET['error'])){
         ?><script type='text/JavaScript'>showError('<?=$_GET['error']?>');</script>`;<?php

@@ -3,19 +3,23 @@
     // Page setup variables
     $title = "- Welcome";
     $header_display = "d-none";
-    $splash_footer_display = $splash_footer_display ?? "d-block";
-    $footer_display = $footer_display ?? "d-none";
-    $scripts = "<script src='public_html/js/splash.js' defer></script>
-                <script src='public_html/js/vd-login.js' defer></script>
-                <script src='public_html/js/vd-signup.js' defer></script>";
-                
+    if(!isset($splash_footer_display)){ $splash_footer_display = "d-block";}
+    if(!isset($footer_display)){$footer_display = "d-none";}
+    $content_offset = "col offset-0 table-main";
+
     $styles = "<link rel='stylesheet' href='public_html/css/splash.css'>";
 
+    $scripts = "<script src='public_html/js/splash.js' defer></script>
+    <script src='public_html/js/vd-login.js' defer></script>
+    <script src='public_html/js/vd-signup.js' defer></script>";
     require_once 'resources/templates/header.php';  
 
-    if($_SESSION["logged_in"] == true){
-        header("Location: home.php");
+    if(isset($_SESSION["logged_in"])){
+        if($_SESSION["logged_in"] == true){
+                header("Location: home.php");
+        }
     }
+
 
     
 ?>
@@ -47,8 +51,11 @@
                             <div class="row align-items-center splash-table-runner-piece h-100">
                                 <div class="col position-relative d-flex justify-content-center">
                                     <div class="splash-table-mat position-absolute d-flex justify-content-center" >
-                                        <img src="public_html/img/page/<?=$logo_style?>.svg" alt="logo" class="img-fluid splash-logo">
+                                        <img src="public_html/img/page/DarkLogo.svg" alt="logo" class="img-fluid splash-logo">
                                     </div>
+                                    
+                                       <!-- <php? \$logo_style ?> -->
+                                    
                                 </div>
                                 <div class="col splash-text d-flex flex-column justify-content-center">
                                     <p class="h1">Adventure Awaits!</p>
@@ -141,11 +148,11 @@
                 </div>
             </div>
         </main>
-
+        
 
 <?php
     require_once 'resources/templates/footer.php';
-
+/*
     if(isset($_GET['signup'])){
         ?><script type='text/JavaScript' defer>
             let item = (<?=$_GET['signup']?>) ? $('.su-item') : $('.lg-item');
@@ -157,4 +164,5 @@
         </script>";<?php
         unset($_GET['signup']);
     }
+*/
 ?>

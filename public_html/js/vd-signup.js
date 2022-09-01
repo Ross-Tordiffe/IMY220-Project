@@ -3,8 +3,6 @@
 var message = "";
 
 $(() => {
-
-    console.log("loaded");
     
     $("#su-submit").on("click", (e) => {
 

@@ -1,12 +1,12 @@
 <?php
     // Default header variables (if not set)
     $splash_footer_display = $splash_footer_display ?? "d-none";
-    $footer_display = $footer_display ?? "d-block";
     $scripts = $scripts ?? "";
 ?>
-            <footer class="page-footer <?= $footer_display ?>">
-            </footer>
-            <footer class="page-footer font-small blue py-4 <?= $splash_footer_display ?>">
+        </div> <!-- End Col -->
+        </div> <!-- End Row -->
+        </div> <!-- End Container -->
+            <footer class="page-footer font-small blue py-4 <?php echo($splash_footer_display); ?>">
                 <div class="container-fluid text-md-left">
                     <div class="row">
                         <div class="col-md-2 mt-md-0 mt-3 d-flex align-items-center">
@@ -74,6 +74,6 @@
         
         <!--Custom Javascript -->
         <script src="public_html/js/default.js"></script>
-        <?= $scripts ?>
+        <?php echo($scripts) ?>
     </body>
 </html>
