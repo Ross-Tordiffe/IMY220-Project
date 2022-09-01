@@ -1,10 +1,12 @@
 <?php
     // Default header variables (if not set)
+    $splash_footer_display = $splash_footer_display ?? "d-none";
     $footer_display = $footer_display ?? "d-block";
-
+    $scripts = $scripts ?? "";
 ?>
-
-            <footer class="page-footer font-small blue py-4 ">
+            <footer class="page-footer <?= $footer_display ?>">
+            </footer>
+            <footer class="page-footer font-small blue py-4 <?= $splash_footer_display ?>">
                 <div class="container-fluid text-md-left">
                     <div class="row">
                         <div class="col-md-2 mt-md-0 mt-3 d-flex align-items-center">
@@ -63,5 +65,15 @@
                 </div>
                 
             </footer>
+        <!-- JQuery  -->
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        
+        <!--Custom Javascript -->
+        <script src="public_html/js/default.js"></script>
+        <?= $scripts ?>
     </body>
 </html>

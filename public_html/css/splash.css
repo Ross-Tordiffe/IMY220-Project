@@ -197,9 +197,8 @@
 .splash-lg
 { 
     z-index: 1;
-    background-color: var(--bg-orange); 
+    background-color: var(--bg-orange);
     border-radius: 20px;
-
 }
 
 .splash-su
@@ -311,9 +310,12 @@
 
 .lg-inputs 
 {
-    background-color: var(--bg-light);
+    background-color: var(--bg-orange);
     border-radius: 20px 20px 0 0;
+}
 
+.lg-inputs-inner {
+    background-color: var(--bg-light);
 }
 
 .lg-inputs .h1 {
@@ -368,9 +370,12 @@
 
 .su-inputs 
 {
-    background-color: var(--bg-light);
+    background-color: var(--bg-blue);
     border-radius: 20px 20px 0 0;
+}
 
+.su-inputs-inner {
+    background-color: var(--bg-light);
 }
 
 .su-inputs .h1 {

@@ -1,51 +1,57 @@
 /* ======== Verify Login ======== */
 
-let message = "";
+var message = "";
 
-console.log("loaded");
+$(() => {
 
-$("splash-su").submit(function (e) {
+    console.log("loaded");
+    
+    $("#su-submit").on("click", (e) => {
 
-    console.log("submit signup");
+        e.preventDefault(); // Prevent Default Submission
 
-    if(!nameCheck() || !emailCheck() || !passCheck() || !passConfCheck)
-    {
-        e.preventDefault(); 
-        showError(message);
-        return false;
-    }
+        console.log("submit signup");
 
+        if(!nameCheck() || !emailCheck() || !passCheck() || !passConfCheck)
+        {
+            console.log(message);
+            showError(message);
+            return false;
+        }
+        else {
+
+            let form = $(".su-inputs")[0];
+            let formData = new FormData(form);
+            formData.append("request", "signup");
+
+            $.ajax({
+                type: "POST",
+                url: "requests.php",
+                processData: false,
+                contentType: false,
+                cache: false,
+                data: formData,
+                success: (data, status) => {
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.status === "success")
+                    {
+                        window.location.href = "home.php?user_id=" + data.user_id;
+                    }
+                    else
+                    {
+                        showError(data.message);
+                    }
+                }
+            });
+        }
+
+    });
 });
-
-// $.ajax({
-//     url: "/u21533572/api.php",
-//     type: "POST",
-//     "data": JSON.stringify({
-//        "key": "f",
-//        "type": "info",
-//        "author": "R",
-//        "return": [
-//          "*"
-//        ]
-//      }),
-//     contentType: 'application/json',
-//     // username:'u21533572',
-//     // password:'Un5t4b13Un1v3r5317?',
-//     })
-//        .done(function(json) {
-//           console.log(json);
-//        })
-//        .fail(function(xhr, status, error) {
-//               alert("(signup There was an Error:" );
-//            console.log("Error: " + error);
-//            console.log("Status: " + status);
-//            console.dir(xhr);
-// });
-
 
 // ======== Validation Functions ========
 
-function nameCheck() 
+const nameCheck = () => 
 {
 
     var namePattern = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'-]*$/;
@@ -53,9 +59,10 @@ function nameCheck()
     if($("input[name='su-firstname'").val().length <= 0)
     {
         message = "Please enter your first name";
+        console.log("asd")
         return false;
     }
-    else if(("input[name='su-firstname'").val().length > 50)
+    else if($("input[name='su-firstname'").val().length > 50)
     {
         message = "First name cannot be more than 50 characters";
         return false;
@@ -65,7 +72,7 @@ function nameCheck()
         message = "Name must be alphabetical letters only";
         return false;
     }
-    else if(("input[name='su-firstname'").val().length > 50)
+    else if($("input[name='su-lastname'").val().length > 50)
     {
         message = "Last name cannot be more than 50 characters";
         return false;
@@ -84,7 +91,7 @@ function nameCheck()
     return true;
 }
 
-function usernameCheck() 
+const usernameCheck = () => 
 {
     var usernamePattern = /^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð._\-!@#\$%\^&\*-]{1,50}$/;
     var usernamePattern2 = /(?!.*[_.]{2})[^_.].*[^_.]$/;
@@ -93,7 +100,7 @@ function usernameCheck()
         message = "Please enter a username";
         return false;
     }
-    else if(("input[name='su-username'").val().length > 80){
+    else if($("input[name='su-username'").val().length > 80){
         message = "Username cannot be more than 80 characters";
         return false;
     }
@@ -110,14 +117,14 @@ function usernameCheck()
     return true;
 }
  
-function emailCheck() 
+const emailCheck = () => 
 {
     var emailPattern = /^([a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð._-]{1,64})+@([a-zA-Z0-9.-]{1,})+(.[a-zA-Z.]{2,})$/;
     if(!emailPattern.test($("input[name='su-email'").val())){
         message = "Please enter a valid email address";
         return false;
     }
-    else if(("input[name='su-email'").val().length <= 0){
+    else if($("input[name='su-email'").val().length <= 0){
         message = "Please enter an email address";
         return false;
     }
@@ -129,7 +136,7 @@ function emailCheck()
     return true;
 }
 
-function passCheck() 
+const passCheck = () => 
 {
     var passPattern = /^(?=.*[a-zàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšž])(?=.*[A-ZÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
     var passLenPattern = /^(?=.{8,})/;
@@ -145,7 +152,7 @@ function passCheck()
             message = "Password must be at least 8 characters";
             return false;
         }
-        else if(("input[name='su-password'").val().length > 100)
+        else if($("input[name='su-password'").val().length > 100)
         {
             message = "Password cannot be more than 100 characters";
             return false;
@@ -175,7 +182,7 @@ function passCheck()
     return true;
 }
 
-function passConfCheck() 
+const passConfCheck = () => 
 {
 
     if(!($("input[name='su-password-confirm'").val() == $("input[name='su-password'").val())){

@@ -3,7 +3,7 @@ $(".splash-container:nth-child(1)").css("height", $(".splash-table").height());
 $(".lgsu-runner").css("height", $(".item").height() + 200);
 
 // ======== Login/Signup Card Swap ========
-$(".item").click(function() {
+$(".item").on("click", (e) => {
     swapLgsu(this);
 });
 
@@ -15,21 +15,27 @@ const swapLgsu = (item) => {
 }
 // ======== Float Up Effect ========
 
-$.fn.isInViewport = function( tolerance ) {
-    var elementTop = $(this).offset().top + tolerance;
-    var elementBottom = elementTop + $(this).outerHeight();
+// $.fn.isInViewport = ( tolerance ) => {
+//     var elementTop = $(this).offset().top() + tolerance;
+//     var elementBottom = elementTop + $(this).outerHeight();
 
-    var viewportTop = $(window).scrollTop();
-    var viewportBottom = viewportTop + $(window).height();
+//     var viewportTop = $(window).scrollTop();
+//     var viewportBottom = viewportTop + $(window).height();
 
-    return elementBottom > viewportTop && elementTop < viewportBottom;
-};
+//     return elementBottom > viewportTop && elementTop < viewportBottom;s
+// };
 
-$(window).on('resize scroll', function() {
-    if ($('.lgsu-container').isInViewport(200)) {
+$(window).on("scroll", () => {
+
+    let hT = $('.lgsu-container').offset().top + 200,
+        hH = $('.lgsu-container').outerHeight(),
+        wH = $(window).height(),
+        wS = $(this).scrollTop();
+    if (wS > (hT+hH-wH)){
         $('.lgsu-container').addClass('in-view');
     }
-});
+ });
+
 
 
 // ======== Go to Login/Signup ========

@@ -157,6 +157,10 @@ input:autofill:active
     box-shadow: 0 0 0 30px var(--bg-light) inset !important;
 }
 
+.btn:focus {
+    outline: none;
+}
+
 
 /* === Bootstrap overrides === */
 
