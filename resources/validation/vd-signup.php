@@ -7,19 +7,18 @@
 
     class Signup extends Database {
 
-        protected function addUser($email, $username, $password, $firstname, $lastname) {
-
+        protected function addUser($email, $username, $password, $firstname, $lastname, $theme) {
             //Prepare to add user to database
-            $stmt = $this->getConnection()->prepare("INSERT INTO db_users (`user_email`, `user_username`, `user_password`, `user_salt` `user_firstname`, `user_lastname`, `user_theme`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->getInstance()->getConnection()->prepare("INSERT INTO db_users (`user_email`, `user_username`, `user_password`, `user_salt`, `user_firstname`, `user_lastname`, `user_theme`) VALUES (?, ?, ?, ?, ?, ?, ?)");
     
             //Create a hashed password for the user
             $salt = bin2hex(random_bytes(16));
             $hashedPass = $this->generatePass($password, $salt);
     
-            $stmt->bind_param("sssssss", $email, $username, $hashedPass, $salt, $firstname, $lastname , "dark");
+            $stmt->bind_param("sssssss", $email, $username, $hashedPass, $salt, $firstname, $lastname , $theme);
             //If statement executed successfully
             if($stmt->execute()){
-                $this->setUser($email, $password);
+                $this->setUser($email, $hashedPass);
                 return $this->getConnection()->insert_id;
             }
             else {
@@ -52,20 +51,16 @@
             $patternSurname = preg_match("/^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð'\- ]*$/", $this->lastname);
             if(empty($this->firstname) || empty($this->lastname) || strlen($this->firstname) <= 0 || strlen($this->lastname) <= 0 || !$patternName || !$patternSurname){
                 if(empty($this->firstname) || strlen($this->firstname) <= 0){
-                    header("location: /IMY220/IMY220-Project/index.php?error=Please-enter-a-first-name.");
-                    exit();
+                    return false;
                 }
                 else if(empty($this->lastname) || strlen($this->lastname) <= 0){
-                    header("location: /IMY220/IMY220-Project/index.php?error=Please-enter-a-last-name.");
-                    exit();
+                    return false;
                 }
                 else if(!$patternName){
-                    header("location: /IMY220/IMY220-Project/index.php?error=Please-enter-a-valid-name.");
-                    exit();
+                    return false;
                 }
                 else if(!$patternSurname){
-                    header("location: /IMY220/IMY220-Project/index.php?error=Please-enter-a-valid-surname.");
-                    exit();
+                    return false;
                 }
             }
             return true;
@@ -113,28 +108,31 @@
 
         public function checkUser(){
             if(!$this->nameSurCheck()){
-                header("location: /IMY220/IMY220-Project/index.php?error=Name or surname is invalid&signup=true&firstname=".$this->firstname."&lastname=".$this->lastname);
-                exit();
+                return json_encode(array("status" => "error", "message" => "Name or surname is not valid"));
             }
-            if(!$this->emailCheck()){
-                header("location: index.php?error=Email is invalid&signup=true");
-                exit();
+            else if(!$this->emailCheck()){
+                return json_encode(array("status" => "error", "message" => "Please enter a valid email."));
             }
-            if(!$this->passCheck()){
-                header("location: index.php?error=Password is invalid&signup=true");    
-                exit();
+            else if(!$this->passCheck()){
+               return json_encode(array("status" => "error", "message" => "Password is invalid"));
             }
-            if(!$this->passConfCheck()){
-                header("location: index.php?error=Password confirmation is invalid&signup=true");
-                exit();
+            else if(!$this->passConfCheck()){
+                return json_encode(array("status" => "error", "message" => "Passwords do not match"));
             }
-            if(!$this->DuplicateUserCheck()){
-                header("location: index.php?error=That-user-already-exists.-Try-logging-in-instead.&signup=true");
-                exit();
+            else if(!$this->DuplicateUserCheck()){
+                return json_encode(array("status" => "error", "message" => "Email is already in use"));
             }
-
-            
-            $this->addUser($this->email, $this->username, $this->password, $this->firstname, $this->lastname, 'dark');
+            else {
+                
+                $result = $this->addUser($this->email, $this->username, $this->password, $this->firstname, $this->lastname, "dark");
+                if(!$result){
+                    return json_encode(array("status" => "error", "message" => "User could not be added"));
+                    
+                }
+                else {
+                    return json_encode(array("status" => "success", "user_id" => $result));
+                }
+            }
         }
 
     }

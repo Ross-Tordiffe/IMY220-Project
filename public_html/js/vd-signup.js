@@ -26,22 +26,39 @@ $(() => {
             $username = $("input[name='su-username'").val();
             $email = $("input[name='su-email'").val();
             $password = $("input[name='su-password'").val();
-            $passwordConf = $("input[name='su-password-conf'").val();
+            $passwordConf = $("input[name='su-password-confirm'").val();
+
+            console.log($firstname);
+            console.log($lastname);
+            console.log($username);
+            console.log($email);
+            console.log($password);
+            console.log($passwordConf);
 
             $.ajax({
                 type: "POST",
                 url: "requests.php",
                 "data" : {
+                    "request" : "signup",
+                    "form" : {
                     "user_firstname" : $firstname,
                     "user_lastname" : $lastname,
                     "user_username" : $username,
                     "user_email" : $email,
                     "user_password" : $password,
                     "user_password_conf" : $passwordConf
+                    }
                 }
                 })
                 .done(function(json) {
-                    console.log(json);
+                    if(json.status == "success")
+                    {
+                        window.location.href = "home.php";
+                    }
+                    else {
+                        console.log(json);
+                        showError(json.message);
+                    }
                 })
                 .fail(function(xhr, status, error) {
                     alert("(signup There was an Error:" );

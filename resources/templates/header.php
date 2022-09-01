@@ -9,6 +9,7 @@
     $icon_style = ($theme == "dark") ? "Icon-Dark" : "Icon-Light";
 
     require_once 'resources\config.php';
+
 ?>
 
 <!DOCTYPE html>

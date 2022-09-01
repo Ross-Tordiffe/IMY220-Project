@@ -24,10 +24,6 @@
 
 
     }
-
-    // if($_SESSION["logged_in"] == false){
-    //     header("Location: index.php");
-    // }
     
     class Database{
         private static $instance = null;
@@ -64,13 +60,14 @@
          *  Destructor for the database class
          */
         public function __destruct() { 
-            $this->connection->close();
+            $this->connection = null;
+            // session_destroy();
         }
-
         /**
          * Returns a connection to the database
          * @return Connection
          */
+
         public function getConnection(){
             return $this->connection;
         }
@@ -82,7 +79,8 @@
          * @return bool || user object
          */
         protected function getUser($email, $password){
-            $stmt = $this->connection->prepare("SELECT `user_password, user_salt` FROM db_users WHERE user_email=?");
+           
+            $stmt = $this->getInstance()->getConnection()->prepare("SELECT `user_password`, `user_salt` FROM db_users WHERE user_email=?");
             $stmt->bind_param("s", $email);
             if($stmt->execute()){
                 $result = $stmt->get_result();
@@ -102,6 +100,7 @@
             else{
                 return false;
             }
+            $stmt->close();
         }
 
         /**
@@ -125,26 +124,31 @@
                 $_SESSION["user_lastname"] = $user["data"]["user_lastname"];
                 $_SESSION["user_username"] = $user["data"]["user_username"];
                 $_SESSION["user_theme"] = $user["data"]["user_theme"];
+                header("Location: home.php/");
                 return true;
             }   
             
         }
 
         protected function duplicateCheck($email){
-        $duplicate = $this->getInstance()->prepare("SELECT * FROM `db_users` WHERE `user_email` = ?;");
-        if(!$duplicate->execute(array($email))){
-            $duplicate = null;
+            $duplicate = $this->getInstance()->getConnection()->prepare("SELECT * FROM `db_users` WHERE `user_email` = ?");
+            $duplicate->bind_param("s", $email);
+            if(!$duplicate->execute()){
+                $duplicate = null;
 
-            header("location: index.php?error=There-was-an-error-looking-for-duplicate-users.");
-            exit();
-        }
-
-        if($duplicate->num_rows() > 0)
-            $duplicate_result = false;
-        else
-            $duplicate_result = true;
+                header("location: index.php?error=There-was-an-error-looking-for-duplicate-users.");
+                exit();
+            }
+            $result = $duplicate->get_result();
             
-        return $duplicate_result;
+            if($result->num_rows > 0){
+                $duplicate_result = false;
+            }
+            else
+                $duplicate_result = true;
+
+            $duplicate->close();
+            return $duplicate_result;
     }
 
         /**

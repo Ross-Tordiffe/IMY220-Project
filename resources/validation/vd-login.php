@@ -2,19 +2,14 @@
 
     require_once("resources/config.php");
 
-    if(isset($_SESSION["user_email"])){
-        
-        
-    }
+    // if($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    if($_SERVER["REQUEST_METHOD"] === "POST") {
+    //     $email = $_POST["logEmail"];
+    //     $pass = $_POST["logPassword"];
 
-        $email = $_POST["logEmail"];
-        $pass = $_POST["logPassword"];
-
-        $login = new LoginHandler($email, $pass);
-        $login->checkUser();
-    }
+    //     $login = new LoginHandler($email, $pass);
+    //     $login->checkUser();
+    // }
 
     class Login extends Database{
 
