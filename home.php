@@ -42,35 +42,26 @@
     require_once("resources/templates/header.php");
 
 ?>
-    
-        <div class="row table-back h-100 w-100">
-            <div class="col-md-12 p-0 d-flex justify-content-center h-100">
-                <div class="row justify-content-center table-outer w-100 h-100">
-                    <div class="table-inner d-flex justify-content-center"></div>
-                </div>
-            </div>
-            <div class="table-bottom">
-                <div class="table-leg">
-                    <div class="table-leg-highlight"></div>
-                </div>
-                
-                <div class="table-leg">
-                    <div class="table-leg-highlight"></div>
-                </div>
-            </div>
-        </div>
-        <div class="row table-runner position-absolute">
+
+        <!-- Background -->
+
+        <!-- Events -->
+
+        <div class="row table-events position-absolute">
             <div class="col-12 p-0 d-flex flex-column align-items-center">
-                <div class="row table-runner-piece">
+                <div class="row table-events-piece">
                     <div></div>
                 </div>
-                <div class="row align-items-center table-runner-piece h-100">
+                <div class="row align-items-center table-events-piece h-100">
                 </div>
-                <div class="row table-runner-piece mb-5 position-absolute">
+                <div class="row table-events-piece mb-5 position-absolute">
                     <div></div>
                 </div>
             </div>
-        </div>
+
+        <!-- Create events -->
+
+
 
 <?php
 

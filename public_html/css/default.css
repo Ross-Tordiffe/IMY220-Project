@@ -286,9 +286,62 @@ input
 input:focus 
 {
     border-radius: 10px;
-    border: 2px solid var(--bg-blue) !important;
-    box-shadow: none !important;
-    color: var(--bg-blue) !important;
+    border: 2px solid var(--bg-blue);
+    box-shadow: none;
+    color: var(--bg-blue);
+}
+
+input
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    transition: border-radius 200ms ease-in-out;
+}
+
+input + label 
+{
+    margin-left: 15px;
+    margin-bottom: 0;
+    opacity: 1;
+    transform: translateY(-80px);
+    pointer-events: none;
+    transition: transform 200ms ease-out, opacity 200ms ease-out;
+}
+
+
+input:focus + label
+{
+    opacity: 1;
+    transform: translateY(-80px);
+}
+
+input:placeholder-shown + label
+{
+    opacity: 0.5;
+    transform: translateY(-40px);
+}
+
+input:focus 
+{
+    border-radius: 10px;
+    border: 2px solid var(--bg-blue);
+    box-shadow: none;
+}
+
+.input-alt.form-control
+{
+    border: none;
+    border-bottom: solid 2px var(--bg-blue);
+}
+
+.input-alt.form-control:focus
+{
+    background-color: var(--bg-light);
+}
+
+.dropdown-item
+{
+    color: var(--text-alt);
 }
 
 
@@ -405,9 +458,36 @@ header .bkm-icon
     right: 15%;
 }
 
-header .bkm-icon svg
-{
-   
+.hd-other {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-groups {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    max-height: 300px;
+    color : var(--text-main);
+    background-color: var(--bg-main);
+    border: solid 2px var(--text-main);
+}
+
+.profile-groups>ul{
+
+    width: 100%;
+    text-align: center;
+}
+
+.profile-groups>ul>li{
+
+    color : var(--text-main);
+    background-color: var(--bg-main);
 }
 
 /* ======== Footer Styles ========= */
@@ -441,7 +521,7 @@ header .bkm-icon svg
 /* ======== Main Content ======== */
 .super-container
 {
-    position:absolute;
+    /* position:absolute; */
     min-height: 100vh;
     height: 100%;
     margin: 0;
@@ -455,6 +535,9 @@ header .bkm-icon svg
 
 .table-main {
     z-index: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
 }
 
 .table-back
@@ -516,31 +599,29 @@ header .bkm-icon svg
 
 .table-runner
 {
+    z-index: 1;
+ 
     /* width: 100%; */
     /* height: 100%; */
 }
 
 .table-runner-piece
 {
-    /* width: 70%; */
+    width: 80%;
+    background-color: var(--bg-red);
 }
 
 
 .table-runner-piece:nth-child(1)>div
 {
+  
     background-color: var(--bg-red);
-    /* height: calc(20px); */
+    height: calc(20px);
 }
 
 .table-runner-piece:nth-child(2)>div
 {
     background-color: var(--bg-redlight);
+    z-index: 1;
     /* height: 30em; */
-}
-
-.table-runner-piece:nth-child(3)>div
-{
-    background-color: var(--bg-red);
-    /* height: calc(240px); */
-    bottom: 0;
 }

@@ -3,27 +3,30 @@ $(".splash-container:nth-child(1)").css("height", $(".splash-table").height());
 $(".lgsu-runner").css("height", $(".item").height() + 200);
 
 // ======== Login/Signup Card Swap ========
-$(".item").on("click", (e) => {
-    swapLgsu(this);
+
+$("#login-card").on("click", (e) => {
+
+    if(!$(".lg-item").hasClass("active")) {
+        swapLgsu($(".lg-item"));
+    }
+});
+
+$("#signup-card").on("click", (e) => {
+
+    if(!$(".su-item").hasClass("active")) {
+        swapLgsu($(".su-item"));
+    }
 });
 
 const swapLgsu = (item) => {
+    console.log("hit");
+    console.log(item);
     if($(item).siblings(".item").hasClass("active")) {
         $(item).siblings(".item").removeClass("active");
         $(item).addClass("active");
     }
 }
 // ======== Float Up Effect ========
-
-// $.fn.isInViewport = ( tolerance ) => {
-//     var elementTop = $(this).offset().top() + tolerance;
-//     var elementBottom = elementTop + $(this).outerHeight();
-
-//     var viewportTop = $(window).scrollTop();
-//     var viewportBottom = viewportTop + $(window).height();
-
-//     return elementBottom > viewportTop && elementTop < viewportBottom;s
-// };
 
 $(window).on("scroll", () => {
 

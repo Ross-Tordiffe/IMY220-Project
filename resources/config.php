@@ -31,7 +31,7 @@
 
         private $servername = "localhost";
         private $username = "u21533572";
-        private $password = "drgdxgld";
+        private $password = "(your password)";
         private $db = "u21533572"; 
 
         /**
