@@ -7,46 +7,16 @@
 
     $db = Database::getInstance();
 
-    // Get instance of database class
-    // $db = Database::getInstance();
-
-    // function getUser($db, $email, $password){
-    //     $stmt = $db->getConnection()->prepare("SELECT `su-password, user_salt` FROM db_users WHERE user_email=?");
-    //     $stmt->bind_param("s", $email);
-    //     if($stmt->execute()){
-    //         $result = $stmt->get_result();
-    //         if($result->num_rows > 0){
-    //             $row = $result->fetch_assoc();
-    //             if($row["user_password"] === $password){
-    //                 return $row;
-    //             }
-    //             else {
-    //                 return false;
-    //             }
-    //         }
-    //         else {
-    //             return false;
-    //         }
-    //     }
-    //     else {
-    //         return false;
-    //     }
-    // }
-
     /**
-     * Handle post requests
+     * Handle all post requests
      */
     if($_SERVER["REQUEST_METHOD"] === "POST"){
+    
+        // === Main POST requests ===
 
-        if(isset($postData['request']) && $postData['request'] == "login") {
-            $email = $postData['email'];
-            $pass = $postData['pass'];
-            $login = new LoginHandler($email, $pass);
-            $login->checkUser();
-        }
-    
-        // echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>"You did it"]));
-    
+        /**
+         * Handle signup requests
+         */
         if(isset($_POST['request']) && $_POST['request'] === "signup") {
     
             $email = $_POST['su-email'];
@@ -69,7 +39,7 @@
            
         }
 
-        /**e
+        /**
          * Handle login requests
          */
         if(isset($_POST['request']) && $_POST['request'] === "login") {
@@ -85,47 +55,77 @@
                 echo(json_encode(["status"=>"error", "timestamp"=>time(), "data"=>$response["message"]]));
             }
             else {
+                $_SESSION['logged_in'] = true;
                 echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$response["user_id"]]));
             }
            
         }
-    
-        // if(isset($postData['request'])){
-        //     echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>"You did it"]));
-        // }
 
-    }
+        /**
+         * Handle logout requests
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "logout") {
 
-    
+            $session_variables = array_keys($_SESSION);
+            foreach($session_variables as $key){
+                unset($_SESSION[$key]);
+            }
 
-    // public function addEvent($su-id, $title, $stime, $etime, $sdate, $edate, $location, $img, $su-count, $description, $category_id){
-    //     $stmt = $db->connection->prepare("INSERT INTO db_events (`event_su-id`, ,`lastname` `username`, `email`, `password`) VALUES (?, ?, ?, ?, ?, ?)");
-    //     $stmt->bind_param("ssssss", $firstname, $lastname, $username, $email, $password);
+            $_SESSION["logged_in"] = $_SESSION["logged_in"] ?? false;
+            $_SESSION["user_role"] = $_SESSION["user_role"] ??  "";
+            $_SESSION["user_id"] = $_SESSION["user_id"] ?? "";
+            $_SESSION["user_firstname"]= $_SESSION["user_firstname"] ?? "";
+            $_SESSION["user_lastname"]= $_SESSION["user_lastname"] ?? "";
+            $_SESSION["user_username"] = $_SESSION["user_username"] ?? "";
+            $_SESSION["user_email"] = $_SESSION["user_email"] ?? "";
 
-    //     //If statement executed successfully
-    //     if($stmt->execute()){
-    //         return $db->getConnection()->insert_id;
-    //     }
-    //     else{
-    //         return false;
-    //     }
-    // }
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>"You did it".$_SESSION["logged_in"]]));
+        }
 
-    // protected function duplicateCheck($email){
-    //     $duplicate = $db->getInstance()->prepare("SELECT * FROM `db_users` WHERE `su-email` = ?;");
-    //     if(!$duplicate->execute(array($email))){
-    //         $duplicate = null;
+        /**
+         * Handle event creation requests
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "createEvent") {
 
-    //         header("location: index.php?error=There-was-an-error-looking-for-duplicate-users.");
-    //         exit();
-    //     }
+            $event_image = $_FILES['event-file'];
+            $event_title = $_POST['event-title'];
+            $event_location = $_POST['event-location'];
+            $event_website = $_POST['event-website'];
+            $event_date = $_POST['event-date'];
+            $event_category = $_POST['event-category'];
+            $event_description = $_POST['event-description'];
+            $event_tags = $_POST['event-tags'];
 
-    //     if($duplicate->num_rows() > 0)
-    //         $duplicate_result = false;
-    //     else
-    //         $duplicate_result = true;
+            $data = [
+                "event_image" => $event_image,
+                "event_title" => $event_title,
+                "event_location" => $event_location,
+                "event_website" => $event_website,
+                "event_date" => $event_date,
+                "event_category" => $event_category,
+                "event_description" => $event_description,
+                "event_tags" => $event_tags,
+            ];
+
+            $message = $db->createEvent($data);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
             
-    //     return $duplicate_result;
-    // }
+        }
 
+        /**
+         * Handle getting of events
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getEvents") {
+            
+            $events = $db->getEvents($_POST['scope']);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$events]));
+
+        };
+        // === Secondary POST requests ===
+
+        // if(isset($_POST['request']) && $_POST['request'] === "uploadImage") {
+        //     $_FILES
+        // }
+        
+    }
 ?>

@@ -9,7 +9,7 @@
 
     $hd_other = '
         <div class="bookmarks">
-            <div class="bkm bkm-current">
+            <div class="bkm bkm-current" id="bkm-global">
 
                 <!-- BOOKMARK SWAP TO GLOBAL -->
                 <svg class="bkm-tag" width="246" height="116" viewBox="0 0 246 116" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,7 +22,7 @@
                 </svg>
                 
             </div>
-            <div class="bkm">
+            <div class="bkm" id="bkm-local">
 
                 <!-- BOOKMARK SWAP TO LOCAL -->
                 <svg class="bkm-tag" width="246" height="116" viewBox="0 0 246 116" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,6 +39,11 @@
         </div>
     ';
 
+    $styles = "<link rel='stylesheet' href='public_html/css/home.css'>";
+
+    $scripts = "
+    <script src='public_html/js/home.js' defer></script>";
+
     require_once("resources/templates/header.php");
 
 ?>
@@ -47,17 +52,12 @@
 
         <!-- Events -->
 
-        <div class="row table-events position-absolute">
-            <div class="col-12 p-0 d-flex flex-column align-items-center">
-                <div class="row table-events-piece">
-                    <div></div>
-                </div>
-                <div class="row align-items-center table-events-piece h-100">
-                </div>
-                <div class="row table-events-piece mb-5 position-absolute">
-                    <div></div>
-                </div>
-            </div>
+        <!-- clearfix at different breakpoints -->
+        <div class="row table-events event-box">
+            <div class="col-xl-4 col-lg-6 col-12 event-col-1 event-col"></div>
+            <div class="col-xl-4 col-lg-6 col-0 event-col-2 event-col"></div>
+            <div class="col-xl-4 col-lg-0 col-0 event-col-3 event-col"></div>
+            
 
         <!-- Create events -->
 
