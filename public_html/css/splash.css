@@ -124,7 +124,7 @@
 
 .splash-lgsu-btn .btn
 {
-    border: solid 2px var(--bg-main);
+    border: solid 2px var(--bg-blue);
 }
 
 .splash-lgsu-btn .btn:hover, .splash-lgsu-btn .btn:focus
@@ -136,7 +136,7 @@
 .splash-btn-lg 
 {
     background-color: var(--bg-orange);
-    color: var(--d-text);
+    color: var(--bg-blue);
     font-size: 2;
 }
 
@@ -178,11 +178,11 @@
 
 .lgsu-runner
 {
-    padding:40px; position:relative;
+    /* position:relative; */
     width: 70%;
     height: 100%;
     background-color: var(--bg-red);
-    padding: 1em;
+    padding: 0 5%;
 }
 
 .card 
@@ -316,6 +316,7 @@
 
 .lg-inputs-inner {
     background-color: var(--bg-light);
+    border-radius: 20px 20px 0 0;
 }
 
 .lg-inputs .h1 {
@@ -376,6 +377,8 @@
 
 .su-inputs-inner {
     background-color: var(--bg-light);
+    border-radius: 20px 20px 0 0;
+
 }
 
 .su-inputs .h1 {

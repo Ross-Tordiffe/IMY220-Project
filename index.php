@@ -1,5 +1,11 @@
 <?php
 
+    require_once("resources/config.php");
+
+    if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true){
+        header("Location: home.php");
+    }
+
     // Page setup variables
     $title = "- Welcome";
     $header_display = "d-none";
@@ -14,14 +20,8 @@
     <script src='public_html/js/vd-login.js' defer></script>
     <script src='public_html/js/vd-signup.js' defer></script>";
 
-    require_once 'resources/templates/header.php';  
-
-    if(isset($_SESSION["logged_in"]) && !headers_sent()){
-        if($_SESSION["logged_in"] == true){
-                header("Location: home.php");
-        }
-    }
-
+    require_once 'resources/templates/header.php'; 
+    
 
     
 ?>
@@ -61,7 +61,7 @@
                                 <div class="col splash-text d-flex flex-column justify-content-center">
                                     <p class="h1">Adventure Awaits!</p>
                                     <p class="text-std">Keep track of all of your favourite table top games!</p>
-                                    <p class="text-std">TableTap lets you create sessions for you and your friends, join a vast ocean of new games, from niche to notirious and meet an awesome diverse community of fellow table top enjoyers.</p>
+                                    <p class="text-std">TableTap lets you create sessions for you and your friends, join a vast ocean of new games, from niche to notorious and meet an awesome diverse community of fellow table top enjoyers.</p>
                                     <div class="splash-lgsu-btn">
                                         <button class="btn splash-btn-lg" onClick="goToLogin(false);">Login</button>
                                         <button class="btn splash-btn-su" onClick="goToLogin(true);">Sign up</button>
