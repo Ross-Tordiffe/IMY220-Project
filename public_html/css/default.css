@@ -536,6 +536,31 @@ header .bkm-icon
     
 }
 
+.event-groups {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    max-height: 300px;
+    color : var(--text-main);
+    background-color: var(--bg-main);
+    border: solid 2px var(--text-main);
+}
+
+.event-groups>ul{
+
+    width: 100%;
+    text-align: center;
+}
+
+.event-groups>ul>li{
+
+    color : var(--text-main);
+    background-color: var(--bg-main);
+}
+
+
 /* ======== Footer Styles ========= */
 
 .page-footer 
