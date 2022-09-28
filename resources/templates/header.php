@@ -42,7 +42,7 @@
     <body class="<?=$theme?>">
         <?php require_once 'resources/templates/toast.php'; ?>
         <div class="container-fluid p-0 super-container">
-            <div class="row pa-0">
+            <div class="row p-0 m-0">
                 <header class="header col-xl-2 col-md-3 col-0 px-1 <?=$header_display?> sticky-sidebar"> <!-- Header -->
                     <div class="hd-logo">
                         <img src="public_html/img/page/<?=$logo_style?>.svg" alt="header logo" class="img-fluid">
@@ -95,6 +95,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     
 <?php
     if(isset($_GET['error'])){

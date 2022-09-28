@@ -21,6 +21,7 @@
         $_SESSION["user_lastname"]= $_SESSION["user_lastname"] ?? "";
         $_SESSION["user_username"] = $_SESSION["user_username"] ?? "";
         $_SESSION["user_email"] = $_SESSION["user_email"] ?? "";
+        $_SESSION["user_friends"] = $_SESSION["user_friends"] ?? "";
 
 
     }
@@ -81,13 +82,46 @@
          */
         protected function getUser($email, $password){
             
+            // Get the user from the database
             $stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_email=?");
             $stmt->bind_param("s", $email);
-            if($stmt->execute()){
+            if($stmt->execute()) {
                 $result = $stmt->get_result();
                 if($result->num_rows > 0){
                     $row = $result->fetch_assoc();
                     if($row["user_password"] === $password){
+
+                        // Create an object array with the friends and their friendship status of the user from the database
+                        $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1=?");
+                        $stmt->bind_param("i", $row["user_id"]);
+                        if($stmt->execute()) {
+                            $result = $stmt->get_result();
+                            $friends = array();
+
+                            // Get friend request to the user
+                            $friend_request_stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_2=? AND fs_accepted=0");
+                            $friend_request_stmt->bind_param("i", $row["user_id"]);
+                            if($friend_request_stmt->execute()) {
+                                $friend_request_result = $friend_request_stmt->get_result();
+                                while($friend_request_row = $friend_request_result->fetch_assoc()){
+                                    $friends[] = array(
+                                        "friend_id" => $friend_request_row["fs_user_id_1"],
+                                        "friend_status" => false
+                                    );
+                                }
+                            }
+                            
+                            if($result->num_rows > 0){
+                                while($row2 = $result->fetch_assoc()){
+                                    $friends[] = array(
+                                        "friend_id" => $row2["fs_user_id_2"], 
+                                        "status" => true
+                                    );
+                                }
+                            }
+                            $row["user_friends"] = $friends;
+                        }
+
                         return $row;
                     }
                     else{
@@ -126,7 +160,7 @@
                 $_SESSION["user_username"] = $user["user_username"];
                 $_SESSION["user_image"] = $user["user_image"];
                 $_SESSION["user_theme"] = $user["user_theme"];
-              
+                $_SESSION["user_friends"] = $user["user_friends"];
                 // header("Location: home.php/");
                 return true;
             }   
@@ -163,11 +197,11 @@
          */
         public function createEvent($data) {
 
-            $userID = $_SESSION["user_id"];
+            $user_id = $_SESSION["user_id"];
 
             //Get the amount of events the user has created
             $stmt = $this->getConnection()->prepare("SELECT COUNT(*) FROM db_events WHERE event_user_id = ?");
-            $stmt->bind_param("i", $userID);
+            $stmt->bind_param("i", $user_id);
             if(!$stmt->execute()){
                 return false;
             };
@@ -181,7 +215,7 @@
             // prepare upload image to server
             $image = $data["event_image"];
             $image_type = $image["type"];
-            $image_name = $userID."_".$eventCount.".".explode("/", $image_type)[1];
+            $image_name = $user_id."_".$eventCount.".".explode("/", $image_type)[1];
             $image_path = "public_html/img/event/".$image_name;
         
    
@@ -207,7 +241,7 @@
             }
 
             $stmt = $this->getConnection()->prepare("INSERT INTO `db_events` (`event_user_id`, `event_title`, `event_date`, `event_location`, `event_website`, `event_image`, `event_user_count`, `event_description`, `event_category_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("isssssisi", $userID, $data["event_title"], $data["event_date"], $data["event_location"], $data["event_website"], $image_name, $user_count, $data["event_description"], $categoryID); 
+            $stmt->bind_param("isssssisi", $user_id, $data["event_title"], $data["event_date"], $data["event_location"], $data["event_website"], $image_name, $user_count, $data["event_description"], $categoryID); 
             if(!$stmt->execute()){
                 return false;
             }
@@ -355,6 +389,57 @@
                 return false;
             }
         } 
+
+        /**
+         * Method to get the ids, names and images of the users friends
+         */
+        public function getFriends() {
+
+            $friends = array();
+            $user_id = $_SESSION["user_id"];
+            $row = array();
+
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_2 = ? AND fs_accepted = 0");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $request_result = $stmt->get_result();
+
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1 = ?");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $friend_result = $stmt->get_result();
+
+            // Append friend requests and friends to the friends array
+            while($row = $request_result->fetch_assoc()) {
+                $request_id = $row["fs_user_id_1"];
+                $request_stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ?");
+                $request_stmt->bind_param("i", $request_id);
+                if(!$request_stmt->execute()){
+                    return false;
+                }
+                $request_result = $request_stmt->get_result();
+                $request_row = $request_result->fetch_assoc();
+                $friends[] = array("user_id" => $request_row["user_id"], "user_username" => $request_row["user_username"], "user_image" => $request_row["user_image"], "accepted" => false);
+            }
+            
+            while($row = $friend_result->fetch_assoc()) {
+                $friend_id = $row["fs_user_id_2"];
+                $friend_stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ?");
+                $friend_stmt->bind_param("i", $friend_id);
+                if(!$friend_stmt->execute()){
+                    return false;
+                }
+                $friend_result = $friend_stmt->get_result();
+                $friend_row = $friend_result->fetch_assoc();
+                $friends[] = array("user_id" => $friend_row["user_id"], "user_username" => $friend_row["user_username"], "user_image" => $friend_row["user_image"], "accepted" => true);
+            }
+
+            return $friends;
+        }
         
     }
 

@@ -114,7 +114,6 @@ $(() => {
                 }
             });
         }).then((data) => {
-            console.log("Here");
             console.log(data);
             // Clear previous events from event-col classes
             $(".event-col").empty();

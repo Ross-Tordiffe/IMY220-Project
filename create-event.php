@@ -6,17 +6,17 @@
         header("Location: index.php");
     }
 
-    $hd_other = '
-        <div class="event-groups card">
-            <h3 class="card-header">Collections</h3>
-            <ul class="overflow-auto list-group list-group-flush">
-                <li class="list-group-item">Group 1</li>
-                <li class="list-group-item">Group 2</li>
-                <li class="list-group-item">Group 3</li>
-                <li class="list-group-item">Group 4</li>
-                <li class="list-group-item">Group 5</li>
-            </ul>
-        </div>';
+    // $hd_other = '
+    //     <div class="event-groups card">
+    //         <h3 class="card-header">Collections</h3>
+    //         <ul class="overflow-auto list-group list-group-flush">
+    //             <li class="list-group-item">Group 1</li>
+    //             <li class="list-group-item">Group 2</li>
+    //             <li class="list-group-item">Group 3</li>
+    //             <li class="list-group-item">Group 4</li>
+    //             <li class="list-group-item">Group 5</li>
+    //         </ul>
+    //     </div>';
 
     $styles = "<link rel='stylesheet' href='public_html/css/create-event.css'>";
 

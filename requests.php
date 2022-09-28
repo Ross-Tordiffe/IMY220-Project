@@ -121,11 +121,16 @@
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$events]));
 
         };
-        // === Secondary POST requests ===
 
-        // if(isset($_POST['request']) && $_POST['request'] === "uploadImage") {
-        //     $_FILES
-        // }
+        // === Secondary POST requests ===
+        /**
+         * Handle getting friends
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getFriends") {
+            
+            $friends = $db->getFriends();
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$friends]));
+        };
         
     }
 ?>
