@@ -1,17 +1,19 @@
 /* ======== Verify Login ======== */
+
+var lg_message = "";
+
+
 $(() => {
     
-    let message = "";
 
     $("#lg-submit").on("click", (e) => {
 
         e.preventDefault(); // Prevent Default Submission
 
-
+        console.log("loaded login");
         if(!emailCheck() || !passCheck())
         {
-            console.log(message);
-            showError(message);
+            showError(lg_message);
             return false;
         }
         else {
@@ -42,7 +44,7 @@ $(() => {
                     }
                     else
                     {
-                        showError(data.message);
+                        showError(data.data);
                     }
                 }
             });
@@ -53,6 +55,7 @@ $(() => {
     {
         var emailPattern = /^([a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð._-]{1,64})+@([a-zA-Z0-9.-]{1,})+(.[a-zA-Z.]{2,})$/;
         if(!emailPattern.test($("input[name='lg-email'").val())){
+            lg_message = "Please enter a valid email address";
             return false;
         }
         else {
@@ -65,6 +68,7 @@ $(() => {
 
         var passLenPattern = /^(?=.{8,})/;
         if(!passLenPattern.test($("input[name='lg-password'").val())){
+            lg_message = "Password must be at least 8 characters";
             return false;
         }
         else {

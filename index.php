@@ -1,25 +1,27 @@
 <?php
 
+    require_once("resources/config.php");
+
+    if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true){
+        header("Location: home.php");
+    }
+
     // Page setup variables
     $title = "- Welcome";
     $header_display = "d-none";
     if(!isset($splash_footer_display)){ $splash_footer_display = "d-block";}
     if(!isset($footer_display)){$footer_display = "d-none";}
-    $content_offset = "col offset-0 table-main";
+    $content_offset = "col offset-0";
 
     $styles = "<link rel='stylesheet' href='public_html/css/splash.css'>";
 
-    $scripts = "<script src='public_html/js/splash.js' defer></script>
+    $scripts = "
+    <script src='public_html/js/splash.js' defer></script>
     <script src='public_html/js/vd-login.js' defer></script>
     <script src='public_html/js/vd-signup.js' defer></script>";
-    require_once 'resources/templates/header.php';  
 
-    if(isset($_SESSION["logged_in"])){
-        if($_SESSION["logged_in"] == true){
-                header("Location: home.php");
-        }
-    }
-
+    require_once 'resources/templates/header.php'; 
+    
 
     
 ?>
@@ -51,16 +53,15 @@
                             <div class="row align-items-center splash-table-runner-piece h-100">
                                 <div class="col position-relative d-flex justify-content-center">
                                     <div class="splash-table-mat position-absolute d-flex justify-content-center" >
-                                        <img src="public_html/img/page/DarkLogo.svg" alt="logo" class="img-fluid splash-logo">
+                                        <img src="public_html/img/page/<?php echo($logo_style) ?>.svg" alt="logo" class="img-fluid splash-logo">
                                     </div>
                                     
-                                       <!-- <php? \$logo_style ?> -->
-                                    
+                                       
                                 </div>
                                 <div class="col splash-text d-flex flex-column justify-content-center">
                                     <p class="h1">Adventure Awaits!</p>
                                     <p class="text-std">Keep track of all of your favourite table top games!</p>
-                                    <p class="text-std">TableTap lets you create sessions for you and your friends, join a vast ocean of new games, from niche to notirious and meet an awesome diverse community of fellow table top enjoyers.</p>
+                                    <p class="text-std">TableTap lets you create sessions for you and your friends, join a vast ocean of new games, from niche to notorious and meet an awesome diverse community of fellow table top enjoyers.</p>
                                     <div class="splash-lgsu-btn">
                                         <button class="btn splash-btn-lg" onClick="goToLogin(false);">Login</button>
                                         <button class="btn splash-btn-su" onClick="goToLogin(true);">Sign up</button>
@@ -79,7 +80,7 @@
                             <div class="row lgsu-runner">
                                 <div class="col-12 carousel carousel-card slide" data-ride="carousel">
                                     <div class="carousel-inner lgsu-container" role="listbox">
-                                        <div class="splash-lg lg-item item active">
+                                        <div class="splash-lg lg-item item active" id="login-card">
                                             <form class="lg-inputs p-2" autocomplete="off">
                                                 <input autocomplete="false" name="hidden" type="text" style="display:none;">
                                                 <div class="lg-inputs-inner d-flex flex-column justify-content-around p-5">
@@ -102,17 +103,17 @@
                                             </div>
                                  
                                         </div>
-                                        <div class="splash-su su-item item ">
+                                        <div class="splash-su su-item item" id="signup-card">
                                             <form class="su-inputs p-2" autocomplete="off">
                                                     <input autocomplete="false" name="hidden" type="text" style="display:none;">
                                                     <div class="su-inputs-inner d-flex flex-column justify-content-around p-5 pb-4">
                                                         <h1 class="h1 p-4 pt-0">Signup</h1>
                                                         <div class="row form-group">
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 ps-0">
                                                                 <input type="text" class="form-control" id="su-firstname" placeholder=" " name="su-firstname" autocomplete="off">
                                                                 <label for="su-first-name">First name</label>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 pe-0">
                                                                 <input type="text" class="form-control" id="su-lastname" placeholder=" " name="su-lastname" autocomplete="off">
                                                                 <label for="su-last-name">Last name</label>
                                                             </div>
@@ -152,7 +153,6 @@
 
 <?php
     require_once 'resources/templates/footer.php';
-/*
     if(isset($_GET['signup'])){
         ?><script type='text/JavaScript' defer>
             let item = (<?=$_GET['signup']?>) ? $('.su-item') : $('.lg-item');
@@ -164,5 +164,4 @@
         </script>";<?php
         unset($_GET['signup']);
     }
-*/
 ?>

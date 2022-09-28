@@ -8,10 +8,14 @@
     class Signup extends Database {
 
         protected function addUser($email, $username, $password, $firstname, $lastname, $theme) {
+
+            // Set random profile image
+            $user_image = "user_placeholder_". rand(0, 3) . ".svg";
+
             //Prepare to add user to database
-            $stmt = $this->GetInstance()->getConnection()->prepare("INSERT INTO db_users (`user_email`, `user_username`, `user_password`, `user_firstname`, `user_lastname`, `user_theme`) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $this->GetInstance()->getConnection()->prepare("INSERT INTO db_users (`user_email`, `user_username`, `user_password`, `user_firstname`, `user_lastname`, `user_image`, `user_theme`) VALUES (?, ?, ?, ?, ?, ?, ?)");
     
-            $stmt->bind_param("ssssss", $email, $username, $password, $firstname, $lastname , $theme);
+            $stmt->bind_param("sssssss", $email, $username, $password, $firstname, $lastname, $user_image, $theme);
             //If statement executed successfully
             if($stmt->execute()){
                 return $this->getConnection()->insert_id;
@@ -125,6 +129,7 @@
                     
                 }
                 else {
+                    $this->setUser($this->email, $this->password);
                     return json_encode(array("status" => "success", "user_id" => $result));
                 }
             }

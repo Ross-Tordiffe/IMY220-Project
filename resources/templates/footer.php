@@ -51,10 +51,10 @@
                                 <a href="home.php">Home</a>
                                 </li>
                                 <li>
-                                <a href="games.php">Games</a>
+                                <a href="games.php">Explore</a>
                                 </li>
                                 <li>
-                                <a href="collections.php">Groups</a>
+                                <a href="collections.php">Profile</a>
                                 </li>
                             </ul>
                         </div>
@@ -65,6 +65,7 @@
                 </div>
                 
             </footer>
+            
         <!-- JQuery  -->
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 

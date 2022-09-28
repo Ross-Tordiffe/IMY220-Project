@@ -1,0 +1,151 @@
+/* ==== Profile General ==== */
+
+.profile-header 
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1em;
+    margin-bottom: 0;
+    color: var(--text-main);
+    background-color: var(--bg-logo-back);
+    border-radius: 30px;
+}
+
+.profile-header-img
+{
+
+}
+
+.profile-header-img img
+{
+    min-width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: var(--text-main) 2px solid;
+}
+
+.profile-header-friends .friend-text
+{
+    transition: all 0.2s ease-in-out;
+}
+
+.profile-header-friends .friend-text:hover
+{
+    transform: translateY(-2px);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.profile-header-friends .friend-request-count
+{
+    background-color: var(--bg-redlight);
+    font-size: 0.7em;
+    padding-left: 0.6em;
+}
+
+#profile-logout
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border-radius: 30px;
+    padding: 0.5em 1em;
+    font-size: 1.2em;
+    transition: all 0.2s ease-in-out;
+}
+
+#profile-logout:hover
+{
+    background-color: var(--bg-orange);
+    color: var(--bg-light);
+    cursor: pointer;
+}
+
+#profile-settings
+{
+    transition: all 0.2s ease-in-out;
+    font-size: 1.5em;
+}
+
+#profile-settings:hover
+{
+    transform: rotate(50deg);
+    cursor: pointer;
+}
+
+.profile-option
+{
+    border-radius: 0 0 10px 10px;
+    background-color: var(--bg-orange);
+}
+
+/* ==== Profile Friends List ==== */
+
+
+.profile-friends-list-box
+{
+    top: 50%;
+    left: calc(50%);
+    transform: translate(-65%, -50%);
+}
+
+.profile-friends-list
+{
+    background-color: var(--bg-orange);
+    border : var(--bg-blue) 2px solid;
+    border-radius: 20px;
+    width: 70%;
+}
+
+.profile-friends-title
+{
+
+    color: var(--text-main);
+    font-family: "Poppins", sans-serif;
+}
+
+.profile-friends
+{
+    background-color: var(--bg-light);
+    border-radius: 20px;
+    width: 95%;
+    border: var(--bg-blue) 2px solid;
+    margin-bottom: 1em;
+    max-height: 500px;
+    overflow: auto;
+}
+
+.profile-friend
+{
+    display: flex;
+    align-items: center;
+    padding: 0.5em;
+    border-bottom: var(--bg-blue) 2px solid;
+}
+
+.profile-friend:last-child
+{
+    border-bottom: none;
+}
+
+.profile-friend-image
+{
+    border-radius: 50%;
+    border: var(--bg-blue) 2px solid;
+}
+
+.profile-friend-image img
+{
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+}
+
+.profile-friend-name
+{
+    color: var(--bg-blue);
+    font-family: "Poppins", sans-serif;
+    font-size: 1.2em;
+    margin-left: 1em;
+}
