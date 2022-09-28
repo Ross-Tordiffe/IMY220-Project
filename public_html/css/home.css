@@ -1,0 +1,77 @@
+/* === General CSS For Home Page === */
+
+/* === Global/Local Bookmarks === */
+
+.bkm:hover
+{
+    cursor: pointer;
+}
+
+.bkm-tag>path
+{
+    fill: var(--bg-red);
+}
+
+.bkm-tag>rect
+{
+    fill: var(--bg-red);
+}
+
+.bkm.bkm-current .bkm-tag>path
+{
+    fill: var(--bg-redlight);
+}
+
+.bkm-tag:hover>path
+{
+    fill: var(--bg-redlight);
+}
+
+.bkm-icon
+{
+    pointer-events: none;
+}
+
+.bkm-icon path
+{
+    fill: var(--bg-light-alt);
+    transition: all 0.2s ease-in-out;
+}
+
+.bkm-icon circle
+{
+    stroke: var(--bg-light-alt);
+    transition: all 0.2s ease-in-out;
+}
+
+.bkm:hover .bkm-icon path, .bkm.bkm-current .bkm-icon path
+{
+    fill: var(--bg-light);
+}
+
+.bkm:hover circle, .bkm.bkm-current .bkm-icon circle
+{
+    stroke: var(--bg-light);
+}
+
+.bkm.bkm-current
+{
+    transition: all 0.4s ease-in-out;
+}
+
+/* === Events === */
+
+.table-events 
+{
+    z-index: 2;
+    width: 80%;
+    height: 100%;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+.table-events .event-col
+{
+    z-index: 2;
+    
+}

@@ -4,10 +4,12 @@
     $title = $title ?? "";
     $header_display = $header_display ?? "d-block";
     $styles = $styles ?? "";
-    $theme = $_SESSION['user_theme'] ?? "dark";
-    $logo_style = ($theme == "dark") ? "DarkLogo" : "LightLogo";
-    $icon_style = ($theme == "dark") ? "Icon-Dark" : "Icon-Light";
-    $content_offset = $content_offset ?? "col offset-3 table-main"; 
+    // $theme = $_SESSION['user_theme'] ?? "light";
+    $theme = "dark";
+    $logo_style = ($theme === "dark") ? "DarkLogo" : "LightLogo";
+    $icon_style = ($theme === "dark") ? "Icon-Dark" : "Icon-Light";
+    $content_offset = $content_offset ?? "col offset-3 offset-xl-2 table-main"; 
+    $hd_other = $hd_other ?? "";
 
     require_once 'resources/config.php';
 
@@ -39,8 +41,8 @@
     </head>
     <body class="<?=$theme?>">
         <?php require_once 'resources/templates/toast.php'; ?>
-        <div class="container-fluid w-100 h-100 p-0 super-container">
-            <div class="row pa-0 w-100 h-100">
+        <div class="container-fluid p-0 super-container">
+            <div class="row p-0 m-0">
                 <header class="header col-xl-2 col-md-3 col-0 px-1 <?=$header_display?> sticky-sidebar"> <!-- Header -->
                     <div class="hd-logo">
                         <img src="public_html/img/page/<?=$logo_style?>.svg" alt="header logo" class="img-fluid">
@@ -62,9 +64,39 @@
                     
                 </header>
                 <footer class="<?=$header_display?> hd-footer col-xl-2 col-md-3 col-0 px-1">
+                    <span class="event-icon d-flex justify-content-center align-items-center h-100">~FOOTER~</span>
                 </footer>
-                    <div class="<?=$content_offset?>">
+                <div class="<?=$content_offset?> w-100 h-100 table-box position-relative">
                         <!-- ... Content  -->
+                        <!-- Displays the centre table -->
+                    <div class="row table-back h-100 w-100 position-absolute <?=$header_display?>">
+                        <div class="col-md-12 p-0 d-flex justify-content-center h-100">
+                            <div class="row justify-content-center table-outer w-100 h-100">
+                                <div class="table-inner d-flex justify-content-center"></div>
+                            </div>
+                        </div>
+                        <div class="table-bottom">
+                            <div class="table-leg">
+                                <div class="table-leg-highlight"></div>
+                            </div>
+                            
+                            <div class="table-leg">
+                                <div class="table-leg-highlight"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row table-runner position-absolute h-100 w-100 <?php echo($header_display)?>">
+                        <div class="col-12 p-0 d-flex flex-column align-items-center h-100">
+                            <div class="row table-runner-piece">
+                                <div></div>
+                            </div>
+                            <div class="row align-items-center table-runner-piece h-100">
+                                <div class="h-100 w-100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
 <?php
     if(isset($_GET['error'])){
         ?><script type='text/JavaScript'>showError('<?=$_GET['error']?>');</script>`;<?php

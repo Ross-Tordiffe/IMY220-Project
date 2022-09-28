@@ -1,0 +1,9 @@
+/* ==== Main Explore Styling ==== */
+
+.explore-container
+{
+    z-index: 2;
+    width: 80%;
+    padding: 1em;
+    color: var(--text-main);
+}

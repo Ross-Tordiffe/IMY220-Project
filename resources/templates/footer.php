@@ -51,10 +51,10 @@
                                 <a href="home.php">Home</a>
                                 </li>
                                 <li>
-                                <a href="games.php">Games</a>
+                                <a href="games.php">Explore</a>
                                 </li>
                                 <li>
-                                <a href="collections.php">Groups</a>
+                                <a href="collections.php">Profile</a>
                                 </li>
                             </ul>
                         </div>
