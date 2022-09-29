@@ -53,6 +53,7 @@ $(() => {
     // $("#friendsModal").modal("show");
 
     getEvents();
+    getFriends();
     
     console.log("profile.js loaded");
 
@@ -63,38 +64,6 @@ $(() => {
     $(".friend-text").on("click", (e) => {
         
         // Get the user's friends and return a promise
-        const getFriends = () => {
-        
-            let friends = new Promise((resolve, reject) => {
-                $.ajax({
-                    url: "requests.php",
-                    type: "POST",
-                    data: {
-                        "request": "getFriends"
-                    },
-                    success: (data) => {
-                        console.log(data);
-                        return data;
-                    },
-                    error: (err) => {
-                        console.log(err);
-                    }
-                }).then((data) => {
-                    resolve(data);
-                });
-            }).then((data) => {
-                data = JSON.parse(data);
-                if(data.status === "success") {
-                    displayFriends(data.data);
-                    console.log(data.data);
-                }
-                else {
-                    console.log(data);
-                }
-            }).catch((err) => {
-                console.log(err);
-            });
-        };
 
         getFriends();
         $("#friendsModal").modal("show");
@@ -105,10 +74,22 @@ $(() => {
         $("#friendsModal").modal("hide");
     });
 
+    // --- Accept Friend Request and create friendship on the database ---
+    $("#friendsModal").on("click", ".accept-request", (e) => {
+    
+        let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
+        console.log(friendId);
+        acceptFriend(friendId);
+    });
+
+
+
 });
 
 
 // === Helper Functions ===
+
+
 
 const displayFriends = (friends) => {
     $(".profile-friends").empty();
@@ -151,6 +132,41 @@ const displayFriends = (friends) => {
         )
     }
 }
+
+const getFriends = () => {
+        
+    let friends = new Promise((resolve, reject) => {
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                "request": "getFriends"
+            },
+            success: (data) => {
+                console.log(data);
+                return data;
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        }).then((data) => {
+            resolve(data);
+        });
+    }).then((data) => {
+        data = JSON.parse(data);
+        if(data.status === "success") {
+            displayFriends(data.data);
+            updateFriendHeader(data.data);
+            console.log("GOT FRIENDS");
+            console.log(data.data);
+        }
+        else {
+            console.log(data);
+        }
+    }).catch((err) => {
+        console.log(err);
+    });
+};
 
 const getEvents = () => {
     let events = new Promise((resolve, reject) => {
@@ -252,6 +268,37 @@ const acceptFriend = (friendId) => {
             url: "requests.php",
             data: {
                 request: "acceptFriend",
+                friend_id: friendId
+            },
+            success: (data, status) => {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.status === "success")
+                {
+                    resolve(data.data);
+                }
+                else
+                {
+                    reject(data.data);
+                }
+            }
+        });
+    }).then((data) => {
+        console.log(data);
+        getFriends();
+    }).catch((data) => {
+        console.log(data);
+        showError(data);
+    });
+}
+
+const rejectFriend = (friendId) => {
+    let reject = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: "requests.php",
+            data: {
+                request: "rejectFriend",
                 friendId: friendId
             },
             success: (data, status) => {
@@ -274,4 +321,30 @@ const acceptFriend = (friendId) => {
         console.log(data);
         showError(data);
     });
+}
+                
+
+const updateFriendHeader = (friends) => {
+
+    console.log("friends", friends);
+
+    let friend_accepted = friends.filter((friend) => {
+        return friend.accepted === true;
+    });
+
+    let friend_requests = friends.filter((friend) => {
+        return friend.accepted === false;
+    });
+
+    $(".friend-count").html(friend_accepted.length);
+    
+    console.log(friend_requests.length);
+    if(friend_requests.length > 0) {
+        console.log("friend requests Here");	
+        $(".friend-request-count").html(friend_requests.length);
+        $(".friend-request-count").removeClass("d-none");
+    }
+    else {
+        $(".friend-requests-count").addClass("d-none");
+    }
 }

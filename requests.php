@@ -56,6 +56,8 @@
             }
             else {
                 $_SESSION['logged_in'] = true;
+
+                
                 echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$response["user_id"]]));
             }
            
@@ -133,6 +135,16 @@
             
             $friends = $db->getFriends();
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$friends]));
+        };
+
+        /**
+         * Handle accepting friend requests
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "acceptFriend") {
+            
+            $friend_id = $_POST['friend_id'];
+            $message = $db->handleFriendRequests($friend_id, true);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
         };
         
     }

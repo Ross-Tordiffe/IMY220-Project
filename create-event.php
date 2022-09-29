@@ -21,10 +21,9 @@
     $styles = "<link rel='stylesheet' href='public_html/css/create-event.css'>";
 
     $scripts = "
-   
-    <script src='public_html/js/createEvent.js'></script>
-    <script src='public_html/js/eventHandle.js' defer></script>
-    <script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDQLaPWKg1VN8PmDCSNuyMgu0DCc1QY8NA&callback=initMap&v=weekly' defer></script>
+        <script src='public_html/js/createEvent.js'></script>
+        <script src='public_html/js/eventHandle.js' defer></script>
+        <script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDQLaPWKg1VN8PmDCSNuyMgu0DCc1QY8NA&callback=initMap&v=weekly' defer></script>
     ";
 
     require_once("resources/templates/header.php");

@@ -99,27 +99,27 @@
                             $friends = array();
 
                             // Get friend request to the user
-                            $friend_request_stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_2=? AND fs_accepted=0");
-                            $friend_request_stmt->bind_param("i", $row["user_id"]);
-                            if($friend_request_stmt->execute()) {
-                                $friend_request_result = $friend_request_stmt->get_result();
-                                while($friend_request_row = $friend_request_result->fetch_assoc()){
-                                    $friends[] = array(
-                                        "friend_id" => $friend_request_row["fs_user_id_1"],
-                                        "friend_status" => false
-                                    );
-                                }
-                            }
+                            // $friend_request_stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_2=? AND fs_accepted=0");
+                            // $friend_request_stmt->bind_param("i", $row["user_id"]);
+                            // if($friend_request_stmt->execute()) {
+                            //     $friend_request_result = $friend_request_stmt->get_result();
+                            //     while($friend_request_row = $friend_request_result->fetch_assoc()){
+                            //         $friends[] = array(
+                            //             "friend_id" => $friend_request_row["fs_user_id_1"],
+                            //             "friend_status" => false
+                            //         );
+                            //     }
+                            // }
                             
-                            if($result->num_rows > 0){
-                                while($row2 = $result->fetch_assoc()){
-                                    $friends[] = array(
-                                        "friend_id" => $row2["fs_user_id_2"], 
-                                        "friend_status" => true
-                                    );
-                                }
-                            }
-                            $row["user_friends"] = $friends;
+                            // if($result->num_rows > 0){
+                            //     while($row2 = $result->fetch_assoc()){
+                            //         $friends[] = array(
+                            //             "friend_id" => $row2["fs_user_id_2"], 
+                            //             "friend_status" => true
+                            //         );
+                            //     }
+                            // }
+                            // $row["user_friends"] = $friends;
                         }
 
                         return $row;
@@ -135,7 +135,6 @@
             else{
                 return false;
             }
-            // $stmt->close();
         }
 
         /**
@@ -160,7 +159,7 @@
                 $_SESSION["user_username"] = $user["user_username"];
                 $_SESSION["user_image"] = $user["user_image"];
                 $_SESSION["user_theme"] = $user["user_theme"];
-                $_SESSION["user_friends"] = $user["user_friends"];
+                $_SESSION["user_friends"] = "";
                 // header("Location: home.php/");
                 return true;
             }   
@@ -471,11 +470,23 @@
             }
             $request_result = $stmt->get_result();
 
+            $stmt->close();
+
             $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1 = ?");
             $stmt->bind_param("i", $user_id);
             if(!$stmt->execute()){
                 return false;
             }
+
+            // get number of rows returned
+            // $friend_results = array();
+            // $result = $stmt->get_result();
+            // while($row = $result->fetch_assoc()) {
+            //     $friend_results[] = $row;
+            // }
+
+            // return array("requests" => $request_result, "friends" => $friend_results);
+
             $friend_result = $stmt->get_result();
 
             // Append friend requests and friends to the friends array
@@ -491,6 +502,7 @@
                 $friends[] = array("user_id" => $request_row["user_id"], "user_username" => $request_row["user_username"], "user_image" => $request_row["user_image"], "accepted" => false);
             }
             
+            // For each friend
             while($row = $friend_result->fetch_assoc()) {
                 $friend_id = $row["fs_user_id_2"];
                 $friend_stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ?");
@@ -501,11 +513,49 @@
                 $friend_result = $friend_stmt->get_result();
                 $friend_row = $friend_result->fetch_assoc();
                 $friends[] = array("user_id" => $friend_row["user_id"], "user_username" => $friend_row["user_username"], "user_image" => $friend_row["user_image"], "accepted" => true);
+                // append friend to friends array
             }
 
+            $_SESSION["user_friends"] = $friends;
             return $friends;
         }
         
+        /**
+         * Method to accept or refuse a friend request and update the friendship in the database
+         */
+        public function handleFriendRequests($friend_id, $accepted)
+        {
+
+            // Friend request accepted
+            if($accepted) {
+
+                $stmt = $this->getConnection()->prepare("UPDATE db_friendships SET fs_accepted = 1 WHERE fs_user_id_1 = ? AND fs_user_id_2 = ?");
+                $stmt->bind_param("ii", $friend_id, $_SESSION["user_id"]);
+                if(!$stmt->execute()){
+                    return false;
+                }
+
+                $stmt = $this->getConnection()->prepare("INSERT INTO db_friendships (fs_user_id_1, fs_user_id_2, fs_accepted) VALUES (?, ?, 1)");
+                $stmt->bind_param("ii", $_SESSION["user_id"], $friend_id);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                
+                return true;
+
+            }
+            else {
+
+                $stmt = $this->getConnection()->prepare("DELETE FROM db_friendships WHERE fs_user_id_1 = ? AND fs_user_id_2 = ?");
+                $stmt->bind_param("ii", $friend_id, $_SESSION["user_id"]);
+                if(!$stmt->execute()){
+                    return false;
+                }
+
+                return true;
+            }
+            
+        }
     }
 
     $db = Database::getInstance(); 

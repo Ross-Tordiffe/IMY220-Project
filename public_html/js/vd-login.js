@@ -36,10 +36,10 @@ $(() => {
                 data: formData,
                 success: (data) => {
                     console.log(data);
-    
                     data = JSON.parse(data);
                     if(data.status === "success")
                     {
+                        // console.log(data);
                         window.location.href = "home.php?user_id=" + data.user_id;
                     }
                     else

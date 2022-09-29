@@ -38,16 +38,16 @@
     require_once("resources/templates/header.php");
 
     // All friends and friend requests
-    $user_friends = array();
-    $user_friends_requested = array();
-    foreach($_SESSION["user_friends"] as $friend){
-        if($friend["friend_status"] == true){
-            $user_friends[] = $friend;
-        }
-        else {
-            $user_friends_requested[] = $friend;
-        }
-    }
+    // $user_friends = array();
+    // $user_friends_requested = array();
+    // foreach($_SESSION["user_friends"] as $friend){
+    //     if($friend["accepted"] == true){
+    //         $user_friends[] = $friend;
+    //     }
+    //     else {
+    //         $user_friends_requested[] = $friend;
+    //     }
+    // }
 
 ?>                          
                 <!-- Full container -->
@@ -64,16 +64,9 @@
                                         <h3 class="fw-bold"><?=$_SESSION["user_username"]?></h3>
                                     </div>
                                     <div class="profile-header-friends d-flex align-items-center vertical-align-middle">
-                                        <span class="friend-count fw-bold"><?php echo(count($user_friends)) ?></span>
+                                        <span class="friend-count fw-bold">0</span>
                                         <span class="friend-text fs-6 p-0 px-1 border-0">Friends</span>
-                                        <?php 
-                                            if(count($user_friends_requested) > 0)
-                                            {
-                                                // Show friend requests as a round badge notification
-                                                echo("<span class='friend-request-count badge rounded-pill'>".count($user_friends_requested)."</span>");
-                                                
-                                            }
-                                        ?>
+                                        <span class='friend-request-count badge rounded-pill d-none'>0</span>
                                     </div>
                                 </div>
                             </div>
