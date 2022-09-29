@@ -41,7 +41,7 @@
     $user_friends = array();
     $user_friends_requested = array();
     foreach($_SESSION["user_friends"] as $friend){
-        if($friend["status"] == true){
+        if($friend["friend_status"] == true){
             $user_friends[] = $friend;
         }
         else {
@@ -86,10 +86,10 @@
                     <div class="col-xl-4 col-lg-6 col-12 event-col-1 event-col"></div>
                     <div class="col-xl-4 col-lg-6 col-0 event-col-2 event-col"></div>
                     <div class="col-xl-4 col-lg-0 col-0 event-col-3 event-col"></div>
-                </div>
                     <!-- Title -->
                     <!-- <h1 class="">Profile</h1> -->
                     <!-- Temporary logout button -->
+                    
       
                     <!-- Create event button -->
                     

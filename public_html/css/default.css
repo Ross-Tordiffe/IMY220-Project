@@ -894,8 +894,17 @@ header .bkm-icon
     padding-top: 0;
 }
 
-.modal-header .btn-close
+.modal-header .modal-close
 {
-    color: var(--bg-blue) !important;
+    color: var(--bg-blue);
+    height: 2.5em;
+    width: 2.5em;
+    font-size: 1em;
+    border-radius: 15px;
 }
 
+.modal-header .modal-close:hover
+{
+    color: var(--bg-light);
+    background-color: var(--bg-blue);
+}

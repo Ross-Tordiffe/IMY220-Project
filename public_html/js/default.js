@@ -15,8 +15,9 @@ const showError = (msg) => {
 
 $(() => {
 
+    console.log("default.js loaded");
     // on logout button click
-    $('#logout').on('click', (e) => {
+    $('#profile-logout').on('click', (e) => {
 
         e.preventDefault();
     

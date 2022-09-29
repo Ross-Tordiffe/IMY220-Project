@@ -6,7 +6,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin: 1em;
+    margin: 1em 0;
     margin-bottom: 0;
     color: var(--text-main);
     background-color: var(--bg-logo-back);
@@ -120,6 +120,7 @@
     display: flex;
     align-items: center;
     padding: 0.5em;
+    padding-right: 0;
     border-bottom: var(--bg-blue) 2px solid;
 }
 
@@ -147,4 +148,59 @@
     font-family: "Poppins", sans-serif;
     font-size: 1.2em;
     margin-left: 1em;
+}
+
+.accept-request
+{
+    font-size: 1em;
+    border-radius: 15px;
+}
+
+.accept-request:hover
+{
+    font-size: 1em;
+}
+
+/* ==== Profile Buttons ==== */
+
+/* new event button in bottom right corner */
+.profile-create-event
+{
+    bottom: 2em;
+    right: 2em;
+    color: var(--bg-light);
+    background-color: var(--bg-blue);
+    border-radius: 90%;
+    font-size: 3em;
+    width: 100px;
+    height: 100px;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-create-event:hover
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    cursor: pointer;
+}
+
+/* ==== Profile Events ==== */
+
+.event-card-template
+{
+    min-height: 345px;
+    opacity: 0.5;
+    transition: all 0.2s ease-in;
+    font-size: 3em;
+    margin-bottom: 30px
+}
+
+.event-card-template:hover
+{
+    opacity: 1;
+    cursor: pointer;
+    font-size: 3.3em;
 }

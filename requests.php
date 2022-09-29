@@ -126,10 +126,6 @@
 
         // === Secondary POST requests ===
 
-        /** 
-         * Handle image upload requests. Add the passed in image to the $_FILES superglobal
-         */
-
         /**
          * Handle getting friends
          */

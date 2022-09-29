@@ -115,7 +115,7 @@
                                 while($row2 = $result->fetch_assoc()){
                                     $friends[] = array(
                                         "friend_id" => $row2["fs_user_id_2"], 
-                                        "status" => true
+                                        "friend_status" => true
                                     );
                                 }
                             }

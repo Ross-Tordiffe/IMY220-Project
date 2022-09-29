@@ -101,7 +101,9 @@ $(() => {
 
     });
 
-    
+    $(".profile-modal-close").on("click", (e) => {
+        $("#friendsModal").modal("hide");
+    });
 
 });
 
@@ -113,16 +115,27 @@ const displayFriends = (friends) => {
     let friendsHTML = "";
     for(let i = 0; i < friends.length; i++) {
         let userImage = "public_html/img/user/" + friends[i].user_image;
-
+        let requested = friends[i].accepted === false ? 
+        `
+            <!-- inline accept button or cancel request -->
+            <div class="d-inline">
+                <button class="btn btn-sm accept-request px-2 py-0 d-inline">accept</button>
+                <i class="fas fa-times ps-2 cancel-request"></i>
+            </div>
+        ` : "";
 
         friendsHTML += `
             <li class="profile-friend">
                 <div class="profile-friend-image">
                     <img src="${userImage}" alt="Profile Image">
                 </div>
-                <div class="profile-friend-name ps-2">
+                <div class="profile-friend-name ps-2 d-flex justify-content-between align-items-center w-100 me-3">
                     <span>${friends[i].user_username}</span>
+                    ${
+                       requested
+                    }
                 </div>
+                <div class="d-none profile-friend-id">${friends[i].user_id}</div>
             </li>
         `;
     }
@@ -180,29 +193,43 @@ const getEvents = () => {
         // Clear previous events from event-col classes
         $(".event-col").empty();
 
-        console.log("here2323");
+        // make first event a create event template
+        let createEventHTML = `
+            <div class="event">
+                <div class="card event-card event-card-template">
+                    <div class="card-body d-flex justify-content-center align-items-center">
+                        <div class=" d-flex justify-content-center align-items-center">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Append create event card to first event-col
+        $(".event-col").first().append(createEventHTML);
 
         // Based on the screen size distribute events between event-cols
         if($(window).width() >= 1200) {
             for(let i = 0; i < data.length; i++) {
                 if(i % 3 === 0) {
-                    $(".event-col-1").append(EventObject(data[i]));
-                }
-                else if(i % 3 === 1) {
                     $(".event-col-2").append(EventObject(data[i]));
                 }
-                else {
+                else if(i % 3 === 1) {
                     $(".event-col-3").append(EventObject(data[i]));
+                }
+                else {
+                    $(".event-col-1").append(EventObject(data[i]));
                 }
             }
         }
         else if($(window).width() >= 992) {
             for(let i = 0; i < data.length; i++) {
                 if(i % 2 === 0) {
-                    $(".event-col-1").append(EventObject(data[i]));
+                    $(".event-col-2").append(EventObject(data[i]));
                 }
                 else {
-                    $(".event-col-2").append(EventObject(data[i]));
+                    $(".event-col-1").append(EventObject(data[i]));
                 }
             }
         }
@@ -211,6 +238,38 @@ const getEvents = () => {
                 $(".event-col-1").append(EventObject(data[i]));
             }
         }
+    }).catch((data) => {
+        console.log(data);
+        showError(data);
+    });
+}
+
+
+const acceptFriend = (friendId) => {
+    let accept = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: "requests.php",
+            data: {
+                request: "acceptFriend",
+                friendId: friendId
+            },
+            success: (data, status) => {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.status === "success")
+                {
+                    resolve(data.data);
+                }
+                else
+                {
+                    reject(data.data);
+                }
+            }
+        });
+    }).then((data) => {
+        console.log(data);
+        getFriends();
     }).catch((data) => {
         console.log(data);
         showError(data);
