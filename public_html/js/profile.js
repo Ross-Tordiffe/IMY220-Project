@@ -192,15 +192,14 @@ const getEvents = (user, profile_user) => {
             $(".event-col").first().append(createEventHTML);
         }
 
-        let i = 0;
+        var i = 0;
         if(!other_user) {
             i = 1;
         }
-
-        
+        console.log(i);
         // Based on the screen size distribute events between event-cols
         if($(window).width() >= 1200) {
-            for(let j = 0, i; j < data.length; i++, j++) {
+            for(let j = 0; j < data.length; i++, j++) {
                 console.log(i);
                 if(i % 3 === 0) {
                     $(".event-col-1").append(EventObject(data[j]));
@@ -214,7 +213,7 @@ const getEvents = (user, profile_user) => {
             }
         }
         else if($(window).width() >= 992) {
-            for(let i = 0; i < data.length; i++) {
+            for(let j = 0; j < data.length; i++, j++) {
                 if(i % 2 === 0) {
                     $(".event-col-1").append(EventObject(data[j]));
                 }
@@ -224,7 +223,7 @@ const getEvents = (user, profile_user) => {
             }
         }
         else {
-            for(let i = 0; i < data.length; i++) {
+            for(let j = 0; j < data.length; j++) {
                 $(".event-col-1").append(EventObject(data[j]));
             }
         }

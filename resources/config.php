@@ -468,6 +468,75 @@
         } 
 
         /**
+         * Method to get a single event from the database using the event id
+         */
+        public function getEvent($event_id) {
+
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $event = $result->fetch_assoc();
+            $stmt->close();
+
+            // Get category name from using the category id for the event
+            $stmt = $this->getConnection()->prepare("SELECT category_name FROM db_category WHERE category_id = ?");
+            $stmt->bind_param("i", $event["event_category_id"]);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $event["event_category"] = $row["category_name"];
+            unset($event["event_category_id"]);
+            $stmt->close();
+
+            // Get user for the event
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ?");
+            $stmt->bind_param("i", $event["event_user_id"]);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $event["event_user_image"] = $row["user_image"];
+            $event["event_user_name"] = $row["user_username"];
+            $stmt->close();
+
+            // Get tags for the event
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_event_tag WHERE evttag_event_id = ?");
+            $stmt->bind_param("i", $event["event_id"]);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $tags = array();
+            while($row = $result->fetch_assoc()) {
+                $tags[] = $row["evttag_tag_id"];
+            }
+            $stmt->close();
+
+            // Get tag name from using the tag id for the event
+            foreach($tags as $tagKey => $tag) {
+                $stmt = $this->getConnection()->prepare("SELECT tag_name FROM db_tags WHERE tag_id = ?");
+                $stmt->bind_param("i", $tag);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                $tags[$tagKey] = $row["tag_name"];
+                $stmt->close();
+            }
+            $event["event_tags"] = $tags;
+
+            return $event;
+        }
+
+
+        /**
          * Method to get the ids, names and images of the users friends
          */
         public function getFriends($profile_user) {

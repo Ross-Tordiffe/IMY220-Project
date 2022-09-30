@@ -128,6 +128,16 @@
 
         };
 
+        /**
+         * Handle getting of a single event using the event id
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getEvent") {
+            
+            $event = $db->getEvent($_POST['event_id']);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$event]));
+
+        };
+
         // === Secondary POST requests ===
 
         /**
