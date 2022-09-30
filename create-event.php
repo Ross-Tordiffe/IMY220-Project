@@ -48,7 +48,7 @@
                                                 <!-- Inner inputs section -->
                                                 <div class="first-inputs-inner d-flex flex-column justify-content-around p-3">
                                                     <!-- Image upload -->
-                                                    <div class="col form-group event-image-box d-flex justify-content-center w-100">
+                                                    <div class="form-group event-image-box d-flex justify-content-center w-100">
                                                         <input type="file" id="event-file" class="file-input" name="event-file" data-height="500" accept=".png, .jpg, .jpeg" />
                                                         <label for="event-file"></label>
                                                         <span class="event-image-btn">
@@ -69,7 +69,7 @@
                                                        
                                                     </div>
                                                     <!-- Event location or site -->
-                                                    <div class="row form-group event-loc-site d-flex align-items-center flex-nowrap">
+                                                    <div class="row form-group event-loc-site px-3 d-flex align-items-center flex-nowrap">
                                                         <div class="col-5 py-0 event-location">
                                                             <button id="event-location" class="btn event-btn d-flex align-items-center" name="event-location">
                                                                 <i class="fa-solid fa-location-dot pe-1"></i><span class="h6 mb-0">Add location</span>
@@ -87,7 +87,7 @@
                                                         </div>
                                                     </div>
                                                     <!-- Event and category -->
-                                                    <div class="row input-group date event-date-cat-box pt-3">
+                                                    <div class="row input-group date event-date-cat-box justify-content-between px-3 pt-3">
                                                         <!-- Event date -->
                                                         <div class="col-6 d-flex align-items-center">
                                                             <span class=" pe-2 pt-1">
@@ -96,7 +96,7 @@
                                                             <input type="date" class="form-control h-100" name="event-date" id="event-date"/>
                                                         </div>
                                                         <!-- Event category -->
-                                                        <div class="col-6 d-flex align-items-center">
+                                                        <div class="col-6 d-flex align-items-center justify-content-end">
                                                             <i class="event-icon fa-solid fa-book pe-2"></i>
                                                             <button id="event-category" class="btn event-btn d-flex" name="event-category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                 <label for="category-dropdown" class="h6 mb-0"><i class="fa-solid fa-caret-down pe-2"></i><span>Select a category</span></label>

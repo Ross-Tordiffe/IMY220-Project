@@ -13,16 +13,10 @@
 
     require_once("resources/templates/header.php");
 
-    
-
-
 ?>
 
-
      <!-- Full container -->
-     <div class="row event-container table-events">
-
-
+     <div class="row event-container table-events justify-content-center">
 
 <?php
 

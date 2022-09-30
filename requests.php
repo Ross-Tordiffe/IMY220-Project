@@ -89,7 +89,7 @@
          */
         if(isset($_POST['request']) && $_POST['request'] === "createEvent") {
 
-            $event_image = $_POST['event-file'];
+            $event_image = $_FILES['event-file'];
             $event_title = $_POST['event-title'];
             $event_location = $_POST['event-location'];
             $event_website = $_POST['event-website'];
@@ -97,8 +97,6 @@
             $event_category = $_POST['event-category'];
             $event_description = $_POST['event-description'];
             $event_tags = $_POST['event-tags'];
-
-            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$event_image]));
 
             $data = [
                 "event_image" => $event_image,
@@ -112,6 +110,38 @@
             ];
 
             $message = $db->createEvent($data);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+            
+        }
+
+        /**
+         * Handle Updating of events
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "updateEvent") {
+
+            $event_id = $_POST['event-id'];
+            $event_image = $_FILES['event-file'];
+            $event_title = $_POST['event-title'];
+            $event_location = $_POST['event-location'];
+            $event_website = $_POST['event-website'];
+            $event_date = $_POST['event-date'];
+            $event_category = $_POST['event-category'];
+            $event_description = $_POST['event-description'];
+            $event_tags = $_POST['event-tags'];
+
+            $data = [
+                "event_id" => $event_id,
+                "event_image" => $event_image,
+                "event_title" => $event_title,
+                "event_location" => $event_location,
+                "event_website" => $event_website,
+                "event_date" => $event_date,
+                "event_category" => $event_category,
+                "event_description" => $event_description,
+                "event_tags" => $event_tags,
+            ];
+
+            $message = $db->updateEvent($data);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
             
         }

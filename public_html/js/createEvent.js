@@ -1,6 +1,9 @@
 $(() => {
 
-    fillDummyData();
+    // fillDummyData();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const event_id = urlParams.get("event_id");
  
     // === Handle swapping cards/forms ===
 
@@ -48,6 +51,7 @@ $(() => {
         let file = e.originalEvent.dataTransfer.files;
         if(handleImageFile(file)){
             imageFile = file[0];
+            console.log(imageFile);
         }
         console.log("success?");
     });
@@ -66,6 +70,7 @@ $(() => {
                 let reader = new FileReader();
                 reader.readAsDataURL(file[0]);
                 reader.onload = (e) => {
+                    console.log("IMAGE: ", e.target.result);
                     $(".event-image-box").css("background-image", `url(${e.target.result})`);
                     $(".event-image-btn").addClass("event-image-hidden");
                 }
@@ -153,10 +158,8 @@ $(() => {
 
     // --- Handle Website
 
-    $("#event-website").on("keyup", (e) => {
-        if(e.target.value.length > 0) {
-            e.preventDefault();
-            $(".event-or").addClass("shrink");
+    const expandWebsite = () => {
+        $(".event-or").addClass("shrink");
      
             $(".event-location").addClass("shrink");
     
@@ -173,9 +176,15 @@ $(() => {
             if($(".event-website").hasClass("d-none")) {
                 $(".event-website").removeClass("d-none");
             }
-        }
+    }
 
+    $("#event-website").on("keyup", (e) => {
+        if(e.target.value.length > 0) {
+            expandWebsite();
+        }
     });
+
+   
 
     $(".event-loc-site-cancel").on("click", (e) => {
         e.preventDefault();
@@ -290,14 +299,10 @@ $(() => {
             });
             formData.append("event-tags", tags);
 
-            // Send form data to server
-            formData.append("request", "createEvent");
-            console.log (formData);
+
             // Check if imageFile is set and append it to formData
             if(imageFile) {
-                console.log(imageFile);
-                formData.append["event-file"] = imageFile;
-                console.log (formData);
+                formData.append("event-file", imageFile);
             }
 
             // convert formdata into json
@@ -306,29 +311,69 @@ $(() => {
                 json[key] = value;
             }
 
-            $.ajax({
-                url: "requests.php",
-                type: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: (data) => {
-                    console.log(data);
-                    data = JSON.parse(data);
-                    console.log(data);
-                    if(data.status == "success") {
-                        window.location.href = "home.php";
+            // If the user is creating an event
+            if(!event_id) {
+
+                // Send form data to server
+                formData.append("request", "createEvent");
+
+                $.ajax({
+                    url: "requests.php",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (data) => {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        console.log(data);
+                        if(data.status == "success") {
+                            window.location.href = "home.php";
+                        }
+                        else {
+                            let message = "error: " + data.message;
+                            showError(message);
+                        }
+                    },
+                    error: (err) => {
+                        console.log(err);
+                        showError("Something went wrong. Please try again.");
                     }
-                    else {
-                        let message = "error: " + data.message;
-                        showError(message);
+                });
+
+            }
+            // If the user is editing an event
+            else {
+
+                // Send form data to server
+                formData.append("request", "updateEvent");
+                formData.append("event-id", event_id);
+
+                $.ajax({
+                    url: "requests.php",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (data) => {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        console.log(data);
+                        if(data.status == "success") {
+                            window.location.href = "event.php?id=" + event_id;
+                        }
+                        else {
+                            let message = "error: " + data.message;
+                            showError(message);
+                        }
+                    },
+                    error: (err) => {
+                        console.log(err);
+                        showError("Something went wrong. Please try again.");
                     }
-                },
-                error: (err) => {
-                    console.log(err);
-                    showError("Something went wrong. Please try again.");
-                }
-            });
+                });
+            }
+           
         }
        
     });
@@ -416,9 +461,79 @@ $(() => {
         }
     }
 
+    // If and event_id is present in the url, the user is editing an event and the form should be populated with the event's data
+    if(event_id) {
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                request: "getEvent",
+                event_id: event_id
+            },
+            success: (data) => {
+                data = JSON.parse(data);
+                console.log(data);
+                if(data.status == "success") {
 
+                    // Change form title
+                    $(".create-event-title").text("Edit Event");
+                    
+                    data = data.data;
+                    console.log(data);
 
+                    // Populate form with event data
+                    $("#event-title").val(data.event_title);
 
+                    $("#title-counter").text(data.event_title.length + "/30");
+
+                    $("#event-date").val(data.event_date);
+                    
+                    // Either location or website will be set, not both
+                    if(data.event_location) {
+                        $("#event-location span").text(data.event_location);
+                        $(".event-or").addClass("d-none");
+                        $(".event-website").addClass("d-none");
+                
+                        if($(".event-location").hasClass("d-none")) {
+                            $(".event-location").removeClass("d-none");
+                        }
+                        $(".event-location").removeClass("col-5");
+                        $(".event-location").addClass("col-11");
+                        $(".event-loc-site-cancel").addClass("col-1");
+                        $(".event-loc-site-cancel").addClass("grow-1");
+                        $("#event-location").addClass("w-100");
+                    }
+                    else {
+                        $("#event-website").val(data.event_website);
+                        expandWebsite();
+                    }
+
+                    $("#event-category>label>span").text(data.event_category);
+                    $("#event-description").val(data.event_description);
+                    $("#description-counter").text(data.event_description.length + "/500");
+                    
+                    // Add tags to tag container from tags json array
+                    data.event_tags.forEach((tag) => {
+                        $(".tag-container").append(`<div class='badge tag-item'>${tag}</div>`);
+                    });
+
+                    // Set image
+                    $(".event-image-box").css("background-image", `url("public_html/img/event/${data.event_image}")`);
+                    $(".event-image-btn").addClass("event-image-hidden");
+
+                    $("#create-event-submit").text("Save Event");
+                }
+                    
+                else {
+                    showError(data.message);
+                }
+            },
+            error: (err) => {
+                console.log(err);
+                showError("Something went wrong. Please try again.");
+            }
+        });
+    }
 });  
 
 // === Handle map (Needs to be defined before google script is loaded) ===
@@ -542,3 +657,4 @@ const fillDummyData = () => {
         $(".tag-container").append(`<div class='badge tag-item'>#test${i}</div>`);
     }
 };
+

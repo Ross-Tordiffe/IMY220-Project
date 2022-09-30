@@ -1,0 +1,71 @@
+/* === General Event Styling === */
+
+.event-page-back 
+{
+    background-color: var(--bg-orange);
+    color: var(--bg-blue);
+    border-radius: 40px;
+    border : 2px solid var(--bg-blue);
+}
+
+.event-page-details
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border-radius: 0 40px 40px 0;
+    border: 2px solid var(--bg-blue);
+    border-left: none;
+}
+
+.event-page-title h1
+{
+    color: var(--bg-blue);
+}
+
+.event-page-image img 
+{
+    border-radius: 40px 0 0 40px;
+    border : 2px solid var(--bg-blue);
+    min-width: 100%;
+    background-color: var(--bg-blue);
+}
+
+.event-hashtags
+{
+    overflow: scroll;
+}
+
+.event-hashtag:hover
+{
+    cursor: pointer;
+}
+
+.event-page-edit
+{
+    left: 1em;
+    top: 1em;
+}
+
+.event-page-edit .btn
+{
+    border-radius: 40%;
+}
+
+.event-page-edit .btn:hover
+{
+    background-color: var(--bg-orange);
+}
+
+.event-page-edit .btn:focus
+{
+    background-color: var(--bg-orange);
+    color: var(--bg-light);
+}
+
+/* === Edit icons === */
+
+.edit-icon
+{
+    display: none;
+    pointer-events: none;
+}

@@ -211,6 +211,7 @@
 
             $stmt->close();
 
+            
             // prepare upload image to server
             $image = $data["event_image"];
             $image_type = $image["type"];
@@ -218,9 +219,9 @@
             $image_path = "public_html/img/event/".$image_name;
 
             // If the image name does not include its specific file type, add it
-            if(!strpos($image_name, $image_type)) {
-                $image_name = $image_name.".".$image_type;
-            }
+            // if(!strpos($image_name, $image_type)) {
+            //     $image_name = $image_name.".".$image_type;
+            // }
         
    
             // find category_id using category_name from db_category and insert into db_eventsd
@@ -274,6 +275,134 @@
             return true;
             
         }
+
+        /**
+         * Method to update an event
+         */
+        public function updateEvent($data) {
+
+            if($data["event_location"] == "Add location") {
+                $data["event_location"] = "";
+            }
+
+            // === Get the original event ===
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_id = ?");
+            $stmt->bind_param("i", $data["event_id"]);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+        
+            $stmt->close();
+   
+            // === Get the original image name ===
+            $image_name = $row["event_image"];
+
+            // === Get the original category ===
+            $category = $this->getConnection()->prepare("SELECT category_name FROM db_category WHERE category_id = ?");
+            $category->bind_param("i", $row["event_category_id"]);
+            if(!$category->execute()){
+                return false;
+            }
+            $result = $category->get_result();
+            $row = $result->fetch_assoc();
+            $category_name = $row["category_name"];
+            $category->close();
+
+            // === Get the original tags and tag ids===
+            $originalTags = $this->getConnection()->prepare("SELECT tag_name, tag_id FROM db_tags INNER JOIN db_event_tag ON db_tags.tag_id = db_event_tag.evttag_tag_id WHERE db_event_tag.evttag_event_id = ?");
+            $originalTags->bind_param("i", $data["event_id"]);
+            if(!$originalTags->execute()){
+                return false;
+            }
+            $result = $originalTags->get_result();
+            $originalTagsArray = array();
+            $originalTagIDs = array();
+            while($row = $result->fetch_assoc()) {
+                array_push($originalTagsArray, $row["tag_name"]);
+                array_push($originalTagIDs, $row["tag_id"]);
+            }
+            $originalTags->close();
+
+            // === Check if the image was changed ===
+            if($data["event_image"]["name"] != "") {
+                // === If the image was changed, delete the old image ===
+                unlink("public_html/img/event/".$image_name);
+
+                // === Upload the new image ===
+                $image = $data["event_image"];
+                $image_type = $image["type"];
+                $image_name = $data["event_id"]."_".explode("/", $image_type)[1];
+                $image_path = "public_html/img/event/".$image_name;
+                move_uploaded_file($image["tmp_name"], $image_path);
+            }
+
+            // === Update the event ===
+            $stmt = $this->getConnection()->prepare("UPDATE `db_events` SET `event_title` = ?, `event_date` = ?, `event_location` = ?, `event_website` = ?, `event_image` = ?, `event_description` = ? WHERE `db_events`.`event_id` = ?");
+            $stmt->bind_param("ssssssi", $data["event_title"], $data["event_date"], $data["event_location"], $data["event_website"], $image_name, $data["event_description"], $data["event_id"]);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            // === Delete all the tags not included in the new tag list ===
+            $tags = explode(" ", $data["event_tags"]);
+            foreach($originalTagsArray as $tag) {
+                if(!in_array($tag, $tags)) {
+                    $tagID = array_search($tag, $originalTagsArray);
+                    $tagID = $originalTagIDs[$tagID];
+                    $deleteTag = $this->getConnection()->prepare("DELETE FROM `db_event_tag` WHERE `db_event_tag`.`evttag_tag_id` = ?");
+                    $deleteTag->bind_param("i", $tagID);
+                    if(!$deleteTag->execute()){
+                        return false;
+                    }
+                    $deleteTag->close();
+                }
+            }
+
+            // === Insert the new tags into the db_tags table ===
+            foreach($tags as $tag) {
+                if(!in_array($tag, $originalTagsArray)) {
+                    $tagStmt = $this->getConnection()->prepare("INSERT INTO `db_tags` (`tag_name`) VALUES (?)");
+                    $tagStmt->bind_param("s", $tag);
+                    if(!$tagStmt->execute()){
+                        return false;
+                    }
+                    $tagID = $this->getConnection()->insert_id;
+                    $eventTagStmt = $this->getConnection()->prepare("INSERT INTO `db_event_tag` (`evttag_event_id`, `evttag_tag_id`) VALUES (?, ?)");
+                    $eventTagStmt->bind_param("ii", $data["event_id"], $tagID);
+                    if(!$eventTagStmt->execute()){
+                        return false;
+                    }
+                }
+            }
+
+            // === if website was changed, clear the event_location field ===
+            if((isset($original["event_website"]) && $original["event_website"] != "") && ( ($data["event_website"] != $original["event_website"]) || ($original["event_location"] == "Add location") ) ) {
+                $stmt = $this->getConnection()->prepare("UPDATE `db_events` SET `event_location` = '' WHERE `db_events`.`event_id` = ?");
+                $stmt->bind_param("i", $data["event_id"]);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $stmt->close();
+            }
+            else {
+                // === if website was not changed, check if location was changed ===
+                if(isset($original["event_location"]) && $data["event_location"] != $original["event_location"]) {
+                    // === if location was changed, clear the event_website field ===
+                    $stmt = $this->getConnection()->prepare("UPDATE `db_events` SET `event_website` = '' WHERE `db_events`.`event_id` = ?");
+                    $stmt->bind_param("i", $data["event_id"]);
+                    if(!$stmt->execute()){
+                        return false;
+                    }
+                    $stmt->close();
+                }
+            }
+
+            return true;
+        }
+
 
         /**
          * Method to get all the events from the database
