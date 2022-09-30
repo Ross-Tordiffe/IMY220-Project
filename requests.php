@@ -121,7 +121,9 @@
          */
         if(isset($_POST['request']) && $_POST['request'] === "getEvents") {
             
-            $events = $db->getEvents($_POST['scope']);
+            $_POST['profile_user'] = $_POST['profile_user'] ?? $_SESSION['user_id'];
+
+            $events = $db->getEvents($_POST['scope'], $_POST['profile_user']);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$events]));
 
         };
@@ -133,7 +135,7 @@
          */
         if(isset($_POST['request']) && $_POST['request'] === "getFriends") {
             
-            $friends = $db->getFriends();
+            $friends = $db->getFriends($_POST["profile_user"]);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$friends]));
         };
 
@@ -145,6 +147,20 @@
             $friend_id = $_POST['friend_id'];
             $message = $db->handleFriendRequests($friend_id, true);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle rejecting friend requests
+         */
+        
+        /**
+         * Handle getting user data
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "fetchUserData") {
+            
+            $get_user_id = $_POST['get_user_id'];
+            $user_data = $db->fetchUserData($get_user_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$user_data]));
         };
         
     }

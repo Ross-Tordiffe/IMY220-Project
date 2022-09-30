@@ -37,17 +37,7 @@
     
     require_once("resources/templates/header.php");
 
-    // All friends and friend requests
-    // $user_friends = array();
-    // $user_friends_requested = array();
-    // foreach($_SESSION["user_friends"] as $friend){
-    //     if($friend["accepted"] == true){
-    //         $user_friends[] = $friend;
-    //     }
-    //     else {
-    //         $user_friends_requested[] = $friend;
-    //     }
-    // }
+    $profile_user_id = $_GET["user_id"];
 
 ?>                          
                 <!-- Full container -->
@@ -55,22 +45,24 @@
                     <!-- Profile header -->
                     <div class="col-12 pb-3">
                         <div class="profile-header row">
+                            <!-- User Id -->
+                            <div id="profile-user-id" class="d-none"><?=$profile_user_id?></div>
                             <!-- Profile image -->
-                            <div class="profile-header-img col-xxl-2 col-2 p-3 d-flex">
+                            <div class="profile-header-img col-xxl-2 col-2 p-3 d-flex align-items-center">
                                 <img src="public_html/img/user/<?=$_SESSION["user_image"]?>" alt="profile image" class="img-fluid">
                                 <!-- Profile name and friends -->
-                                <div class="profile-header-info d-flex flex-column p-0 m-3">
+                                <div class="profile-header-info d-flex flex-column p-0 m-3 m-xxl-4">
                                     <div class="profile-header-name">
                                         <h3 class="fw-bold"><?=$_SESSION["user_username"]?></h3>
                                     </div>
                                     <div class="profile-header-friends d-flex align-items-center vertical-align-middle">
                                         <span class="friend-count fw-bold">0</span>
-                                        <span class="friend-text fs-6 p-0 px-1 border-0">Friends</span>
-                                        <span class='friend-request-count badge rounded-pill d-none'>0</span>
+                                        <span class="friend-text p-0 px-1 border-0">Friends</span>
+                                        <span class='friend-request-count badge rounded-pill d-none fs-6 fs-xxl-5'>0</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col offset-8">
+                            <div class="col offset-8 profile-options">
                                 <i class="profile-btn fas fa-cog me-3" id="profile-settings"></i>
                                 <i class="profile-btn fas fa-sign-out-alt" id="profile-logout"></i>
                             </div>

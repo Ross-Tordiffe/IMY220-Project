@@ -42,6 +42,7 @@
     <body class="<?=$theme?>">
         <?php require_once 'resources/templates/toast.php'; ?>
         <div class="container-fluid p-0 super-container">
+            <div id="user-id" class="d-none"><?=$_SESSION["user_id"]?></div>
             <div class="row p-0 m-0">
                 <header class="header col-xl-2 col-md-3 col-0 px-1 <?=$header_display?> sticky-sidebar"> <!-- Header -->
                     <div class="hd-logo">

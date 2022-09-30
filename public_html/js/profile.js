@@ -1,59 +1,15 @@
-// === Event Object === 
-
-const EventObject = ({event_id, event_user_id, event_title, event_date, event_location, event_image, event_user_count, event_description, event_category, event_tags, event_user_name, event_user_image}) => `
-    <div class="event">
-        <div class="card card-container mb-4 shadow event-card d-flex justify-content-center">
-            <p class="d-none">${event_user_id}</p>
-            <p class="d-none event-id">${event_id}</p>
-            <div class="event-image position-relative">
-                <img class="img-fluid mx-auto d-block" src="public_html/img/event/${event_image}" alt="${event_image}"/>
-                <div class="d-flex align-items-center event-user-loc w-100">
-                    <img src="public_html/img/user/${event_user_image}" class="col-2 img-fluid event-user-img my-0 mx-2"/>
-                    <div class="col-xxl-8 col-xl-7 col-lg-6 event-name-loc d-flex flex-column">
-                        <div class="event-user-name">${event_user_name}</div>
-                        <span class="event-location"><i class="fas fa-map-marker-alt pe-1"></i>${event_location}</span>
-                    </div>
-                    <div class="col-2 event-join d-flex justify-content-between align-items-center">
-                        <div class="event-user-count d-flex align-items-center">
-                            <span class="small">${event_user_count}</span>
-                            <i class="fas fa-users ps-1"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body event-content pt-1 px-3">
-                <p class="event-title card-title mb-0" onclick="openEvent()">${event_title}</p>
-                <div class="event-date d-flex justify-content-between">
-                    <span class="small">${event_category}</span>
-                    <span class="small">${event_date}<i class="fas fa-calendar-alt ps-1"></i></span>
-                </div>
-                <!-- small line -->
-                <div class="extra">
-                    <hr class="my-2"></hr>
-                    <div class="event-description card-text small">${event_description}</div>
-                    <div class="hashtag-container d-flex flex-wrap">
-                        ${
-                            event_tags.map((tag) => {
-                                return `<span class="event-hashtag small badge">${tag}</span>`
-                            }).join('')
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-`;
-
 // === Promise & Request Functions ===
 
 // === On Page Load ===
 
 $(() => {
 
-    // $("#friendsModal").modal("show");
+    let user = $("#user-id").text();
+    let profile_user = $("#profile-user-id").text();
 
-    getEvents();
-    getFriends();
+    setUser(user, profile_user);
+    getEvents(user, profile_user);
+    getFriends(profile_user);
     
     console.log("profile.js loaded");
 
@@ -65,7 +21,7 @@ $(() => {
         
         // Get the user's friends and return a promise
 
-        getFriends();
+        getFriends(profile_user);
         $("#friendsModal").modal("show");
 
     });
@@ -79,17 +35,21 @@ $(() => {
     
         let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
         console.log(friendId);
-        acceptFriend(friendId);
+        acceptFriend(friendId, profile_user);
     });
 
+    // --- Go to the friend's profile ---
+    $("#friendsModal").on("click", ".profile-friend", (e) => {
+        let friendId = $(e.target).find(".profile-friend-id").text();
+        // console.log(friendId);
+        window.location.href = `profile.php?user_id=${friendId}`;
+    });
 
 
 });
 
 
 // === Helper Functions ===
-
-
 
 const displayFriends = (friends) => {
     $(".profile-friends").empty();
@@ -133,17 +93,20 @@ const displayFriends = (friends) => {
     }
 }
 
-const getFriends = () => {
+
+
+const getFriends = (profile_user) => {
         
     let friends = new Promise((resolve, reject) => {
         $.ajax({
             url: "requests.php",
             type: "POST",
             data: {
-                "request": "getFriends"
+                "request": "getFriends",
+                "profile_user": profile_user
             },
             success: (data) => {
-                console.log(data);
+                // console.log(data);
                 return data;
             },
             error: (err) => {
@@ -157,7 +120,6 @@ const getFriends = () => {
         if(data.status === "success") {
             displayFriends(data.data);
             updateFriendHeader(data.data);
-            console.log("GOT FRIENDS");
             console.log(data.data);
         }
         else {
@@ -168,17 +130,18 @@ const getFriends = () => {
     });
 };
 
-const getEvents = () => {
+const getEvents = (user, profile_user) => {
     let events = new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
             url: "requests.php",
             data: {
                 request: "getEvents",
+                profile_user: profile_user,
                 scope: "profile"
             },
             success: (data, status) => {
-                console.log(data);
+                // console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -209,49 +172,60 @@ const getEvents = () => {
         // Clear previous events from event-col classes
         $(".event-col").empty();
 
-        // make first event a create event template
-        let createEventHTML = `
-            <div class="event">
-                <div class="card event-card event-card-template">
-                    <div class="card-body d-flex justify-content-center align-items-center">
-                        <div class=" d-flex justify-content-center align-items-center">
-                            <i class="fas fa-plus"></i>
+        let other_user = user !== profile_user ? true : false;
+
+        if(!other_user) {
+            // make first event a create event template
+            let createEventHTML = `
+                <div class="event">
+                    <div class="card event-card event-card-template">
+                        <div class="card-body d-flex justify-content-center align-items-center">
+                            <div class=" d-flex justify-content-center align-items-center">
+                                <i class="fas fa-plus"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
 
-        // Append create event card to first event-col
-        $(".event-col").first().append(createEventHTML);
+            // Append create event card to first event-col
+            $(".event-col").first().append(createEventHTML);
+        }
 
+        let i = 0;
+        if(!other_user) {
+            i = 1;
+        }
+
+        
         // Based on the screen size distribute events between event-cols
         if($(window).width() >= 1200) {
-            for(let i = 0; i < data.length; i++) {
+            for(let j = 0, i; j < data.length; i++, j++) {
+                console.log(i);
                 if(i % 3 === 0) {
-                    $(".event-col-2").append(EventObject(data[i]));
+                    $(".event-col-1").append(EventObject(data[j]));
                 }
                 else if(i % 3 === 1) {
-                    $(".event-col-3").append(EventObject(data[i]));
+                    $(".event-col-2").append(EventObject(data[j]));
                 }
                 else {
-                    $(".event-col-1").append(EventObject(data[i]));
+                    $(".event-col-3").append(EventObject(data[j]));
                 }
             }
         }
         else if($(window).width() >= 992) {
             for(let i = 0; i < data.length; i++) {
                 if(i % 2 === 0) {
-                    $(".event-col-2").append(EventObject(data[i]));
+                    $(".event-col-1").append(EventObject(data[j]));
                 }
                 else {
-                    $(".event-col-1").append(EventObject(data[i]));
+                    $(".event-col-2").append(EventObject(data[j]));
                 }
             }
         }
         else {
             for(let i = 0; i < data.length; i++) {
-                $(".event-col-1").append(EventObject(data[i]));
+                $(".event-col-1").append(EventObject(data[j]));
             }
         }
     }).catch((data) => {
@@ -261,7 +235,7 @@ const getEvents = () => {
 }
 
 
-const acceptFriend = (friendId) => {
+const acceptFriend = (friendId, profile_user) => {
     let accept = new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
@@ -285,14 +259,14 @@ const acceptFriend = (friendId) => {
         });
     }).then((data) => {
         console.log(data);
-        getFriends();
+        getFriends(profile_user);
     }).catch((data) => {
         console.log(data);
         showError(data);
     });
 }
 
-const rejectFriend = (friendId) => {
+const rejectFriend = (friendId, profile_user) => {
     let reject = new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
@@ -316,7 +290,7 @@ const rejectFriend = (friendId) => {
         });
     }).then((data) => {
         console.log(data);
-        getFriends();
+        getFriends(profile_user);
     }).catch((data) => {
         console.log(data);
         showError(data);
@@ -325,8 +299,6 @@ const rejectFriend = (friendId) => {
                 
 
 const updateFriendHeader = (friends) => {
-
-    console.log("friends", friends);
 
     let friend_accepted = friends.filter((friend) => {
         return friend.accepted === true;
@@ -338,7 +310,6 @@ const updateFriendHeader = (friends) => {
 
     $(".friend-count").html(friend_accepted.length);
     
-    console.log(friend_requests.length);
     if(friend_requests.length > 0) {
         console.log("friend requests Here");	
         $(".friend-request-count").html(friend_requests.length);
@@ -348,3 +319,38 @@ const updateFriendHeader = (friends) => {
         $(".friend-requests-count").addClass("d-none");
     }
 }
+
+
+const setUser = (user, profile_user) => {
+
+    // If the user is not viewing their own profile
+    if(user !== profile_user) {
+        $(".profile-options").html("");
+
+        // Get the user being viewed
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                request: "fetchUserData",
+                get_user_id: profile_user
+            },
+            success: (data, status) => {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.status === "success") {
+                    console.log("profile-user", data.data);
+                    let profile_user = data.data;
+                    let profile_user_image = "public_html/img/user/" + profile_user.user_image;
+
+                    $(".profile-header-img img").attr("src", profile_user_image);
+                    $(".profile-header-name h3").html(profile_user.user_username);
+                }
+                else {
+                    showError(data.data);
+                }
+                
+            }
+        });
+    }
+};

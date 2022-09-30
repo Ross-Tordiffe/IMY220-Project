@@ -704,6 +704,7 @@ header .bkm-icon
 .event
 {
     transition: all 0.2s ease-out;
+    cursor: pointer;
 }
 
 .event:hover
@@ -729,6 +730,7 @@ header .bkm-icon
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     color: var(--text-main);
+
 }
 
 .event-image>img
@@ -738,6 +740,7 @@ header .bkm-icon
     width: 100%;
     border-top-left-radius: var(--bs-card-inner-border-radius);
     border-top-right-radius: var(--bs-card-inner-border-radius);
+    pointer-events: none;
 }
 
 
@@ -766,6 +769,33 @@ header .bkm-icon
 {
     font-size: 0.8em;
     line-height: 1em;
+    transition: all 0.2s ease-out;
+}
+
+.event-user-name:hover
+{
+    text-decoration: underline;
+}
+
+.event-user-count i
+{
+    transition: all 0.2s ease-out;
+}
+
+.event-user-count:hover i
+{
+    color: var(--bg-orange);
+    
+}
+
+.event-user-count span
+{
+    transition: all 0.2s ease-out;
+}
+
+.event-user-count:hover span
+{
+    
 }
 
 .event-location 
@@ -829,6 +859,14 @@ header .bkm-icon
     margin: 0 0.2em;
     margin-bottom: 0.3em;
     border-radius: 20px;
+    transition: all 0.1s ease-out;
+}
+
+.badge.event-hashtag:hover
+{
+    background-color: var(--bg-orange);
+    color: var(--text-alt);
+    transform: translate(-2px, -2px);
 }
 
 /* ======== Misc ======== */
