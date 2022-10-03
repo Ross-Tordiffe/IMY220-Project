@@ -8,13 +8,29 @@
     border : 2px solid var(--bg-blue);
 }
 
+.event-page-content 
+{
+    background-color: var(--bg-light);
+    border-radius: 40px 0 0 40px;
+    border : 2px solid var(--bg-blue);
+}
+
+.event-page-content img 
+{
+    border-radius: 40px 0 0 0;
+    border : 2px solid var(--bg-blue);
+    min-width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+
 .event-page-details
 {
     background-color: var(--bg-light);
     color: var(--bg-blue);
-    border-radius: 0 40px 40px 0;
-    border: 2px solid var(--bg-blue);
-    border-left: none;
+    border-radius: 0 0 0 40px;
+    border-top: none;
 }
 
 .event-page-title h1
@@ -22,13 +38,6 @@
     color: var(--bg-blue);
 }
 
-.event-page-image img 
-{
-    border-radius: 40px 0 0 40px;
-    border : 2px solid var(--bg-blue);
-    min-width: 100%;
-    background-color: var(--bg-blue);
-}
 
 .event-hashtags
 {
@@ -60,6 +69,109 @@
 {
     background-color: var(--bg-orange);
     color: var(--bg-light);
+}
+
+.event-page-user 
+{
+    background-color: var(--bg-blue);
+    color: var(--bg-blue);
+    border-radius: 0 40px 40px 0;
+}
+
+/* === Event Header Styling === */
+
+.event-page-join-header
+{
+    background-color: var(--bg-blue);
+    color: var(--bg-blue);
+    border-radius: 0 40px 0 0;
+    border : 2px solid var(--bg-blue);
+}
+
+.event-page-join-header button 
+{
+    font-size: 1em;
+    transition: all 0.2s ease-in-out;
+    padding: 0 2em;
+}
+
+.event-page-join-event:hover button
+{
+    background-color: var(--bg-orange);
+    color: var(--bg-light);
+    font-size: 1em;
+}
+
+.event-page-join-event:hover 
+{
+    cursor: pointer;
+}
+
+.event-page-add-to-group:hover button
+{
+    background-color: var(--bg-orange);
+    color: var(--bg-light);
+    font-size: 1em;
+}
+
+.event-page-add-to-group:hover 
+{
+    cursor: pointer;
+}
+
+.event-page-user-count
+{
+
+    color: var(--bg-light);
+}
+
+.event-page-join-header i
+{
+    color: var(--bg-light);
+}
+
+.event-page-user-info
+{
+    background-color: var(--bg-blue);
+    color: var(--bg-light);
+}
+
+.event-page-user-info img
+{
+    border-radius: 50%;
+    border : 2px solid var(--bg-light);
+    width: 3em;
+    height: 3em;
+    object-fit: cover;
+}
+
+.event-page-profile-line div
+{
+    border-top : 2px solid var(--bg-light);
+    width: 95%;
+}
+
+/* === Review Styling === */
+
+.event-page-review-window
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border : 2px solid var(--bg-blue);
+}
+
+.event-page-add-review i
+{
+    color: var(--bg-light);
+}
+
+/* === Add Review Modal === */
+
+.event-review-form-container
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border : 2px solid var(--bg-blue);
 }
 
 /* === Edit icons === */

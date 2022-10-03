@@ -128,7 +128,17 @@ $(".event-box").on("click", ".event", (e) => {
         e.target = e.target.parentElement;
     }
     let id = $(e.target).find(".event-id").text();
-    window.location.href = "event.php?id=" + id;
+    if(id !== "") {
+        window.location.href = "event.php?id=" + id;
+    }
+    else {
+        window.location.href = "create-event.php";
+    }
+});
+
+$("body").on("click", ".modal-close", (e) => {
+    console.log("close clicked");
+    $(".modal").modal("hide");
 });
 
 

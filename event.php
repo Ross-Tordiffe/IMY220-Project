@@ -21,5 +21,6 @@
 <?php
 
     require_once("resources/templates/footer.php");
+    require_once("resources/templates/modals.php");
 
 ?>

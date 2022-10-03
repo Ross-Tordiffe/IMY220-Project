@@ -13,16 +13,55 @@
     border-radius: 30px;
 }
 
-.profile-header-img
-{
-}
-
 .profile-header-img img
 {
-    min-width: 100%;
+    min-width: 6em;
     height: 100%;
     border-radius: 50%;
     border: var(--text-main) 2px solid;
+}
+
+.profile-header-img-icon
+{
+    font-size: 2em;
+    z-index: 100;
+    color: var(--bg-light);
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.profile-img-container:hover
+{
+    cursor: pointer;
+}
+
+.profile-img-container:hover .profile-header-img-icon
+{
+    opacity: 1;
+}
+
+.profile-img-background
+{
+    opacity: 0;
+    background-color: var(--bg-light);
+    width: 6em;
+    height: 6em;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 0;
+    transition: all 0.5s ease;
+}
+
+.profile-img-container:hover .profile-img-background
+{
+    opacity: 0.5;
+}
+
+.profile-img-change path
+{
+    width: 100px;
+    height: 100px;
+    fill: var(--text-main);
 }
 
 .profile-header-name h3
@@ -194,6 +233,7 @@
 /* ==== Profile Buttons ==== */
 
 /* new event button in bottom right corner */
+
 .profile-create-event
 {
     bottom: 2em;

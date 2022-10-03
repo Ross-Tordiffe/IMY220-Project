@@ -196,11 +196,19 @@
         /**
          * Handle getting user data
          */
-        if(isset($_POST['request']) && $_POST['request'] === "fetchUserData") {
-            
-            $get_user_id = $_POST['get_user_id'];
-            $user_data = $db->fetchUserData($get_user_id);
-            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$user_data]));
+        // if(isset($_POST['request']) && $_POST['request'] === "fetchUserData") {
+        //     $user_id = $_POST['user_id'];
+        //     $user_data = $db->fetchUserData($user_id);
+        //     echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$user_data]));
+        // };
+
+        /**
+         * Handle getting reviews for event
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getReviews") {
+            $event_id = $_POST['event_id'];
+            $reviews = $db->fetchReviews($event_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$reviews]));
         };
         
     }

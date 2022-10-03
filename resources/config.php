@@ -776,6 +776,33 @@
             return $user;
         }
 
+        /**
+         * Method to fetch reviews for an event
+        */
+        public function fetchReviews($event_id) {
+
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_review WHERE review_event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $reviews = array();
+            while($row = $result->fetch_assoc()) {
+                $reviews[] = array("review_id" => $row["review_id"], "review_user_id" => $row["review_user_id"], "review_event_id" => $row["review_event_id"], "review_message" => $row["review_message"], "review_rating" => $row["review_rating"], "review_time" => $row["review_time"]);
+            }
+            $stmt->close();
+
+            // Fetch user data for each review
+            foreach($reviews as &$review) {
+                $user = $this->fetchUserData($review["review_user_id"]);
+                $review["review_user_username"] = $user["user_username"];
+                $review["review_user_image"] = $user["user_image"];
+            }
+
+            return $reviews;
+        }
+        
     }
 
     $db = Database::getInstance(); 

@@ -14,21 +14,18 @@ $(() => {
     console.log("profile.js loaded");
 
     $("#create-event-button").on("click", (e) => {
-        window.location.href = "create-event.php";
+        window.location.href = "create-event.php?id=urmum";
     });
 
     $(".friend-text").on("click", (e) => {
         
         // Get the user's friends and return a promise
-
         getFriends(profile_user);
         $("#friendsModal").modal("show");
 
     });
 
-    $(".profile-modal-close").on("click", (e) => {
-        $("#friendsModal").modal("hide");
-    });
+
 
     // --- Accept Friend Request and create friendship on the database ---
     $("#friendsModal").on("click", ".accept-request", (e) => {
@@ -45,6 +42,49 @@ $(() => {
         window.location.href = `profile.php?user_id=${friendId}`;
     });
 
+    // // --- Cancel Friend Request ---
+    // $("#friendsModal").on("click", ".cancel-request", (e) => {
+    //     let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
+    //     console.log(friendId);
+    //     cancelFriend(friendId, profile_user);
+    // });
+
+    // --- Change profile image ---
+    $(".profile-img-container").on("click", (e) => {
+        console.log("clicked");
+        e.stopPropagation();
+        $("#profile-img-input").click();
+        // do not propogate to parent
+
+    });
+
+    $("#profile-img-input").on("click", (e) => {
+        e.stopPropagation();
+    });
+
+    $("#profile-img-input").on("change", (e) => {
+        console.log("changed");
+        let file = e.target.files[0];
+        let formData = new FormData();
+        formData.append("request", "changeProfileImage");
+        formData.append("file", file);
+        formData.append("user_id", profile_user);
+
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (data) => {
+                console.log(data);
+                let response = JSON.parse(data);
+                if (response.success) {
+                    $(".profile-img").attr("src", response.url);
+                }
+            }
+        });
+    });
 
 });
 

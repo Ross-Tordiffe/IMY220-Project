@@ -49,9 +49,18 @@
                             <div id="profile-user-id" class="d-none"><?=$profile_user_id?></div>
                             <!-- Profile image -->
                             <div class="profile-header-img col-xxl-2 col-2 p-3 d-flex align-items-center">
-                                <img src="public_html/img/user/<?=$_SESSION["user_image"]?>" alt="profile image" class="img-fluid">
+                                <div class="profile-img-container d-flex align-items-center justify-content-center flex-grow-1">
+                                    <div class="profile-img-background"></div>
+                                    <img src="public_html/img/user/<?=$_SESSION["user_image"]?>" alt="profile image" class="img-fluid">
+                                    <div class="profile-header-img-icon position-absolute">
+                                    <i class="fas fa-image"></i>
+                                    <input type="file" id="profile-img-input" class="d-none" name="profile-img-input">
+                                </div>
+                                </div>
                                 <!-- Profile name and friends -->
-                                <div class="profile-header-info d-flex flex-column p-0 m-3 m-xxl-4">
+                                <!-- hidden change profile image icon-->
+                            
+                                <div class="profile-header-info d-flex flex-column p-0 m-3 m-xxl-4 flex-shrink-1">
                                     <div class="profile-header-name">
                                         <h3 class="fw-bold"><?=$_SESSION["user_username"]?></h3>
                                     </div>
