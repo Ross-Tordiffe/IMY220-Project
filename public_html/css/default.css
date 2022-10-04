@@ -123,6 +123,11 @@ button:focus
     outline: none;
 }
 
+small
+{
+    font-size: 0.8rem;
+}
+
 /*======== Toast ========*/
 
 .toast-container{
@@ -945,4 +950,148 @@ header .bkm-icon
 {
     color: var(--bg-light);
     background-color: var(--bg-blue);
+}
+
+/* --- Review Modal --- */
+/* 
+#event-review-message
+{
+    width: 100%;
+} */
+
+.rating-box
+{
+    z-index: 3;
+	position: relative;
+	border-bottom-right-radius:10px ;
+	padding: 5px;
+	display: flex;
+	width: 150px;
+	justify-content: space-around;
+    /* transform: translate(-50%, 50%); */
+}
+
+.full-star{
+	height: 30px;
+	min-width: 30px;
+}
+
+.half-star{
+	z-index: 4;
+	position: absolute;
+	height: 32px;
+	width: 15px;
+	background-color: blue;
+	opacity:0;
+}
+
+#review-counter
+{
+    transform: translateY(-40px);
+}
+
+.review-label
+{
+    opacity: 1;
+}
+
+#event-review-message
+{
+    border: solid 2px var(--bg-blue);
+}
+
+.has-counter textarea:placeholder-shown + #review-counter
+{
+    transform: translateY(-40px);
+}
+
+.star path {
+    fill: var(--bg-blue);
+}
+
+.event-review-image-box 
+{
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 450px;
+    max-width: 100%;
+    padding: 25px;
+    border: 2px solid var(--bg-blue);
+    border-radius: 3px;
+    transition: 0.2s;
+    border-radius: 20px ;
+    background: var(--bg-orange) no-repeat center center;
+    background-size: cover;
+    transition: all 100ms ease-in-out;
+}
+  
+.event-review-image-btn 
+{
+    flex-shrink: 0;
+    border-radius: 3px;
+    padding: 8px 15px;
+    margin-right: 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+#event-review-file 
+{
+    background: none;
+    display: none;
+    pointer-events: none;
+}
+
+.event-review-image-box-dragging
+{
+    border: 2px dashed var(--bg-orange);
+    background-color: var(--bg-light);
+}
+
+.event-review-image-box:hover 
+{
+    border: 2px solid var(--bg-orange);
+    background-color: var(--bg-light);
+    cursor: pointer;
+}
+
+.event-review-image-box:hover
+{
+    color: var(--bg-orange);
+}
+
+.event-review-icon-hide
+{
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
+}
+
+.event-review-image-box:hover .event-review-icon-hide
+{
+    opacity: 0.5;
+}
+
+
+
+.event-review-image-box-dragging .event-review-image-icon path, .event-review-image-box:hover .event-review-image-icon path 
+{
+    fill: var(--bg-orange);
+}
+
+.event-review-image-hidden 
+{
+    opacity: 0;
+    transition: all 100ms ease-in-out;
+}
+
+.event-review-image-box-dragging .event-image-hidden, .event-review-image-box:hover .event-review-image-hidden 
+{
+    opacity: 0.5;
+} 
+
+.event-review-image-box
+{
+    height: 100px;
 }

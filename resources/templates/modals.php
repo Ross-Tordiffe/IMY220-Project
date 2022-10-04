@@ -28,20 +28,33 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="event-review-form-container ">
-                    <form action="" method="post" class="event-review-form d-flex flex-column align-items-center w-100">
+                <div class="event-review-form-container">
+                    <form action="" method="post" class="event-review-form d-flex flex-column w-100 p-3">
                         <!-- Give a star rating -->
-                        
-                        <div class="form-group py-5 has-counter">
-                            <label for="event-description" class="">How was your experience?</label>
-                            <textarea type="text" class="form-control input-alt" id="event-description" placeholder=" " name="event-description" rows=3 maxlength="240"></textarea>
-                            <div class="character-counter" id="description-counter">0/240</div>
+                        <div class="event-rating d-flex flex-column justify-content-center position-relative">
+                            <div class="h5 pt-3">Rating<span class="review-score ps-4">0.0</span></div>
+                            <div class="star-box"></div>
                         </div>
-                        
-                        <div class="event-review-form-group">
-                            <button type="submit" class="btn btn-primary">Send</button>
+                       
+                        <!-- Review text -->
+                        <div class="form-group pt-3 pb-1 has-counter w-100">
+                            <label for="event-review-message" class="review-label fs-5 mb-1">How was it?</label>
+                            <textarea type="text" class="form-control input-alt" id="event-review-message" placeholder=" " name="event-description" rows=5 maxlength="240"></textarea>
+                            <div class="character-counter" id="review-counter">0/240</div>
                         </div>
+
+                        <!-- Upload image -->
+                        <label for="event-review-file" class="review-label fs-5 mb-1 mt-2">Upload an image<small class=" ps-1">(optional)</small></label>
+                        <div class="form-group event-review-image-box d-flex justify-content-center w-100">
+                            <span class="event-review-image-btn">
+                                <i class="event-review-image-i fas fa-image fs-1"></i>
+                            </span>
+                        </div>
+                        <input type="file" id="event-review-file" class="file-input" name="event-review-file" data-height="500" accept=".png, .jpg, .jpeg" />
                     </form>
+                </div>
+                <div class="event-review-form-group w-100 d-flex justify-content-center pt-3">
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
         </div>
     </div>
