@@ -210,6 +210,21 @@
             $reviews = $db->fetchReviews($event_id);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$reviews]));
         };
+
+        /**
+         * Handle create review
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "createReview") {
+            echo ("here");
+            $event_id = $_POST['event_id'];
+            $review = $_POST['review'];
+            $rating = $_POST['rating'];
+            $image = $_FILES['review-image'];
+            $message = $db->createReview($event_id, $review, $rating);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+
         
     }
 ?>

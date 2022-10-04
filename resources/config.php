@@ -518,8 +518,6 @@
             }
             else if(isset($scope) && $scope == "profile") {
 
-          
-
                 $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_user_id = ? ORDER BY event_date DESC");
                 $stmt->bind_param("i", $profile_user);
                 if(!$stmt->execute()){

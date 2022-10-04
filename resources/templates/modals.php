@@ -32,13 +32,13 @@
                     <form action="" method="post" class="event-review-form d-flex flex-column w-100 p-3">
                         <!-- Give a star rating -->
                         <div class="event-rating d-flex flex-column justify-content-center position-relative">
-                            <div class="h5 pt-3">Rating<span class="review-score ps-4">0.0</span></div>
+                            <div class="h5 pt-3">Rating</div>
                             <div class="star-box"></div>
                         </div>
                        
                         <!-- Review text -->
                         <div class="form-group pt-3 pb-1 has-counter w-100">
-                            <label for="event-review-message" class="review-label fs-5 mb-1">How was it?</label>
+                            <label for="event-review-message" class="review-label fs-5 mb-1">Leave a comment</label>
                             <textarea type="text" class="form-control input-alt" id="event-review-message" placeholder=" " name="event-description" rows=5 maxlength="240"></textarea>
                             <div class="character-counter" id="review-counter">0/240</div>
                         </div>
@@ -54,7 +54,7 @@
                     </form>
                 </div>
                 <div class="event-review-form-group w-100 d-flex justify-content-center pt-3">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary review-submit">Submit</button>
                 </div>
         </div>
     </div>

@@ -1,4 +1,6 @@
+// === Global Variables ===
 
+var imageFile = null;
 
 const EventPageObject = ({event_id, event_user_id, event_title, event_date, event_location, event_image, event_user_count, event_description, event_category, event_tags, event_user_name, event_user_image}) => `
     <div class="row event-view">
@@ -88,7 +90,6 @@ $(() => {
         let user_id = $('#user-id').text();
 
         // if the user is the owner of the event then show the edit event button
-        console.log(event_user_id);
         if (event_user_id == user_id) {
             $('.event-page-content').append(`
                 <div class="col-12 event-page-edit position-absolute">
@@ -134,14 +135,12 @@ $(() => {
 
     // === Open review creation modal === 
     $(".event-container").on("click", ".add-review-btn", () => {
-        console.log("clicked");
         $("#eventReviewModal").modal("show");
     });
 
     // === Handle review Stars ===
 
     var cur = $(".star-box");
-    console.log(cur);
     var curRating = parseInt($(".review-score").text() - 1);
     if($(".star-box").has('.star').length == 0){
 
@@ -174,7 +173,6 @@ $(() => {
             $($(this)).one('click', (() => {
                 if(wait){
                     wait = false;
-                    console.log($(this), cur);
                     curRating = $(this).index();
                 }
                 setTimeout(() => {
@@ -220,7 +218,10 @@ $(() => {
 
     $("#event-review-file").on("change", (e) => {
         let file = e.target.files;
-        handleImageFile(file);
+        if(handleImageFile(file)){
+            imageFile = file[0];
+            console.log(imageFile);
+        }
     });
 
     $(".event-review-image-box").on("click", (e) => {
@@ -228,49 +229,59 @@ $(() => {
         // do not propegate to parent 
 
     });
-    //     console.log(e.target);
-    //     
-    // });
+
+    $(".review-submit").on("click", (e) => {
+        e.preventDefault();
+        console.log("submit");
+        let review = {
+            review_text: $("#event-review-message").val(),
+            review_score: curRating + 1,
+            event_id: $('.event-page-user-id').text(),
+            user_id: $("#user-id").text(),
+            image: imageFile
+        }
+        console.log(review);
+        createReview(review);
+    }); 
 
 });
 
 
 
-    // === Ajax Requests ===
+// === Ajax Requests ===
 
-    const eventPage = new Promise((resolve, reject) => {
+const eventPage = new Promise((resolve, reject) => {
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const event_id = urlParams.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const event_id = urlParams.get('id');
 
-        $.ajax({
-            url: 'requests.php',
-            type: 'POST',
-            data: {
-                request: 'getEvent',
-                event_id: event_id
-            },
-            success: (data) => {
-                const event = JSON.parse(data).data;
-                console.log(event);
-                // Format event
-                // Format the date from yyyy-mm-dd to dd/mm/yyyy
-                let date = event.event_date.split("-");
-                event.event_date = date[2] + "/" + date[1] + "/" + date[0];
-                // Check entry for an empty location. if empty replace with event_website
-                if(event.event_location === "") {
-                    // remove http:// or https://
-                    event.event_location = event.event_website.replace(/(^\w+:|^)\/\//, '');
-                }
-                // Format the user image
-                $('.event-container').html(EventPageObject(event));
-                resolve(event);
-            },
-            error: (err) => {
-                console.log(err);
+    $.ajax({
+        url: 'requests.php',
+        type: 'POST',
+        data: {
+            request: 'getEvent',
+            event_id: event_id
+        },
+        success: (data) => {
+            const event = JSON.parse(data).data;
+            // Format event
+            // Format the date from yyyy-mm-dd to dd/mm/yyyy
+            let date = event.event_date.split("-");
+            event.event_date = date[2] + "/" + date[1] + "/" + date[0];
+            // Check entry for an empty location. if empty replace with event_website
+            if(event.event_location === "") {
+                // remove http:// or https://
+                event.event_location = event.event_website.replace(/(^\w+:|^)\/\//, '');
             }
-        });
+            // Format the user image
+            $('.event-container').html(EventPageObject(event));
+            resolve(event);
+        },
+        error: (err) => {
+            console.log(err);
+        }
     });
+});
 
 // === Promise Functions ===
 
@@ -289,9 +300,7 @@ const reviews = new Promise((resolve, reject) => {
             event_id: event_id
         },
         success: (data) => {
-            console.log(data);
             const reviews = JSON.parse(data).data;
-            console.log(reviews);
             resolve(reviews);
         },
         error: (err) => {
@@ -307,10 +316,6 @@ const getreviews = reviews.then(reviews);
 // --- Event Rating Stars ---
 
 const fillStars = (cur, star, curRating) => {
-
-    // console.log(curRating);
-    console.log("star", star);
-    // console.log(cur);
 
     if(star != null)
         var limit = star.index();
@@ -347,11 +352,8 @@ const fillStars = (cur, star, curRating) => {
     });
 }
 
-// --- Image handling --- //
 
 const handleImageFile = (file) => {
-
-    console.log("handleImageFile");
 
     // Check if the file is one of the allowed types (jpg, jpeg, png)
     if(file[0].type === "image/jpeg" || file[0].type === "image/png") {
@@ -360,7 +362,6 @@ const handleImageFile = (file) => {
             let reader = new FileReader();
             reader.readAsDataURL(file[0]);
             reader.onload = (e) => {
-                console.log("IMAGE: ", e.target.result);
                 $(".event-review-image-box").css("background-image", `url(${e.target.result})`);
                 $(".event-review-image-i").addClass("event-review-icon-hide");
             }
@@ -376,7 +377,38 @@ const handleImageFile = (file) => {
 
 }
 
+// === Create a new review ===
 
+const createReview = (event_id, review, rating, image) => {
+
+    console.log("Creating review...");
+
+    let data = {
+        event_id: event_id,
+        review: review,
+        rating: rating,
+        image: image
+    }
+
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            createReview: data
+        },
+        success: (response) => {
+            if(response === "success") {
+                showSuccess("Review created successfully");
+                // setTimeout(() => {
+                //     location.reload();
+                // }, 2000);
+            } else {
+                showError("Something went wrong. Please try again later.");
+            }
+        }
+    });
+
+}
 
 
 // const updateRating = (star, article) => {
