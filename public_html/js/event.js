@@ -2,43 +2,52 @@
 
 var imageFile = null;
 
-const EventPageObject = ({event_id, event_user_id, event_title, event_date, event_location, event_image, event_user_count, event_description, event_category, event_tags, event_user_name, event_user_image}) => `
-    <div class="row event-view">
-        <div class="col-12 event-info">
-            <div class="event-page-user-id d-none">${event_user_id}</div>
-            <div class="event-page-id d-none">${event_id}</div>
-            <div class="row event-page-back p-2">
-                <div class="col-12 col-md-6 event-page-content p-2 position-relative">
-                    <img class="img-fluid p-0" src="public_html/img/event/${event_image}" alt="${event_image}"/>
-                    <div class="event-page-details d-flex flex-column p-1 pt-1">
-                        <div class="event-page-title">
-                            <h2>${event_title}</h2>
-                        </div>
-                        <div class="event-page-date">
-                            <span class="small"><i class="fas fa-calendar-alt pe-2"></i>${event_date}</span>
-                        </div>
-                        <div class="event-page-location">
-                            <span class="small"><i class="fas fa-map-marker-alt pe-2"></i>${event_location}</span>
-                        </div>
-                        <div class="event-page-category">
-                            <span class="small">${event_category}</span>
-                        </div>
-                        <div class="event-page-description">
-                            <p class="small">${event_description}</p>
-                        </div>
-                        <div class="event-page-hashtags">
-                            <div class="hashtag-container d-flex flex-wrap">
-                                ${
-                                    event_tags.map((tag) => {
-                                        return `<span class="event-hashtag small badge">${tag}</span>`
-                                    }).join('')
-                                }
+const EventPageObject = ({event_id, event_user_id, event_title, event_date, event_location, event_image, event_user_count, event_description, event_category, event_tags, event_user_name, event_user_image}) => {
+
+    if(event_location.length > 30) {
+        event_location = event_location.substring(0, 30) + '...';
+    }
+
+    return (`
+        <div class="row event-view">
+            <div class="col-12 event-info">
+                <div class="event-page-user-id d-none">${event_user_id}</div>
+                <div class="event-page-id d-none">${event_id}</div>
+                <div class="row event-page-back p-2">
+                    <div class="col-12 col-md-6 event-page-content p-0 position-relative">
+                        <div class="p-2">
+                    
+                            <img class="img-fluid p-0" src="public_html/img/event/${event_image}" alt="${event_image}"/>
+                            <div class="event-page-details d-flex flex-column p-1 pt-1">
+                                <div class="event-page-title">
+                                    <span class="h2">${event_title}</span>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="event-page-date">
+                                        <span class="small"><i class="fas fa-calendar-alt pe-2"></i>${event_date}</span>
+                                    </div>
+                                    <div class="event-page-location">
+                                        <span class="small"><i class="fas fa-map-marker-alt ps-3 pe-2"></i>${event_location}</span>
+                                    </div>
+                                </div>
+                            
+                                <div class="event-page-description pt-2">
+                                    <p class="small">${event_description}</p>
+                                </div>
+                                <div class="event-page-category">
+                                    <span class="fw-bold">${event_category}</span>
+                                </div>
+                                <div class="event-page-hashtags">
+                                    <div class="hashtag-container d-flex flex-wrap">
+                                        ${
+                                            event_tags.map((tag) => {
+                                                return `<span class="event-hashtag small badge">${tag}</span>`
+                                            }).join('')
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 event-page-reviews p-0">
-                    <div class="row event-page-user m-0 h-100 flex-column">
                         <div class="col-12 event-page-join-header p-2 border-start-0 d-flex justify-content-evenly">
                             <div class="event-page-join-event d-flex align-items-center">
                                 <button class="btn btn-primary btn-sm">Attend</button>
@@ -47,36 +56,35 @@ const EventPageObject = ({event_id, event_user_id, event_title, event_date, even
                             </div>
                             <div class="event-page-add-to-group d-flex align-items-center">
                                 <button class="btn btn-primary btn-sm">Add to group</button>
-                                <i class="fas fa-border-all ps-1 pe-2"></i>
                             </div>
-                        </div>
-                        <div class="event-page-profile-line d-flex justify-content-center">
-                            <div></div class="border-top-2">
-                        </div>
-                        <div class="col-12 event-page-user-info p-2 border-start-0 d-flex align-items-center justify-content-center">
-                            <div class="col-2 col-md-2 event-page-user-image">
-                                <img class="img-fluid" src="public_html/img/user/${event_user_image}" alt="${event_user_image}"/>
-                            </div>
-                            <div class="col-12 col-md-10">
-                                <div class="event-page-user-name">
-                                    <h3>${event_user_name}</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 event-page-review-box flex-grow-1 d-flex justify-content-center">
-                            <div class="event-page-review-window p-2 w-100"></div>
-                        </div>
-                        <div class="col-12 event-page-add-review p-2 flex-shrink-1 d-flex justify-content-center align-items-center">
-                            <button class="add-review-btn btn btn-primary btn-sm py-0">Add review</button>
                         </div>
                     </div>
-             
-                        
+                    <div class="col-12 col-md-6 event-page-reviews p-0">
+                        <div class="row event-page-user m-0 h-100 position-relative">
+                            <div class="col-12 event-page-user-info p-2 border-start-0 d-flex align-items-center justify-content-center position-absolute top-0">
+                                <div class="col-2 col-md-2 event-page-user-image ms-3">
+                                    <img class="img-fluid" src="public_html/img/user/${event_user_image}" alt="${event_user_image}"/>
+                                </div>
+                                <div class="col-12 col-md-10">
+                                    <div class="event-page-user-name">
+                                        <h3>${event_user_name}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 event-page-review-box d-inline-block h-100 position-absolute">
+                                <div class="event-page-review-window p-2 w-100 h-100"></div>
+                            </div>
+                            <div class="col-12 event-page-add-review p-2 flex-shrink-1 d-flex justify-content-center align-items-center position-absolute bottom-0">
+                                <button class="add-review-btn btn btn-primary btn-sm py-0">Add review</button>
+                            </div>
+                        </div>
+                
+                            
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-`;
+    `)};
 
 $(() => {
 
@@ -112,25 +120,69 @@ $(() => {
 
     // === Event Page reviews ===
 
-    getreviews.then((reviews) => {
+    getReviews.then((reviews) => {
+
+        // if there are no reviews then show the add review button
+
+        // console.log(reviews);
         
         reviews.forEach((review) => {
-            $('.event-page-reviews').append(`
-                <div class="row event-page-review p-2">
+
+            let review_time_ago = timeAgo(review.review_time);
+            let stars = '';
+            let skip = (review.review_rating % 2 != 0) ? 1 : 0;
+
+            // Fill stars with full stars up to the rating (include half stars)
+            for (let i = skip; i < review.review_rating / 2; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+
+           
+            // If the rating is odd then add a half star
+            if (review.review_rating % 2 != 0) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+
+            // Fill the rest of the stars with empty stars
+            for (let i = 0; i < 5 - Math.ceil(review.review_rating / 2); i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+
+            $('.event-page-review-window').append(`
+                <!-- Profile Image --><!-- Profile Name -->
+                <!-- Star Rating -->
+                <!-- Review Text -->
+                <!-- Review Date -->
+                <div class="row event-page-review px-2">
                     <div class="col-2 col-md-1 event-page-review-image">
-                        <img class="img-fluid" src="public_html/img/user/${review.user_image}" alt="${review.user_image}"/>
+                        <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
                     </div>
-                    <div class="col-10 col-md-11 event-page-review-content">
-                        <div class="event-page-review-user-name">
-                            <h3>${review.user_name}</h3>
+                    <div class="col-10 col-md-6 event-page-review-name ms-2">
+                        <h4 class="m-0">${review.review_user_username}</h4>
+                    </div>
+                    <div class="col-10 col-md-11 event-page-review-info">
+                        <div class="row ">
+                            <div class="col-12 event-page-review-rating pb-2 ps-2">
+                                <span class="small">${stars}</span>
+                            </div>
                         </div>
-                        <div class="event-page-review-text">
-                            <p>${review.review_text}</p>
+                        <div class="row ps-2">
+                            <div class="col-12 event-page-review-text px-2 py-1">
+                                <p class="small m-0">${review.review_message}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 event-page-review-date align-text-top">
+                                <small>${review_time_ago}</small>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             `);
         });
+
+        fillEventImageCarousel(reviews);
     });
 
     // === Open review creation modal === 
@@ -233,20 +285,33 @@ $(() => {
     $(".review-submit").on("click", (e) => {
         e.preventDefault();
         console.log("submit");
-        let review = {
-            review_text: $("#event-review-message").val(),
-            review_score: curRating + 1,
-            event_id: $('.event-page-user-id').text(),
-            user_id: $("#user-id").text(),
-            image: imageFile
-        }
-        console.log(review);
-        createReview(review);
+        createReview(curRating+1, $("#event-review-message").val(), imageFile);
     }); 
 
+    // === Event Images Bootstrap Carousel ===
+
+    $("event-images-carousel").carousel({
+        interval: 5000
+    });
+
+    $(".carousel-control-prev").on("click", (e) => {
+        e.preventDefault();
+        $("#event-images-carousel").carousel("prev");
+        // Make previous carousel item active
+
+    });
+
+    $(".carousel-control-next").on("click", (e) => {
+        e.preventDefault();
+        $("#event-images-carousel").carousel("next");
+    });
+
+    $(".carousel-indicators").on("click", (e) => {
+        e.preventDefault();
+        $("#event-images-carousel").carousel($(e.target).index());
+    });
+
 });
-
-
 
 // === Ajax Requests ===
 
@@ -301,6 +366,7 @@ const reviews = new Promise((resolve, reject) => {
         },
         success: (data) => {
             const reviews = JSON.parse(data).data;
+            console.log(reviews);
             resolve(reviews);
         },
         error: (err) => {
@@ -309,7 +375,7 @@ const reviews = new Promise((resolve, reject) => {
     });
 });
 
-const getreviews = reviews.then(reviews);
+const getReviews = reviews.then(reviews);
 
 // === Helper Functions ===
 
@@ -352,6 +418,7 @@ const fillStars = (cur, star, curRating) => {
     });
 }
 
+// --- Handle image validation --- //
 
 const handleImageFile = (file) => {
 
@@ -377,38 +444,105 @@ const handleImageFile = (file) => {
 
 }
 
+// --- Decide which message to show based on time ago --- //
+
+
+
+
 // === Create a new review ===
 
-const createReview = (event_id, review, rating, image) => {
+const createReview = (rating, review, image) => {
 
-    console.log("Creating review...");
+    console.log("Creating review...", rating, review, image);
 
-    let data = {
-        event_id: event_id,
-        review: review,
-        rating: rating,
-        image: image
+    if(rating <= 0) {
+        showError("Please give a star rating");
+        return false;
     }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const event_id = urlParams.get('id');
+
+    let formData = new FormData($("#event-review-form")[0]);
+    formData.append("review_event_id", event_id);
+    formData.append("review_user_id", $('#user-id').text());
+    formData.append("review_rating", rating);
+    formData.append("review_review", review);
+    formData.append("review_image_file", image);
+    formData.append("request", "createReview");
+    console.log(formData);
 
     $.ajax({
         url: "requests.php",
         type: "POST",
-        data: {
-            createReview: data
-        },
-        success: (response) => {
-            if(response === "success") {
-                showSuccess("Review created successfully");
-                // setTimeout(() => {
-                //     location.reload();
-                // }, 2000);
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: (data) => {
+            data = JSON.parse(data);
+            console.log(data);
+            if(data.status === "success") {
+                window.location.reload();
             } else {
-                showError("Something went wrong. Please try again later.");
+                showError(data);
             }
         }
     });
 
 }
+
+// Fill the event image carousel with the images
+
+const fillEventImageCarousel = (reviews) => {
+    let carousel = $(".carousel-inner");
+    let carouselIndicators = $(".carousel-indicators");
+    carouselIndicators.empty();
+    
+    carousel.empty();
+    reviews.filter((review) => {
+        return (review.review_image !== null && review.review_image !== "");
+    }).forEach((review) => {
+
+        let stars = '';
+        let skip = (review.review_rating % 2 != 0) ? 1 : 0;
+
+        // Fill stars with full stars up to the rating (include half stars)
+        for (let i = skip; i < review.review_rating / 2; i++) {
+            stars += '<i class="fas fa-star"></i>';
+        }
+        if (review.review_rating % 2 != 0) {
+            stars += '<i class="fas fa-star-half-alt"></i>';
+        }
+        for (let i = 0; i < 5 - Math.ceil(review.review_rating / 2); i++) {
+            stars += '<i class="far fa-star"></i>';
+        }
+
+        carousel.append(`
+            <div class="carousel-item position-relative">
+                <img src="public_html/img/review/${review.review_image}" class="d-block w-100 event-carousel-image" alt="...">
+                <div class="carousel-caption d-none d-md-block">
+                    <span class="h5">${stars}</span>
+                    <p>${review.review_message}</p>
+                </div>
+                <div class="review-image-user position-absolute bottom-0 left-0 m-2 p-2 d-flex align-items-center">
+                        
+                    <img src="public_html/img/user/${review.review_user_image}" class="event-carousel-user-image ms-2" alt="...">
+                    <span class="h5 event-carousel-user-name px-2">${review.review_user_username}</span>
+                </div>
+            </div>
+        `);
+
+        carouselIndicators.append(`
+            <button type="button" data-bs-target="#event-images-carousel" data-bs-slide-to="${carouselIndicators.children().length}" class="active" aria-current="true" aria-label="Slide ${carouselIndicators.children().length}"></button>
+        `);
+    });
+    $(".carousel-item").first().addClass("active");
+    // set aria attributes
+    $(".carousel-indicators button").each((index, item) => {
+        $(item).attr("aria-label", `Slide ${index+1}`);
+    });
+}
+    
 
 
 // const updateRating = (star, article) => {

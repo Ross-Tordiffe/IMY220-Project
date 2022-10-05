@@ -787,7 +787,7 @@
             $result = $stmt->get_result();
             $reviews = array();
             while($row = $result->fetch_assoc()) {
-                $reviews[] = array("review_id" => $row["review_id"], "review_user_id" => $row["review_user_id"], "review_event_id" => $row["review_event_id"], "review_message" => $row["review_message"], "review_rating" => $row["review_rating"], "review_time" => $row["review_time"]);
+                $reviews[] = array("review_id" => $row["review_id"], "review_user_id" => $row["review_user_id"], "review_event_id" => $row["review_event_id"], "review_message" => $row["review_message"], "review_rating" => $row["review_rating"], "review_time" => $row["review_time"], "review_image" => $row["review_image"]);
             }
             $stmt->close();
 
@@ -800,7 +800,46 @@
 
             return $reviews;
         }
-        
+
+        /**
+         * Method to create review for an event
+         */
+        public function createReview($review_event_id, $review_user, $review_review, $review_rating, $review_image) {
+
+            // Get the number of reviews for the event
+            $stmt = $this->getConnection()->prepare("SELECT COUNT(*) FROM db_review WHERE review_event_id = ?");
+            $stmt->bind_param("i", $review_event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $review_number = $row["COUNT(*)"];
+            $stmt->close();
+
+            // prepare upload image to server
+            if(isset($review_image)){
+                $review_image_type = $review_image["type"];
+                $review_image_name = $review_user."_".$review_number.".".explode("/", $review_image_type)[1];
+                $review_image_path = "public_html/img/review/".$review_image_name;
+            }
+            else {
+                $review_image_name = "";
+            }
+
+            $stmt = $this->getConnection()->prepare("INSERT INTO db_review (review_event_id, review_user_id, review_message, review_rating, review_image) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("iisss", $review_event_id, $review_user, $review_review, $review_rating, $review_image_name);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            if(isset($review_image)){
+                move_uploaded_file($review_image["tmp_name"], $review_image_path);
+            }
+
+            return true;
+        }
     }
 
     $db = Database::getInstance(); 

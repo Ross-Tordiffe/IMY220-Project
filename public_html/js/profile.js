@@ -69,7 +69,7 @@ $(() => {
         formData.append("request", "changeProfileImage");
         formData.append("file", file);
         formData.append("user_id", profile_user);
-
+        
         $.ajax({
             url: "requests.php",
             type: "POST",

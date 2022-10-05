@@ -141,4 +141,39 @@ $("body").on("click", ".modal-close", (e) => {
     $(".modal").modal("hide");
 });
 
+// ======== General Helper Functions ========
 
+const timeAgo = (date) => {
+    // if time is less than 1 day ago then show hours ago, if less than 1 hour ago then show minutes ago, if less than 1 minute ago then show seconds ago, else show date
+    let time = new Date(date);
+    let now = new Date();
+    let diff = now - time;
+    let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    let hours = Math.floor(diff / (1000 * 60 * 60));
+    let minutes = Math.floor(diff / (1000 * 60));
+    let seconds = Math.floor(diff / 1000);
+    if(days > 0) {
+        // return date in format dd/mm/yyyy
+        return `${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
+    } else if(hours > 0) {
+        if(hours === 1) {
+            return `${hours} hour ago`;
+        } else {
+            return `${hours} hours ago`;
+        }
+    } else if(minutes > 0) {
+        if(minutes === 1) {
+            return `${minutes} minute ago`;
+        } else {
+            return `${minutes} minutes ago`;
+        }
+    } else if(seconds > 0) {
+        if(seconds === 1) {
+            return `${seconds} second ago`;
+        } else {
+            return `${seconds} seconds ago`;
+        }
+    } else {
+        return "Just now";
+    }
+}

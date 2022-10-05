@@ -1,5 +1,10 @@
 /* === General Event Styling === */
 
+.event-images-carousel
+{
+    z-index: 10;
+}
+
 .event-page-back 
 {
     background-color: var(--bg-orange);
@@ -84,7 +89,7 @@
 {
     background-color: var(--bg-blue);
     color: var(--bg-blue);
-    border-radius: 0 40px 0 0;
+    border-radius: 0 0 0 35px;
     border : 2px solid var(--bg-blue);
 }
 
@@ -134,6 +139,7 @@
 {
     background-color: var(--bg-blue);
     color: var(--bg-light);
+    border-radius: 0 40px 0 0;
 }
 
 .event-page-user-info img
@@ -145,11 +151,11 @@
     object-fit: cover;
 }
 
-.event-page-profile-line div
+/* .event-page-profile-line div
 {
     border-top : 2px solid var(--bg-light);
     width: 95%;
-}
+} */
 
 /* === Review Styling === */
 
@@ -193,3 +199,98 @@
     display: none;
     pointer-events: none;
 }
+
+/* === Event Review Styling === */
+
+.event-page-review-box
+{
+    padding-top: 80px;
+    padding-bottom: 70px;
+}
+
+.event-page-review-window
+{
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.event-page-add-review
+{
+    bottom: 0;
+}
+
+.event-page-review-image img
+{
+    min-width: 40px;
+    max-height: 40px;
+    border-radius: 50%;
+    border: solid 2px var(--bg-blue);
+}
+
+.event-page-review-date
+{
+    opacity: 0.6;
+    color: var(--bg-blue);
+    text-align: right;
+}
+
+.event-page-review-text {
+    color: var(--bg-blue);
+    border: solid 2px var(--d-bg-main-05);
+    border-radius: 10px;
+ 
+}
+
+.event-page-location:hover
+{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.event-page-description
+{
+    color: var(--bg-blue);
+
+}
+
+/* === Event images carousel === */
+
+.image-template
+{
+    height: 400px;
+    width: 75%;
+    margin: 0 auto;
+    object-fit: cover;
+    border: 1px solid var(--d-bg-main-05);
+}
+
+.carousel-item>img{
+    height: 400px;
+    width: 75%;
+    margin: 0 auto;
+    object-fit: cover;
+}
+
+.event-carousel-user-image
+{
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--bg-blue);
+    object-fit: cover;
+}
+
+.review-image-user
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border-radius: 10px;
+    border: 2px solid var(--bg-blue);
+}
+
+.carousel-caption
+{
+    /* background-color: rgba(0,0,0,0.5); */
+    color: var(--bg-light);
+}
+

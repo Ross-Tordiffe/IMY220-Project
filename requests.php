@@ -215,12 +215,14 @@
          * Handle create review
          */
         if(isset($_POST['request']) && $_POST['request'] === "createReview") {
-            echo ("here");
-            $event_id = $_POST['event_id'];
-            $review = $_POST['review'];
-            $rating = $_POST['rating'];
-            $image = $_FILES['review-image'];
-            $message = $db->createReview($event_id, $review, $rating);
+            $review_event_id = $_POST['review_event_id'];
+            $review_user = $_POST['review_user_id'];
+            $review_review = $_POST['review_review'];
+            $review_rating = $_POST['review_rating'];
+            $review_image = $_FILES['review_image_file'] ?? null;
+
+
+            $message = $db->createReview($review_event_id, $review_user, $review_review, $review_rating, $review_image);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
         };
 
