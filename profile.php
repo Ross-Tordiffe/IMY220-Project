@@ -42,25 +42,26 @@
 ?>                          
                 <!-- Full container -->
                 <div class="row profile-container table-events event-box">
+                    <div class="doSomething" id="doSomething">HERE</div>
                     <!-- Profile header -->
                     <div class="col-12 pb-3">
-                        <div class="profile-header row">
+                        <div class="profile-header row align-items-center mx-1">
                             <!-- User Id -->
                             <div id="profile-user-id" class="d-none"><?=$profile_user_id?></div>
                             <!-- Profile image -->
-                            <div class="profile-header-img col-xxl-2 col-2 p-3 d-flex align-items-center">
+                            <div class="col-2 profile-header-img py-3 ps-3 d-flex align-items-center justify-content-between ">
                                 <div class="profile-img-container d-flex align-items-center justify-content-center flex-grow-1">
                                     <div class="profile-img-background"></div>
-                                    <img src="public_html/img/user/<?=$_SESSION["user_image"]?>" alt="profile image" class="img-fluid">
+                                    <img src="public_html/img/user/<?=$_SESSION["user_image"]?>" alt="profile image" class="img-fluid"/>
                                     <div class="profile-header-img-icon position-absolute">
-                                    <i class="fas fa-image"></i>
-                                    <input type="file" id="profile-img-input" class="d-none" name="profile-img-input">
-                                </div>
+                                        <i class="fas fa-image"></i>
+                                        <input type="file" id="profile-img-input" class="d-none" name="profile-img-input"/>
+                                    </div>
                                 </div>
                                 <!-- Profile name and friends -->
                                 <!-- hidden change profile image icon-->
                             
-                                <div class="profile-header-info d-flex flex-column p-0 m-3 m-xxl-4 flex-shrink-1">
+                                <div class="profile-header-info d-flex flex-column p-3 p-xxl-4">
                                     <div class="profile-header-name">
                                         <h3 class="fw-bold"><?=$_SESSION["user_username"]?></h3>
                                     </div>
@@ -70,16 +71,26 @@
                                         <span class='friend-request-count badge rounded-pill d-none fs-6 fs-xxl-5'>0</span>
                                     </div>
                                 </div>
+                                
                             </div>
-                            <div class="col offset-8 profile-options">
+                            <?php if($_SESSION["user_id"] == $profile_user_id){ ?>
+                            <div class="col-1 offset-3 profile-options">
                                 <i class="profile-btn fas fa-cog me-3" id="profile-settings"></i>
                                 <i class="profile-btn fas fa-sign-out-alt" id="profile-logout"></i>
                             </div>
+                            <?php } else { ?>
+                            <div class="col-1 offset-2 profile-options d-flex">
+                                <div class="profile-btn btn py-0 me-2 d-flex align-items-center fs-5" id="profile-add-friend">Friend<i class="fas fa-user-plus ms-2 fs-6"></i></div>
+                                <div class="message-btn profile-btn btn py-0 d-flex align-items-center fs-5 d-none" id="profile-message">Message<i class="fas fa-envelope ms-2 fs-6"></i></div>
+                            </div>
+                            <?php } ?>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-6 col-12 event-col-1 event-col"></div>
                     <div class="col-xl-4 col-lg-6 col-0 event-col-2 event-col"></div>
                     <div class="col-xl-4 col-lg-0 col-0 event-col-3 event-col"></div>
+
+         
                     <!-- Title -->
                     <!-- <h1 class="">Profile</h1> -->
                     <!-- Temporary logout button -->

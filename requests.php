@@ -179,6 +179,25 @@
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$friends]));
         };
 
+        
+        /**
+         * Handle friendRequest
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "friendRequest") {
+            $friend_id = $_POST['friend_id'];
+            $message = $db->sendFriendRequest($friend_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle removeFriend
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "removeFriend") {
+            $friend_id = $_POST['friend_id'];
+            $message = $db->removeFriend($friend_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
         /**
          * Handle accepting friend requests
          */
@@ -192,15 +211,21 @@
         /**
          * Handle rejecting friend requests
          */
+        if(isset($_POST['request']) && $_POST['request'] === "rejectFriend") {
+            
+            $friend_id = $_POST['friend_id'];
+            $message = $db->handleFriendRequests($friend_id, false);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
         
         /**
          * Handle getting user data
          */
-        // if(isset($_POST['request']) && $_POST['request'] === "fetchUserData") {
-        //     $user_id = $_POST['user_id'];
-        //     $user_data = $db->fetchUserData($user_id);
-        //     echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$user_data]));
-        // };
+        if(isset($_POST['request']) && $_POST['request'] === "fetchUserData") {
+            $user_id = $_POST['user_id'];
+            $user_data = $db->fetchUserData($user_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$user_data]));
+        };
 
         /**
          * Handle getting reviews for event

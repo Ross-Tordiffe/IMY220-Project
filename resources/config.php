@@ -307,6 +307,7 @@
             }
             $result = $category->get_result();
             $row = $result->fetch_assoc();
+            $original = $row;
             $category_name = $row["category_name"];
             $category->close();
 
@@ -717,6 +718,47 @@
             $_SESSION["user_friends"] = $friends;
             return $friends;
         }
+        
+        /**
+         * Method to send a friend request to another user
+         */
+        public function sendFriendRequest($friend_id) {
+
+            $user_id = $_SESSION["user_id"];
+
+            $stmt = $this->getConnection()->prepare("INSERT INTO db_friendships (fs_user_id_1, fs_user_id_2, fs_accepted) VALUES (?, ?, 0)");
+            $stmt->bind_param("ii", $user_id, $friend_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+            return true;
+        }
+
+        /**
+         * Method to remove a friend from the user's friends list
+         */
+        public function removeFriend($friend_id) {
+
+            $user_id = $_SESSION["user_id"];
+
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_friendships WHERE fs_user_id_1 = ? AND fs_user_id_2 = ?");
+            $stmt->bind_param("ii", $user_id, $friend_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_friendships WHERE fs_user_id_1 = ? AND fs_user_id_2 = ?");
+            $stmt->bind_param("ii", $friend_id, $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            return true;
+        }
+
         
         /**
          * Method to accept or refuse a friend request and update the friendship in the database

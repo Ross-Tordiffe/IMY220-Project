@@ -137,7 +137,6 @@ $(".event-box").on("click", ".event", (e) => {
 });
 
 $("body").on("click", ".modal-close", (e) => {
-    console.log("close clicked");
     $(".modal").modal("hide");
 });
 

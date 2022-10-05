@@ -25,8 +25,6 @@ $(() => {
 
     });
 
-
-
     // --- Accept Friend Request and create friendship on the database ---
     $("#friendsModal").on("click", ".accept-request", (e) => {
     
@@ -84,6 +82,26 @@ $(() => {
                 }
             }
         });
+    });
+
+    $("#profile-add-friend").on("click", (e) => {
+        
+        // print profile-add-friend classes
+        console.log($("#profile-add-friend").attr("class"));
+        // if the profile-add-friend class is "add-friend"
+        if($("#profile-add-friend").hasClass("friend")) {
+            $(".confirmation-modal-text p").text("Do you want to unfriend this user?");
+            $("#confirmationModal").modal("show");
+
+            $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
+                removeFriend(profile_user);
+                $(".modal").modal("hide");
+            });
+
+        }
+        else {
+            friendRequest(profile_user);
+        }
     });
 
 });
@@ -160,7 +178,23 @@ const getFriends = (profile_user) => {
         if(data.status === "success") {
             displayFriends(data.data);
             updateFriendHeader(data.data);
-            console.log(data.data);
+            console.log("friends", data.data);
+            let user = $("#user-id").text();
+
+            // look for the user in the friends list
+            let friend = data.data.filter((friend) => {
+                return friend.user_id == user;
+            });
+
+            console.log("friend", friend);
+
+            // if the user is not the profile user, but is friends with the profile user, show the message button and change the friend icon to a checkmark
+            if(user !== profile_user && friend.length > 0) {
+                $("#profile-message").removeClass("d-none");
+                $("#profile-add-friend i").removeClass("fa-user-plus");
+                $("#profile-add-friend i").addClass("fa-check");
+                $("#profile-add-friend").addClass("friend");
+            }
         }
         else {
             console.log(data);
@@ -364,15 +398,13 @@ const setUser = (user, profile_user) => {
 
     // If the user is not viewing their own profile
     if(user !== profile_user) {
-        $(".profile-options").html("");
-
         // Get the user being viewed
         $.ajax({
             url: "requests.php",
             type: "POST",
             data: {
                 request: "fetchUserData",
-                get_user_id: profile_user
+                user_id: profile_user
             },
             success: (data, status) => {
                 console.log(data);
@@ -381,7 +413,7 @@ const setUser = (user, profile_user) => {
                     console.log("profile-user", data.data);
                     let profile_user = data.data;
                     let profile_user_image = "public_html/img/user/" + profile_user.user_image;
-
+                    
                     $(".profile-header-img img").attr("src", profile_user_image);
                     $(".profile-header-name h3").html(profile_user.user_username);
                 }
@@ -393,3 +425,55 @@ const setUser = (user, profile_user) => {
         });
     }
 };
+
+const friendRequest = (profile_user) => {
+
+    // Send friend request
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "friendRequest",
+            friend_id: profile_user
+        },
+        success: (data, status) => {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status === "success") {
+                console.log(data.data);
+                $(".profile-add-friend").addClass("friend")
+                $(".profile-add-friend i").removeClass("fa-user-plus");
+                $(".profile-add-friend i").addClass("fa-user-check");
+            }
+            else {
+                showError(data.data);
+            }
+        }
+    });
+}
+
+const removeFriend = (profile_user) => {
+
+    // Remove friend
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "removeFriend",
+            friend_id: profile_user
+        },
+        success: (data, status) => {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status === "success") {
+                console.log(data.data);
+                $(".profile-add-friend").removeClass("friend")
+                $(".profile-add-friend i").removeClass("fa-user-check");
+                $(".profile-add-friend i").addClass("fa-user-plus");
+            }
+            else {
+                showError(data.data);
+            }
+        }
+    });
+}

@@ -56,5 +56,35 @@
                 <div class="event-review-form-group w-100 d-flex justify-content-center pt-3">
                     <button type="submit" class="btn btn-primary review-submit">Submit</button>
                 </div>
+            </div>
         </div>
     </div>
+</div>
+
+
+<!-- Confirmation modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title ms-1 h3 d-flex" id="confirmationModalLabel">
+                    <div class="confirmation-modal-icon me-2">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Confirmation</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body p-2">
+                <div class="confirmation-modal-container d-flex flex-column justify-content-center align-items-center">
+                    <div class="confirmation-modal-text p-3">
+                        <p class="h4"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary py-0 modal-close" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary confirmation-modal-btn py-0">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
