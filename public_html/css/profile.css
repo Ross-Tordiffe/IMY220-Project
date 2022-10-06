@@ -34,6 +34,12 @@
     cursor: pointer;
 }
 
+.profile-img-container img
+{
+    height: 6em;
+    width: auto
+}
+
 .profile-img-container:hover .profile-header-img-icon
 {
     opacity: 1;
@@ -119,6 +125,7 @@
 {
     transform: rotate(50deg);
     cursor: pointer;
+    color: var(--bg-orange);
 }
 
 .profile-options
@@ -138,24 +145,7 @@
     color: var(--bg-light-alt);
 }
 
-.confirmation-modal-text 
-{
-    background-color: var(--bg-light);
-    border: var(--bg-blue) 2px solid;
-    border-radius: 20px;
-    width: 100%;
-}
 
-.confirmation-modal-text p
-{
-    font-size: 1.2em;
-    color: var(--bg-blue);
-}
-
-#confirmationModal .modal-footer
-{
-    border:none;
-}
 
 /* ==== Profile Friends List ==== */
 
@@ -299,7 +289,200 @@
 
 .event-card-template:hover
 {
+    cursor: pointer;
+    font-size: 3.3em;
+    opacity: 1;
+}
+
+.event-card-template-plus
+{
+    z-index: 5;
+}
+
+.event-card-template:hover .event-card-template-plus
+{
+    color: var(--bg-light);
+    opacity: 1;
+}
+
+
+.event-card-background-square 
+{
+    /* background-color: var(--bg-blue); */
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0.8;
+}
+
+.event-card-background-square div
+{
+    background-color: var(--bg-light-alt);
+    border-radius: 10px;
+}
+
+.event-card-background-square div:nth-child(1)
+{
+    width: 95%;
+    height: 60%;
+}
+
+.event-card-background-square div:nth-child(2)
+{
+    width: 95%;
+    height: 10%;
+}
+
+.event-card-background-square div:nth-child(3)
+{
+    width: 95%;
+    height: 20%;
+}
+
+.event-card-template:hover .event-card-background-square div
+{
+    background-color: var(--bg-blue);
+}
+
+
+
+/* ==== Profile Event Groups ==== */
+
+.group-card-template
+{
+    height: 300px;
+    opacity: 0.5;
+    transition: all 0.2s ease-in;
+    font-size: 3em;
+    margin-bottom: 30px
+}
+
+.group-card-template:hover
+{
     opacity: 1;
     cursor: pointer;
     font-size: 3.3em;
+}
+
+.group-card-background-square
+{
+    background-color: var(--bg-blue);
+    border-radius: 10px;
+    width: 44%;
+    height:  44%;
+    opacity: 0.5;
+    transition: all 0.2s ease-in;
+}
+
+.group-card-template:hover .group-card-background-square
+{
+    opacity: 0.8;
+}
+
+/* --- Event group modal --- */
+
+.create-group-form-container form
+{
+    background-color: var(--bg-light);
+    border: solid 2px var(--bg-blue);
+    border-radius: 20px;
+}
+
+#group-title
+{
+    background-color: var(--bg-light);
+    border: solid 2px var(--bg-blue);
+}
+
+#group-title:focus
+{
+    background-color: var(--bg-light);
+    outline: solid 1px var(--bg-blue);
+    box-shadow: none;
+}
+
+#group-description
+{
+    background-color: var(--bg-light);
+    border: solid 2px var(--bg-blue);
+}
+
+#group-description:focus
+{
+    background-color: var(--bg-light);
+    outline: solid 1px var(--bg-blue);
+    box-shadow: none;
+}
+
+#createGroupModal .character-counter
+{
+    color: var(--bg-blue);
+    font-size: 1em;
+}
+
+#group-title-counter 
+{
+    transform: translateY(10px);
+}
+
+#group-description-counter {
+    transform: translateY(-50px);
+}
+
+.has-counter input:placeholder-shown + #group-title-counter 
+{
+    transform: translateY(50px);
+}
+
+.has-counter textarea:placeholder-shown + #group-description-counter
+{
+    transform: translateY(-20px);
+}
+
+/* ==== Profile Group Events ==== */
+
+.group-header-content
+{
+    background-color: var(--bg-blue);
+    border-radius: 30px;
+    color: var(--bg-light);
+}
+
+.group-header-back-arrow
+{
+    color: var(--bg-light);
+    transition: all 0.2s ease-in-out;
+}
+
+.group-header-back-arrow:hover
+{
+    color: var(--bg-orange);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.group-header-delete
+{
+    color: var(--bg-light);
+    transition: all 0.2s ease-in-out;
+}
+
+.group-header-delete:hover
+{
+    color: var(--bg-orange);
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.event-delete-icon
+{
+    color: var(--bg-light);
+    transition: all 0.2s ease-in-out;
+}
+
+.event-delete-icon:hover
+{
+    color: var(--bg-orange);
+    transform: scale(1.1);
+    cursor: pointer;
 }

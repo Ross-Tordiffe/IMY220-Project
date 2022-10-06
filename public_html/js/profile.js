@@ -1,4 +1,6 @@
-// === Promise & Request Functions ===
+// === Global Variables ===
+
+var displaying = "my-events";
 
 // === On Page Load ===
 
@@ -13,21 +15,17 @@ $(() => {
     
     console.log("profile.js loaded");
 
-    $("#create-event-button").on("click", (e) => {
-        window.location.href = "create-event.php?id=urmum";
-    });
-
     $(".friend-text").on("click", (e) => {
-        
+
         // Get the user's friends and return a promise
         getFriends(profile_user);
         $("#friendsModal").modal("show");
-
     });
 
     // --- Accept Friend Request and create friendship on the database ---
     $("#friendsModal").on("click", ".accept-request", (e) => {
-    
+        e.preventDefault();
+        e.stopPropagation();
         let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
         console.log(friendId);
         acceptFriend(friendId, profile_user);
@@ -35,9 +33,32 @@ $(() => {
 
     // --- Go to the friend's profile ---
     $("#friendsModal").on("click", ".profile-friend", (e) => {
+        while(!$(e.target).hasClass("profile-friend")) {
+            e.target = e.target.parentElement;
+        }
         let friendId = $(e.target).find(".profile-friend-id").text();
-        // console.log(friendId);
+        console.log("friend target", $(e.target).find(".profile-friend-id"));
         window.location.href = `profile.php?user_id=${friendId}`;
+    });
+
+    $("#profile-add-friend").on("click", (e) => {
+        
+        // print profile-add-friend classes
+        console.log($("#profile-add-friend").attr("class"));
+        // if the profile-add-friend class is "add-friend"
+        if($("#profile-add-friend").hasClass("friend")) {
+            $(".confirmation-modal-text p").text("Do you want to unfriend this user?");
+            $("#confirmationModal").modal("show");
+
+            $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
+                removeFriend(profile_user);
+                $(".modal").modal("hide");
+            });
+
+        }
+        else {
+            friendRequest(profile_user);
+        }
     });
 
     // // --- Cancel Friend Request ---
@@ -84,25 +105,137 @@ $(() => {
         });
     });
 
-    $("#profile-add-friend").on("click", (e) => {
-        
-        // print profile-add-friend classes
-        console.log($("#profile-add-friend").attr("class"));
-        // if the profile-add-friend class is "add-friend"
-        if($("#profile-add-friend").hasClass("friend")) {
-            $(".confirmation-modal-text p").text("Do you want to unfriend this user?");
-            $("#confirmationModal").modal("show");
-
-            $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
-                removeFriend(profile_user);
-                $(".modal").modal("hide");
-            });
-
+    $("#bkm-my-events").on("click", (e) => {
+        console.log("bkm-my-events clicked");
+        if(!$("#bkm-my-events").hasClass("bkm-current")) {
+            $("#bkm-groups").removeClass("bkm-current");
+            $("#bkm-my-events").addClass("bkm-current");
         }
-        else {
-            friendRequest(profile_user);
+        if(displaying === "groups") {
+            console.log("displaying my-events");
+            displaying = "my-events";
+            getEvents();
+        }
+        else if (displaying === "group") {
+            $(".group-header").empty();
+            displaying = "my-events";
+            getEvents();
         }
     });
+
+    $("#bkm-groups").on("click", (e) => {
+        console.log("bkm-groups clicked");
+        if(!$("#bkm-groups").hasClass("bkm-current")) {
+            $("#bkm-my-events").removeClass("bkm-current");
+            $("#bkm-groups").addClass("bkm-current");
+        }
+        if(displaying === "my-events") {
+            displaying = "groups";
+            console.log("displaying groups");
+            getGroups();
+        }
+        else if (displaying === "group") {
+            $(".group-header").empty();
+            displaying = "groups";
+            getGroups();
+        }
+    });
+
+    $(".profile-container").on("click", ".group-card-template", () =>{
+        
+        console.log("group card clicked");
+        // Show create group modal
+        $("#createGroupModal").modal("show");
+
+        $(".create-group-form-container").on("click", ".create-group-submit", (e) => {
+            console.log("create group submit clicked");
+            let name = $("#group-title").val();
+            let description = $("#group-description").val();
+            let formData = new FormData();
+            formData.append("request", "createGroup");
+            formData.append("group_name", name);
+            formData.append("group_description", description);
+    
+            $.ajax({
+                url: "requests.php",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: (data) => {
+                    console.log(data);
+                    let response = JSON.parse(data);
+                    if (response.status === "success") {
+                        console.log("group created");
+                        $("#createGroupModal").modal("hide");
+                        getGroups();
+                    }
+                }
+            });
+        });
+        
+    });
+
+    $("#group-title").on("keyup", (e) => {
+        $("#group-title-counter").text(`${e.target.value.length}/50`);
+    });
+
+    $("#group-description").on("keyup", (e) => {
+        $("#group-description-counter").text(`${e.target.value.length}/120`);
+    });
+
+    $(".profile-container").on("mouseenter", ".event-group", (e) => {
+        // float the description up
+        console.log("hovered");
+        $(e.currentTarget).find(".group-description").removeClass("d-none");
+        $(e.currentTarget).find(".group-description").removeClass("reverse-animate");
+        $(e.currentTarget).find(".group-description").addClass("animate");
+        
+    });
+
+    $(".profile-container").on("mouseleave", ".event-group", (e) => {
+        // float the description down
+        let event_group = $(e.currentTarget);
+        console.log("hovered", event_group);
+        $(event_group).css("pointer-events", "none");
+        setTimeout(() => {
+            $(e.currentTarget).find(".group-description").addClass("d-none");
+            $(e.currentTarget).find(".group-description").removeClass("animate");
+            $(event_group).css("pointer-events", "auto");
+        }, 500);
+        
+        $(e.currentTarget).find(".group-description").addClass("reverse-animate");
+    });
+
+    $(".profile-container").on("click", ".event-group", (e) => {
+        showGroupEvents($(e.currentTarget).find(".group-id").text());
+    });
+
+    $(".profile-container").on("click", ".event-delete-icon", (e) => {
+        e.stopPropagation();
+        let event_id = $(e.currentTarget).parent().find(".event-id").text();
+        let group_id = $(".group-header-id").text();
+        removeEventFromGroup(event_id, group_id);   
+    });
+
+    $(".group-header").on("click", ".group-header-back-arrow", (e) => {
+        $(".group-header").empty();
+        getGroups();
+    });
+
+    $(".group-header").on("click", ".group-header-delete", (e) => {
+   
+        $(".confirmation-modal-text p").text("Do you want to delete this group?");
+        $("#confirmationModal").modal("show");
+
+        $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
+            deleteGroup($(".group-header-id").text());
+            $(".modal").modal("hide");
+        });
+
+    });
+
+    
 
 });
 
@@ -253,9 +386,14 @@ const getEvents = (user, profile_user) => {
             let createEventHTML = `
                 <div class="event">
                     <div class="card event-card event-card-template">
-                        <div class="card-body d-flex justify-content-center align-items-center">
-                            <div class=" d-flex justify-content-center align-items-center">
+                        <div class="card-body d-flex justify-content-center align-items-center position-relative">
+                            <div class="event-card-template-plus d-flex justify-content-center align-items-center position-absolute">
                                 <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="row event-card-background-square d-flex justify-content-center position-absolute">
+                                <div class="col-12 top-0 start-0 mt-2"></div>
+                                <div class="col-12 start-0 m-1"></div>
+                                <div class="col-12 bottom-0 start-0 mb-1"></div>
                             </div>
                         </div>
                     </div>
@@ -270,7 +408,9 @@ const getEvents = (user, profile_user) => {
         if(!other_user) {
             i = 1;
         }
-        console.log(i);
+
+
+    
         // Based on the screen size distribute events between event-cols
         if($(window).width() >= 1200) {
             for(let j = 0; j < data.length; i++, j++) {
@@ -301,12 +441,104 @@ const getEvents = (user, profile_user) => {
                 $(".event-col-1").append(EventObject(data[j]));
             }
         }
+
     }).catch((data) => {
         console.log(data);
         showError(data);
     });
 }
 
+getGroups = (user, profile_user) => {
+    let groups = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: "requests.php",
+            data: {
+                request: "getGroups",
+                profile_user: profile_user,
+                scope: "profile"
+            },
+            success: (data, status) => {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.status === "success")
+                {
+                    resolve(data.data);
+                }
+                else
+                {
+                    reject(data.data);
+                }
+            }
+        });
+    }).then((data) => {
+        console.log(data);
+        // Clear previous groups from group-col classes
+        $(".event-col").empty();
+
+        let other_user = user !== profile_user ? true : false;
+
+        if(!other_user) {
+            // make first group a create group template
+            let createGroupHTML = `
+                <div class="group">
+                    <div class="card group-card group-card-template">
+                        <div class="card-body d-flex justify-content-center align-items-center position-relative">
+                            <div class=" d-flex justify-content-center align-items-center position-absolute">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="row group-card-background-squares">
+                                <div class="col-6 group-card-background-square position-absolute top-0 start-0 m-1"></div>
+                                <div class="col-6 group-card-background-square position-absolute top-0 end-0 m-1"></div>
+                                <div class="col-6 group-card-background-square position-absolute bottom-0 end-0 m-1"></div>
+                                <div class="col-6 group-card-background-square position-absolute bottom-0 start-0 m-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            // Append create group card to first group-col
+            $(".event-col").first().append(createGroupHTML);
+        }
+
+        var i = 0;
+        if(!other_user) {
+            i = 1;
+        }
+        // Based on the screen size distribute groups between group-cols
+        if($(window).width() >= 1200) {
+            for(let j = 0; j < data.length; i++, j++) {
+                if(i % 3 === 0) {
+                    $(".event-col-1").append(GroupObject(data[j]));
+                }
+                else if(i % 3 === 1) {
+                    $(".event-col-2").append(GroupObject(data[j]));
+                }
+                else {
+                    $(".event-col-3").append(GroupObject(data[j]));
+                }
+            }
+        }
+        else if($(window).width() >= 992) {
+            for(let j = 0; j < data.length; i++, j++) {
+                if(i % 2 === 0) {
+                    $(".event-col-1").append(GroupObject(data[j]));
+                }
+                else {
+                    $(".event-col-2").append(GroupObject(data[j]));
+                }
+            }
+        }
+        else {
+            for(let j = 0; j < data.length; j++) {
+                $(".event-col-1").append(GroupObject(data[j]));
+            }
+        }
+    }).catch((data) => {
+        console.log(data);
+        showError(data);
+    });
+}
 
 const acceptFriend = (friendId, profile_user) => {
     let accept = new Promise((resolve, reject) => {
@@ -472,6 +704,172 @@ const removeFriend = (profile_user) => {
                 $(".profile-add-friend i").addClass("fa-user-plus");
             }
             else {
+                showError(data.data);
+            }
+        }
+    });
+}
+
+const showGroupEvents = (group_id) => {
+    let getEvents = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: "requests.php",
+            data: {
+                request: "getGroup",
+                group_id: group_id
+            },
+            success: (data, status) => {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.status === "success")
+                {
+                    resolve(data.data);
+                }
+                else
+                {
+                    reject(data.data);
+                }
+            }
+        });
+    }).then((data) => {
+
+        displaying = "group";
+
+        
+
+        $(".event-col").empty();
+        $(".group-header").empty();
+        // append the group header
+        $(".group-header").append(
+            $(`<div></div>`, {
+                html: 
+                `
+                
+                    <div class="d-flex align-items-center">
+                        <div class="group-header-back-arrow pe-4 ps-2 fs-2">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <div>
+                            <div class="group-header-title">
+                                <h3>${data.group_title}</h3>
+                            </div>
+                            <div class="group-header-description">
+                                <p class="m-0">${data.group_description}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-header-delete mx-2 fs-2">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+                    <div class="group-header-id d-none">${data.group_id}</div>
+                `,
+                class: `group-header-content p-2 d-flex align-items-center justify-content-between`,
+            })
+        );
+
+        $(".event-col-1").html("");
+        $(".event-col-2").html("");
+        $(".event-col-3").html("");
+
+        data = data.group_events;
+
+        console.log("scerm", data);
+
+        if($(window).width() >= 1200) {
+            for(let j = 0, i = 0; j < data.length; i++, j++) {
+                if(data[j].event_location === ""){
+                    data[j].event_location = data[j].event_website;
+                }
+                if(i % 3 === 0) {
+                    $(".event-col-1").append(EventObject(data[j]));
+                }
+                else if(i % 3 === 1) {
+                    $(".event-col-2").append(EventObject(data[j]));
+                }
+                else {
+                    $(".event-col-3").append(EventObject(data[j]));
+                }
+            }
+        }
+        else if($(window).width() >= 992) {
+            for(let j = 0; j < data.length; i++, j++) {
+                if(i % 2 === 0) {
+                    $(".event-col-1").append(EventObject(data[j]));
+                }
+                else {
+                    $(".event-col-2").append(EventObject(data[j]));
+                }
+            }
+        }
+        else {
+            for(let j = 0; j < data.length; j++) {
+                $(".event-col-1").append(EventObject(data[j]));
+            }
+        }
+
+        // append delete icon to each event
+        $(".event").each((index, element) => {
+            $(element).append(
+                $(`<div></div>`, {
+                    html: `<i class="fas fa-times"></i>`,
+                    class: `event-delete-icon position-absolute top-0 end-0 fs-2 pe-3`,
+                })
+            );
+        });
+
+    }).catch((data) => {
+        console.log(data);
+        showError(data);
+    });
+}
+
+const deleteGroup = (group_id) => {
+
+    let user = $("#user-id").text();
+
+    $.ajax({
+        type: "POST",
+        url: "requests.php",
+        data: {
+            request: "deleteGroup",
+            group_id: group_id
+        },
+        success: (data, status) => {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status === "success")
+            {
+                console.log(data.data);
+                window.location.href = `profile.php?user_id=${user}`;
+            }
+            else
+            {
+                showError(data.data);
+            }
+        }
+    });
+}
+
+const removeEventFromGroup = (event_id, group_id) => {
+    $.ajax({
+        type: "POST",
+        url: "requests.php",
+        data: {
+            request: "removeEventFromGroup",
+            event_id: event_id,
+            group_id: group_id
+        },
+        success: (data, status) => {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status === "success")
+            {
+                console.log(data.data);
+                showGroupEvents(group_id);
+            }
+            else
+            {
                 showError(data.data);
             }
         }

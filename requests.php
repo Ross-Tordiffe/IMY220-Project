@@ -168,6 +168,15 @@
 
         };
 
+        /**
+         * Handle removing of an event
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "deleteEvent") {
+            
+            $event = $db->deleteEvent($_POST['event_id']);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$event]));
+        };
+
         // === Secondary POST requests ===
 
         /**
@@ -179,7 +188,6 @@
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$friends]));
         };
 
-        
         /**
          * Handle friendRequest
          */
@@ -251,7 +259,61 @@
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
         };
 
+        /**
+         * Handle creating of groups of events like a playlist
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "createGroup") {
+            $group_name = $_POST['group_name'];
+            $group_description = $_POST['group_description'];
 
-        
+            $message = $db->createGroup($group_name, $group_description);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle getting of groups
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getGroups") {
+            $groups = $db->getGroups();
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$groups]));
+        };
+
+        /**
+         * Handle getting of a single group
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getGroup") {
+            $group_id = $_POST['group_id'];
+            $group = $db->getGroup($group_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$group]));
+        };
+
+        /**
+         * Handle deleting of a group
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "deleteGroup") {
+            $group_id = $_POST['group_id'];
+            $message = $db->deleteGroup($group_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };        
+
+        /**
+         * Handle adding of an event to a group
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "addEventToGroup") {
+            $group_id = $_POST['group_id'];
+            $event_id = $_POST['event_id'];
+            $message = $db->addEventToGroup($group_id, $event_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle removing of an event from a group
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "removeEventFromGroup") {
+            $group_id = $_POST['group_id'];
+            $event_id = $_POST['event_id'];
+            $message = $db->removeEventFromGroup($group_id, $event_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
     }
 ?>

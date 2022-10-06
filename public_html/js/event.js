@@ -55,7 +55,7 @@ const EventPageObject = ({event_id, event_user_id, event_title, event_date, even
                                 <span class="small event-page-user-count">${event_user_count}</span>
                             </div>
                             <div class="event-page-add-to-group d-flex align-items-center">
-                                <button class="btn btn-primary btn-sm">Add to group</button>
+                                <button class="btn btn-primary btn-sm add-to-group">Add to group</button>
                             </div>
                         </div>
                     </div>
@@ -103,6 +103,9 @@ $(() => {
                 <div class="col-12 event-page-edit position-absolute">
                     <button class="btn"><i class="fas fa-edit"></i></button>
                 </div>
+                <div class="col-12 event-page-delete position-absolute">
+                    <button class="btn"><i class="fas fa-trash-alt"></i></button>
+                </div>
             `);
         }
 
@@ -115,6 +118,17 @@ $(() => {
 
         $('.event-page-edit').click(() => {
             window.location.href = 'create-event.php?event_id=' + event.event_id;
+        });
+
+        $('.event-page-delete').click(() => {
+            // Show confirmation modal
+            $(".confirmation-modal-text p").text("Are you sure you want to delete this event?");
+            $("#confirmationModal").modal("show");
+
+            $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
+                deleteEvent();
+                $(".modal").modal("hide");
+            });
         });
     });
 
@@ -309,6 +323,25 @@ $(() => {
     $(".carousel-indicators").on("click", (e) => {
         e.preventDefault();
         $("#event-images-carousel").carousel($(e.target).index());
+    });
+
+    $(".add-to-group").on("click", (e) => {
+        e.preventDefault();
+        addToGroup();
+    });
+
+    $(".event-container").on("click", ".add-to-group", (e) => {
+        console.log("add to group");
+        // Get the user's friends and return a promise
+        getGroups();
+        $("#showGroupsModal").modal("show");
+    });
+
+    $(".modal-body").on("click", ".event-group-list", (e) => {
+        console.log("Add event to group", );
+        let group_id = $(e.target).children(".group_id").text();
+        if(addEventToGroup(group_id));
+            $("#showGroupsModal").modal("hide");
     });
 
 });
@@ -542,41 +575,101 @@ const fillEventImageCarousel = (reviews) => {
         $(item).attr("aria-label", `Slide ${index+1}`);
     });
 }
+
+const getGroups = () => {
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "getGroups"
+        },
+        success: (data) => {
+            data = JSON.parse(data);
+            if(data.status === "success") {4
+                data = data.data;
+                // map the groups to <li class="event-group">Group Name</li>
+                console.log(data);
+                let groups = data.map((group) => { 
+                    return `<li class="event-group-list fs-6 m-0"><div class="group_id d-none">${group.group_id}</div></div><i class="fas fa-border-all fs-4 me-2"></i> ${group.group_title}</li>`;
+                });
+                $(".event-show-groups-box").html(groups);
+            } else {
+                showError(data);
+            }
+        }
+    });
+}
+
+const addToGroup = (event_id, user_id) => {
+    console.log("Adding to group...", event_id, user_id);
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "addToGroup",
+            event_id: event_id,
+            user_id: user_id
+        },
+        success: (data) => {
+            data = JSON.parse(data);
+            console.log(data);
+            if(data.status === "success") {
+                window.location.reload();
+            } else {
+                showError(data);
+            }
+        }
+    });
+}
     
+const addEventToGroup = (group_id) => {
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let event_id = urlParams.get('id');
+
+    console.log("Adding event to group...", group_id, event_id);
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "addEventToGroup",
+            group_id: group_id,
+            event_id: event_id
+        },
+        success: (data) => {
+            data = JSON.parse(data);
+            console.log(data);
+            if(data.status === "success") {
+                return true;
+            } else {
+                showError(data);
+            }
+        }
+    });
+}
+
+const deleteEvent = () => {
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let event_id = urlParams.get('id');
+
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "deleteEvent",
+            event_id: event_id
+        },
+        success: (data) => {
+            data = JSON.parse(data);
+            console.log(data);
+            if(data.status === "success") {
+                window.location.href = "index.php";
+            } else {
+                showError(data);
+            }
+        }
+    });
+}
 
 
-// const updateRating = (star, article) => {
-
-// 	rating = $(star).index() + 1;
-// 	url = $(article).find("a").attr("href");
-// 	id = $(article).find(".id_store").html();
-
-// 	console.log("rating: " + rating + " url: " + url + " id: " + id);
- 
-// 	$.ajax({
-// 		// "url": "/u21533572/api.php",
-// 		"url": "requests.php",
-// 		"type": "POST",
-// 		"data": JSON.stringify({
-// 			"key": userKey,
-// 			"type": "rate",
-// 			"rating": rating,
-// 			"url": url,
-// 			"id": id,
-// 		}),
-// 		contentType: 'application/json',
-// 		username:'u21533572',
-// 		password:'Un5t4b13Un1v3r5317?',
-// 	}).done(function (json) {
-// 		if(json != null){
-// 			json = JSON.parse(json)
-// 		}
-// 		console.log(json);
-// 		console.log(json.data['rating'])
-// 		$(article).find(".rating_store").html(json.data['rating']);
-// 	}).fail(function(xhr, status, error) {
-// 	console.log("Error: " + error);
-// 	console.log("Status: " + status);
-// 	console.dir(xhr);
-// 	});
-// }

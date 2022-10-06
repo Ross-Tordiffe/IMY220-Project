@@ -48,6 +48,51 @@ const EventObject = ({event_id, event_user_id, event_title, event_date, event_lo
     </div>
 `;
 
+// --- Group Object ---
+const GroupObject = ({group_id, group_user_id, group_title, group_description, group_events}) => {
+
+    // Map first 4 events images to group
+    let classes = [
+        "top-0 start-0",
+        "top-0 end-0",
+        "bottom-0 start-0",
+        "bottom-0 end-0"
+    ];
+
+    let groupEvents = group_events.map((event, index) => {
+        return `<div class="col-6 group-event-img p-0 position-absolute m-2 ${classes[index]}"/><img src="public_html/img/event/${event.event_image}"/></div>`
+    }).join('');
+
+
+    // If there are less than 4 events then add empty divs to fill the space
+    if(group_events.length < 4) {
+        for(let i = group_events.length; i < 4; i++) {
+            groupEvents += `<div class="col-6 group-event-img p-0 position-absolute m-2 ${classes[i]}"></div>`;
+        }
+    }
+
+    console.log("groupEvents", groupEvents);
+
+    return `
+        <div class="event-group">
+            <div class="card card-container mb-4 shadow group-card d-flex justify-content-center position-relative">
+                <p class="d-none group-user-id">${group_user_id}</p>
+                <p class="d-none group-id">${group_id}</p>
+                <div class="group-content position-relative mb-0">
+                    <div class="row group-events">
+                        ${groupEvents}
+                    </div>
+                </div>
+                <div class="col-12 card-body position-absolute bottom-0">
+                    <p class="group-title card-title mb-0 ">${group_title}</p>
+                    <div class="group-description card-text small d-none">${group_description}</div>
+                </div>
+            </div>
+        
+        </div>
+    `;
+}
+
 // ======== Toast =========
 
 const showError = (msg) => {
@@ -87,12 +132,7 @@ $(() => {
             }
         });
     
-    });
-
-    
-
-    
-
+    });    
 
 })
 

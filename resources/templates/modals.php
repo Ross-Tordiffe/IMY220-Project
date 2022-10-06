@@ -53,8 +53,9 @@
                         <input type="file" id="event-review-file" class="file-input" name="event-review-file" data-height="500" accept=".png, .jpg, .jpeg" />
                     </form>
                 </div>
-                <div class="event-review-form-group w-100 d-flex justify-content-center pt-3">
-                    <button type="submit" class="btn btn-primary review-submit">Submit</button>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary py-0 modal-close" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary py-0 review-submit">Submit</button>
                 </div>
             </div>
         </div>
@@ -73,6 +74,9 @@
                             <span>Confirmation</span>
                     </div>
                 </div>
+                <button type="button" class="btn modal-close profile-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body p-2">
                 <div class="confirmation-modal-container d-flex flex-column justify-content-center align-items-center">
@@ -81,9 +85,65 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer border-top-0">
                 <button type="button" class="btn btn-secondary py-0 modal-close" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary confirmation-modal-btn py-0">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create group modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title ms-3" id="createGroupModalLabel">Create group</h3>
+                <button type="button" class="btn modal-close profile-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="create-group-form-container">
+                    <form action="" method="post" class="create-group-form d-flex flex-column w-100 p-3">
+                        <!-- Group name -->
+                        <div class="form-group pt-3 pb-1 has-counter w-100">
+                            <label for="group-title" class="review-label fs-5 mb-1">Group name</label>
+                            <input type="text" class="form-control input-alt" id="group-title" placeholder=" " name="group-title" maxlength="50" />
+                            <div class="character-counter" id="group-title-counter">0/50</div>
+                        </div>
+
+                        <!-- Group description -->
+                        <div class="form-group pt-3 pb-1 has-counter w-100">
+                            <label for="group-description" class="review-label fs-5 mb-1">Group description</label>
+                            <textarea type="text" class="form-control input-alt" id="group-description" placeholder=" " name="group-description" rows=5 maxlength="120"></textarea>
+                            <div class="character-counter" id="group-description-counter">0/120</div>
+                        </div>
+                    </form>
+                    <div class="modal-footer border-top-0 ">
+                        <button type="button" class="btn btn-secondary py-0 modal-close" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary create-group-submit py-0">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show groups list modal -->
+<div class="modal fade" id="showGroupsModal" tabindex="-1" aria-labelledby="showGroupsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title ms-3" id="showGroupsLabel">Groups</h3>
+                <button type="button" class="btn modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body p-2 ">
+                <ul class="list-group list-group-flush event-show-groups-box w-100 p-0">
+                    
+                </ul>
             </div>
         </div>
     </div>

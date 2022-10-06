@@ -255,21 +255,40 @@
             // Only upload image if the event was created successfully
             move_uploaded_file($image["tmp_name"], $image_path);
 
-            // insert tags into db_tags
+            // insert tags into db_tags only if they do not already exist, otherwise get the tag_id and insert into db_event_tags
             $tags = explode(" ", $data["event_tags"]);
             $eventID = $this->getConnection()->insert_id;
             foreach($tags as $tag) {
-                $tagStmt = $this->getConnection()->prepare("INSERT INTO `db_tags` (`tag_name`) VALUES (?)");
-                $tagStmt->bind_param("s", $tag);
-                if(!$tagStmt->execute()){
+
+                // Check if the tag already exists
+                $tagCheck = $this->getConnection()->prepare("SELECT tag_id FROM db_tags WHERE tag_name = ?");
+                $tagCheck->bind_param("s", $tag);
+                if(!$tagCheck->execute()){
                     return false;
                 }
-                $tagID = $this->getConnection()->insert_id;
-                $eventTagStmt = $this->getConnection()->prepare("INSERT INTO `db_event_tag` (`evttag_event_id`, `evttag_tag_id`) VALUES (?, ?)");
-                $eventTagStmt->bind_param("ii", $eventID, $tagID);
-                if(!$eventTagStmt->execute()){
+                $result = $tagCheck->get_result();
+                $row = $result->fetch_assoc();
+                $tagID = $row["tag_id"];
+                $tagCheck->close();
+
+                // If the tag does not exist, create it
+                if($tagID == null) {
+                    $tagCreate = $this->getConnection()->prepare("INSERT INTO db_tags (tag_name) VALUES (?)");
+                    $tagCreate->bind_param("s", $tag);
+                    if(!$tagCreate->execute()){
+                        return false;
+                    }
+                    $tagID = $this->getConnection()->insert_id;
+                    $tagCreate->close();
+                }
+
+                // Insert the tag into the event
+                $tagInsert = $this->getConnection()->prepare("INSERT INTO db_event_tags (event_id, tag_id) VALUES (?, ?)");
+                $tagInsert->bind_param("ii", $eventID, $tagID);
+                if(!$tagInsert->execute()){
                     return false;
                 }
+                $tagInsert->close();
             }
 
             return true;
@@ -663,6 +682,68 @@
             return $event;
         }
 
+        /**
+         * Method to delete and event and its image from the database using the event id
+         */
+        public function deleteEvent($event_id) {
+
+            // Delete the image from the server
+            $image = $this->getEvent($event_id)["event_image"];
+
+            if($image != null) {
+                unlink("public_html/img/event/".$image);
+            }
+
+            // Delete the event from the database
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_events WHERE event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            $tagIds = array();
+
+            // Get the tag ids for the event
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_event_tag WHERE evttag_event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            while($row = $result->fetch_assoc()) {
+                $tagIds[] = $row["evttag_tag_id"];
+            }
+            $stmt->close();
+            
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_event_tag WHERE evttag_event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }            
+            $stmt->close();
+
+            // Delete the tags from the database if they are not used by any other event
+            foreach($tagIds as $tagId) {
+                $stmt = $this->getConnection()->prepare("SELECT * FROM db_event_tag WHERE evttag_tag_id = ?");
+                $stmt->bind_param("i", $tagId);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $result = $stmt->get_result();
+                if($result->num_rows == 0) {
+                    $stmt = $this->getConnection()->prepare("DELETE FROM db_tags WHERE tag_id = ?");
+                    $stmt->bind_param("i", $tagId);
+                    if(!$stmt->execute()){
+                        return false;
+                    }
+                    $stmt->close();
+                }
+            }
+
+            return true;
+            
+        }
 
         /**
          * Method to get the ids, names and images of the users friends
@@ -881,6 +962,140 @@
             }
 
             return true;
+        }
+
+        /**
+         * Method to create a group of events like a playlist
+         */
+        public function createGroup($group_name, $group_description) {
+
+            $user_id = $_SESSION["user_id"];
+            
+            $stmt = $this->getConnection()->prepare("INSERT INTO db_list (list_user_id, list_title, list_description) VALUES (?, ?, ?)");
+            $stmt->bind_param("iss", $user_id, $group_name, $group_description);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+        }
+
+        /**
+         * Method to fetch groups for a user
+         */
+        public function getGroups() {
+
+            $user_id = $_SESSION["user_id"];
+
+            // Get all groups' information
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_list WHERE list_user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $groups = array();
+            while($row = $result->fetch_assoc()) {
+                $groups[] = array("group_id" => $row["list_id"], "group_user_id" => $row["list_user_id"], "group_title" => $row["list_title"], "group_description" => $row["list_description"]);
+            }
+            
+            // Get all events' information for each group
+            foreach($groups as &$group) {
+                $stmt = $this->getConnection()->prepare("SELECT * FROM db_list_event WHERE listevt_list_id = ?");
+                $stmt->bind_param("i", $group["group_id"]);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $result = $stmt->get_result();
+                $events = array();
+                while($row = $result->fetch_assoc()) {
+                    $events[] = $this->getEvent($row["listevt_event_id"]);
+                }
+                $group["group_events"] = $events;
+            }
+
+            return $groups;
+
+        }
+
+        /**
+         * Method to get a specific group
+         */
+        public function getGroup($group_id) {
+
+            $user_id = $_SESSION["user_id"];
+
+            // Get group's information
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_list WHERE list_id = ?");
+            $stmt->bind_param("i", $group_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $group = array("group_id" => $row["list_id"], "group_user_id" => $row["list_user_id"], "group_title" => $row["list_title"], "group_description" => $row["list_description"]);
+            
+            // Get all events' information for the group
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_list_event WHERE listevt_list_id = ?");
+            $stmt->bind_param("i", $group_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $events = array();
+            while($row = $result->fetch_assoc()) {
+                $events[] = $this->getEvent($row["listevt_event_id"]);
+            }
+            $group["group_events"] = $events;
+
+            return $group;
+
+        }
+
+        /**
+         * Method to add an event to a group
+         */
+        public function addEventToGroup($group_id, $event_id) {
+
+            $stmt = $this->getConnection()->prepare("INSERT INTO db_list_event (listevt_list_id, listevt_event_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $group_id, $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            return true;
+        }
+
+        /**
+         * Method to delete a group
+         */
+        public function deleteGroup($group_id) {
+
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_list WHERE list_id = ?");
+            $stmt->bind_param("i", $group_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            return true;
+
+        }
+
+        /**
+         * Method to delete an event from a group
+         */
+        public function removeEventFromGroup($group_id, $event_id) {
+
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_list_event WHERE listevt_list_id = ? AND listevt_event_id = ?");
+            $stmt->bind_param("ii", $group_id, $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            return true;
+
         }
     }
 

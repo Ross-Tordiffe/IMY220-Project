@@ -491,6 +491,82 @@ header .bkm-icon
     right: 15%;
 }
 
+.bkm:hover
+{
+    cursor: pointer;
+}
+
+.bkm-tag>path
+{
+    fill: var(--bg-red);
+}
+
+.bkm-tag>rect
+{
+    fill: var(--bg-red);
+}
+
+.bkm.bkm-current .bkm-tag>path
+{
+    fill: var(--bg-redlight);
+}
+
+.bkm-tag:hover>path
+{
+    fill: var(--bg-redlight);
+}
+
+.bkm-icon
+{
+    pointer-events: none;
+}
+
+.bkm-icon path
+{
+    fill: var(--bg-light-alt);
+    transition: all 0.2s ease-in-out;
+}
+
+.bkm-icon circle
+{
+    stroke: var(--bg-light-alt);
+    transition: all 0.2s ease-in-out;
+}
+
+.bkm:hover .bkm-icon path, .bkm.bkm-current .bkm-icon path
+{
+    fill: var(--bg-light);
+}
+
+.bkm:hover circle, .bkm.bkm-current .bkm-icon circle
+{
+    stroke: var(--bg-light);
+}
+
+.bkm.bkm-current
+{
+    transition: all 0.4s ease-in-out;
+}
+
+.bkm-icon
+{
+    margin-right: 5px;
+}
+
+.bkm-icon i
+{
+    font-size: 3em;
+    color: var(--bg-light);
+    
+}
+
+.bkm-icon-text
+{
+    font-size: 1.2em;
+    color: var(--bg-light);
+    font-weight: 600;
+}
+
 .hd-other {
     height: 50%;
     display: flex;
@@ -952,6 +1028,25 @@ header .bkm-icon
     background-color: var(--bg-blue);
 }
 
+.confirmation-modal-text 
+{
+    background-color: var(--bg-light);
+    border: var(--bg-blue) 2px solid;
+    border-radius: 20px;
+    width: 100%;
+}
+
+.confirmation-modal-text p
+{
+    font-size: 1.2em;
+    color: var(--bg-blue);
+}
+
+#confirmationModal .modal-footer
+{
+    border:none;
+}
+
 /* --- Review Modal --- */
 /* 
 #event-review-message
@@ -1094,4 +1189,113 @@ header .bkm-icon
 .event-review-image-box
 {
     height: 100px;
+}
+
+/* ==== Group Event ==== */
+
+.event-group {
+    height: 300px;
+}
+
+.group-card
+{
+    border: none;
+    border-radius: 10px;
+}
+
+.group-content
+{
+    height: 300px;
+    transition: all 0.2s ease-in;
+    margin-bottom: 30px;
+    overflow: hidden;
+    background-color: var(--bg-light);
+    border-radius: 10px;
+}
+
+.group-content:hover
+{
+    cursor: pointer;
+}
+
+.group-event-img
+{
+    background-color: var(--bg-light-alt);
+    border-radius: 10px;
+    width: 44%;
+    height:  44%;
+    transition: all 0.2s ease-in;
+
+}
+
+.group-event-img img 
+{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.group-content:hover .group-event-img
+{
+    transform: scale(1.03);
+}
+
+.event-group .card-body
+{
+    background-color: var(--bg-main-05);
+    border-radius: 0 0 10px 10px;
+    transition: all 0.2s ease-in;
+    color: var(--bg-light);
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+
+
+/* grow description upwards */
+@keyframes showDescription {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    1% {
+        display: block;
+        opacity: 0;
+    }
+    50%{
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* grow description downwards */
+@keyframes hideDescription {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+
+.group-description
+{
+    color: var(--bg-light);
+    transform: translateY(100%);
+    z-index: 5;
+}
+
+.group-description.animate  {
+    animation: showDescription 0.3s ease-in-out forwards;
+}
+
+.group-description.reverse-animate  {
+    animation: hideDescription 0.3s ease-in-out forwards;
 }

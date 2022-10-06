@@ -3,6 +3,8 @@
 .event-images-carousel
 {
     z-index: 10;
+    background-color: var(--bg-light);
+    border-radius: 10px;
 }
 
 .event-page-back 
@@ -27,6 +29,7 @@
     min-width: 100%;
     max-height: 300px;
     object-fit: cover;
+    background-color: var(--bg-blue);
 }
 
 
@@ -71,6 +74,28 @@
 }
 
 .event-page-edit .btn:focus
+{
+    background-color: var(--bg-orange);
+    color: var(--bg-light);
+}
+
+.event-page-delete
+{
+    left: 4.5em;
+    top: 1em;
+}
+
+.event-page-delete .btn
+{
+    border-radius: 40%;
+}
+
+.event-page-delete .btn:hover
+{
+    background-color: var(--bg-orange);
+}
+
+.event-page-delete .btn:focus
 {
     background-color: var(--bg-orange);
     color: var(--bg-light);
@@ -178,6 +203,12 @@
     background-color: var(--bg-light);
     color: var(--bg-blue);
     border : 2px solid var(--bg-blue);
+    border-radius: 10px;
+}
+
+.event-review-form
+{
+    border-radius: 10px;
 }
 
 #event-review-message
@@ -255,6 +286,14 @@
 
 /* === Event images carousel === */
 
+.event-carousel
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border : 2px solid var(--bg-blue);
+    border-radius: 10px;
+}
+
 .image-template
 {
     height: 400px;
@@ -269,6 +308,26 @@
     width: 75%;
     margin: 0 auto;
     object-fit: cover;
+    background-color: var(--bg-light);
+    border-radius: 10px;
+}
+
+.carousel-control-prev
+{
+    position: absolute;
+    left: -0.5em;
+    background-color: var(--d-bg-main-05);
+    width: 10%;
+    border-radius: 10px 0 0 10px;
+}
+
+.carousel-control-next
+{
+    position: absolute;
+    right: -0.5em;
+    background-color: var(--d-bg-main-05);
+    width: 10%;
+    border-radius: 0 10px 10px 0;
 }
 
 .event-carousel-user-image
@@ -286,6 +345,7 @@
     color: var(--bg-blue);
     border-radius: 10px;
     border: 2px solid var(--bg-blue);
+    z-index: 50;
 }
 
 .carousel-caption
@@ -294,3 +354,50 @@
     color: var(--bg-light);
 }
 
+/* === Event Groups List === */
+
+.event-show-groups-box
+{
+    background-color: var(--bg-light);
+    border-radius: 20px;
+    width: 95%;
+    border: var(--bg-blue) 2px solid;
+    margin-bottom: 1em;
+    max-height: 500px;
+    overflow: auto;
+}
+
+.event-group-list
+{
+    display: flex;
+    align-items: center;
+    padding: 0.5em;
+    padding-right: 0;
+    border-bottom: var(--bg-blue) 2px solid;
+    transition: all 0.1s ease-in-out;
+    color: var(--bg-blue);
+    font-family: "Poppins", sans-serif;
+}
+
+.event-group-list:hover
+{
+    background-color: var(--bg-blue);
+    color: var(--bg-light);
+    cursor: pointer;
+
+}
+
+.event-group-list i
+{
+    pointer-events: none;
+}
+
+.event-group-list:last-child
+{
+    border-bottom: none;
+}
+
+.event-group-list
+{
+   
+}

@@ -8,23 +8,31 @@
 
     $hd_other = '
         <div class="bookmarks">
-            <div class="bkm bkm-current" id="bkm-global">
+            <div class="bkm bkm-current" id="bkm-my-events">
 
                 <!-- BOOKMARK SWAP TO MY EVENTS -->
                 <svg class="bkm-tag" width="246" height="116" viewBox="0 0 246 116" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 0H246V116H0L55.1379 58L0 0Z" fill="#9F1618"/>
-                <rect x="227" width="19" height="116" fill="#821419" fill-opacity="0.75"/>
+                    <path d="M0 0H246V116H0L55.1379 58L0 0Z" fill="#9F1618"/>
+                    <rect x="227" width="19" height="116" fill="#821419" fill-opacity="0.75"/>
                 </svg>
-                <i class="fas fa-user bkm-icon fs-1"></i>
+                <div class="bkm-icon d-flex flex-column align-items-center">
+                    <i class="fa-solid fa-image-portrait"></i>
+                    <span class="bkm-icon-text">Events</span>
+                </div>
+                
             </div>
-            <div class="bkm" id="bkm-local">
+            <div class="bkm" id="bkm-groups">
 
                 <!-- BOOKMARK SWAP TO GROUPS -->
                 <svg class="bkm-tag" width="246" height="116" viewBox="0 0 246 116" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0 0H246V116H0L55.1379 58L0 0Z" fill="#9F1618"/>
                 <rect x="227" width="19" height="116" fill="#821419" fill-opacity="0.75"/>
                 </svg>
-                <i class="fas fa- bkm-icon fs-1"></i>           
+                
+                <div class="bkm-icon d-flex flex-column align-items-center">
+                    <i class="fas fa-border-all"></i>
+                    <span class="bkm-icon-text">Groups</span>
+                </div>           
             </div>
         </div>
     ';
@@ -42,10 +50,9 @@
 ?>                          
                 <!-- Full container -->
                 <div class="row profile-container table-events event-box">
-                    <div class="doSomething" id="doSomething">HERE</div>
                     <!-- Profile header -->
                     <div class="col-12 pb-3">
-                        <div class="profile-header row align-items-center mx-1">
+                        <div class="profile-header row align-items-center justify-content-between mx-1">
                             <!-- User Id -->
                             <div id="profile-user-id" class="d-none"><?=$profile_user_id?></div>
                             <!-- Profile image -->
@@ -74,22 +81,23 @@
                                 
                             </div>
                             <?php if($_SESSION["user_id"] == $profile_user_id){ ?>
-                            <div class="col-1 offset-3 profile-options">
-                                <i class="profile-btn fas fa-cog me-3" id="profile-settings"></i>
-                                <i class="profile-btn fas fa-sign-out-alt" id="profile-logout"></i>
+                            <div class="col-2 me-5 profile-options d-flex align-items-center">
+                                <div><i class="profile-btn fas fa-cog me-3" id="profile-settings"></i></div>
+                                <div><i class="profile-btn fas fa-sign-out-alt" id="profile-logout"></i></div>
                             </div>
                             <?php } else { ?>
-                            <div class="col-1 offset-2 profile-options d-flex">
+                            <div class="col-3 me-5 profile-options d-flex">
                                 <div class="profile-btn btn py-0 me-2 d-flex align-items-center fs-5" id="profile-add-friend">Friend<i class="fas fa-user-plus ms-2 fs-6"></i></div>
                                 <div class="message-btn profile-btn btn py-0 d-flex align-items-center fs-5 d-none" id="profile-message">Message<i class="fas fa-envelope ms-2 fs-6"></i></div>
                             </div>
                             <?php } ?>
                         </div>
                     </div>
+                    <div class="col-12 group-header mb-2"></div>
                     <div class="col-xl-4 col-lg-6 col-12 event-col-1 event-col"></div>
                     <div class="col-xl-4 col-lg-6 col-0 event-col-2 event-col"></div>
                     <div class="col-xl-4 col-lg-0 col-0 event-col-3 event-col"></div>
-
+                 
          
                     <!-- Title -->
                     <!-- <h1 class="">Profile</h1> -->
