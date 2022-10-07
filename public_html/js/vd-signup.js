@@ -6,12 +6,8 @@ $(() => {
 
         e.preventDefault(); // Prevent Default Submission
 
-        console.log("submit signup");
-
         if(!nameCheck() || !emailCheck() || !passCheck() || !passConfCheck() || !usernameCheck())
         {
-            console.log("nameCheck: " + nameCheck() + " " + "emailCheck: " + emailCheck() + " " + "passCheck: " + passCheck() + " " + "passConfCheck: " + passConfCheck() + " " + "usernameCheck: " + usernameCheck());
-            console.log("invalid");
             return false;
         }
         else {

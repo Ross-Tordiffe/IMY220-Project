@@ -24,7 +24,6 @@ $(() => {
             e.stopPropagation();
             if(!$(".second-item").hasClass("active")) {
                 swapCards($(".second-item"));
-                console.log("hit2");
             }
         });
 
@@ -53,7 +52,7 @@ $(() => {
             imageFile = file[0];
             console.log(imageFile);
         }
-        console.log("success?");
+        ("success?");
     });
 
     $("#event-file").on("change", (e) => {
@@ -70,7 +69,6 @@ $(() => {
                 let reader = new FileReader();
                 reader.readAsDataURL(file[0]);
                 reader.onload = (e) => {
-                    console.log("IMAGE: ", e.target.result);
                     $(".event-image-box").css("background-image", `url(${e.target.result})`);
                     $(".event-image-btn").addClass("event-image-hidden");
                 }
@@ -88,7 +86,6 @@ $(() => {
 
     const uploadImage = (file) => {
         let formData = new FormData();
-        console.log(file[0]);
         formData.append("file", file[0]);
         formData.append("request", "uploadImage");
         $.ajax({
@@ -109,7 +106,6 @@ $(() => {
     // --- Handle title
     
     $("#event-title").on("keyup", (e) => {
-        console.log("here")
         $("#title-counter").text(`${e.target.value.length}/30`);
     });
 
@@ -262,7 +258,6 @@ $(() => {
 
     // Remove tag when clicked
     $(".tag-container").on("click", ".tag-item", (e) => {
-        console.log(e.target);
         e.target.remove();
     });
 
@@ -324,9 +319,7 @@ $(() => {
                     processData: false,
                     contentType: false,
                     success: (data) => {
-                        console.log(data);
                         data = JSON.parse(data);
-                        console.log(data);
                         if(data.status == "success") {
                             window.location.href = "home.php";
                         }
@@ -356,9 +349,7 @@ $(() => {
                     processData: false,
                     contentType: false,
                     success: (data) => {
-                        console.log(data);
                         data = JSON.parse(data);
-                        console.log(data);
                         if(data.status == "success") {
                             window.location.href = "event.php?id=" + event_id;
                         }
@@ -419,7 +410,6 @@ $(() => {
             
             return false;
         } else {
-            console.log($("#event-title").val());
             return true;
         }
     }
@@ -428,7 +418,6 @@ $(() => {
         if($("#event-location span").text() === "Add location") {
             return false;
         } else {
-            console.log($("#event-location span").text());
             return true;
         }
     }
@@ -438,7 +427,6 @@ $(() => {
         if($("#event-website").val() === "" || !urlValitation.test($("#event-website").val())) {
             return false;
         } else {
-            console.log($("#event-website").val());
             return true;
         }
     }
@@ -448,7 +436,6 @@ $(() => {
         if($("#event-date").val() === "" || new Date($("#event-date").val()) < new Date()) {
             return false;
         } else {
-            console.log($("#event-date").val());
             return true;
         }
     }
@@ -472,14 +459,12 @@ $(() => {
             },
             success: (data) => {
                 data = JSON.parse(data);
-                console.log(data);
                 if(data.status == "success") {
 
                     // Change form title
                     $(".create-event-title").text("Edit Event");
                     
                     data = data.data;
-                    console.log(data);
 
                     // Populate form with event data
                     $("#event-title").val(data.event_title);

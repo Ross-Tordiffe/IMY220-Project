@@ -19,8 +19,6 @@ $("#signup-card").on("click", (e) => {
 });
 
 const swapLgsu = (item) => {
-    console.log("hit");
-    console.log(item);
     if($(item).siblings(".item").hasClass("active")) {
         $(item).siblings(".item").removeClass("active");
         $(item).addClass("active");

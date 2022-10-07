@@ -3,11 +3,9 @@ var displaying = "global";
 
 $(() => {
 
-    console.log("home.js loaded");
     // === Handle Events ===
 
     $("#bkm-global").on("click", (e) => {
-        console.log("bkm-global clicked");
         if(!$("#bkm-global").hasClass("bkm-current")) {
             $("#bkm-local").removeClass("bkm-current");
             $("#bkm-global").addClass("bkm-current");
@@ -19,7 +17,6 @@ $(() => {
     });
 
     $("#bkm-local").on("click", (e) => {
-        console.log("bkm-local clicked");
         if(!$("#bkm-local").hasClass("bkm-current")) {
             $("#bkm-global").removeClass("bkm-current");
             $("#bkm-local").addClass("bkm-current");
@@ -61,6 +58,7 @@ $(() => {
                             
                         }
 
+                        console.log(data.data);
 
                         resolve(data.data);
                     }
@@ -71,7 +69,6 @@ $(() => {
                 }
             });
         }).then((data) => {
-            console.log(data);
             // Clear previous events from event-col classes
             $(".event-col").empty();
 

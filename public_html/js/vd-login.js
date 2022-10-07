@@ -10,7 +10,6 @@ $(() => {
 
         e.preventDefault(); // Prevent Default Submission
 
-        console.log("loaded login");
         if(!emailCheck() || !passCheck())
         {
             showError(lg_message);
@@ -21,11 +20,6 @@ $(() => {
             let form = $(".lg-inputs")[0];
             let formData = new FormData(form);
             formData.append("request", "login");
-
-            for (var pair of formData.entries()) {
-                console.log(pair[0]+ ', ' + pair[1]); 
-            }
-
 
             $.ajax({
                 type: "POST",
@@ -39,7 +33,6 @@ $(() => {
                     data = JSON.parse(data);
                     if(data.status === "success")
                     {
-                        // console.log(data);
                         window.location.href = "home.php?user_id=" + data.user_id;
                     }
                     else
