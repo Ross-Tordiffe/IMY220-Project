@@ -13,6 +13,7 @@ const EventPageObject = ({event_id, event_user_id, event_title, event_date, even
             <div class="col-12 event-info">
                 <div class="event-page-user-id d-none">${event_user_id}</div>
                 <div class="event-page-id d-none">${event_id}</div>
+                <div class="event-user-attending d-none"></div>
                 <div class="row event-page-back p-2">
                     <div class="col-12 col-md-6 event-page-content p-0 position-relative">
                         <div class="p-2">
@@ -23,12 +24,20 @@ const EventPageObject = ({event_id, event_user_id, event_title, event_date, even
                                     <span class="h2">${event_title}</span>
                                 </div>
                                 <div class="d-flex">
+                                    <div class="event-page-rating-stars"></div>
+                                    <div class="event-page-user-count">
+                                        <span class="small"><i class="fas fa-users ps-3 pe-2"></i>${event_user_count}</span>
+                                    </div>
+                                </div>
+                               
+                                <div class="d-flex">
                                     <div class="event-page-date">
                                         <span class="small"><i class="fas fa-calendar-alt pe-2"></i>${event_date}</span>
                                     </div>
                                     <div class="event-page-location">
                                         <span class="small"><i class="fas fa-map-marker-alt ps-3 pe-2"></i>${event_location}</span>
                                     </div>
+                                 
                                 </div>
                             
                                 <div class="event-page-description pt-2">
@@ -48,16 +57,6 @@ const EventPageObject = ({event_id, event_user_id, event_title, event_date, even
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 event-page-join-header p-2 border-start-0 d-flex justify-content-evenly">
-                            <div class="event-page-join-event d-flex align-items-center">
-                                <button class="btn btn-primary btn-sm">Attend</button>
-                                <i class="fas fa-users ps-1 pe-2"></i>
-                                <span class="small event-page-user-count">${event_user_count}</span>
-                            </div>
-                            <div class="event-page-add-to-group d-flex align-items-center">
-                                <button class="btn btn-primary btn-sm add-to-group">Add to group</button>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-12 col-md-6 event-page-reviews p-0">
                         <div class="row event-page-user m-0 h-100 position-relative">
@@ -75,8 +74,10 @@ const EventPageObject = ({event_id, event_user_id, event_title, event_date, even
                                 <div class="event-page-review-window p-2 w-100 h-100"></div>
                             </div>
                             <div class="col-12 event-page-add-review p-2 flex-shrink-1 d-flex justify-content-center align-items-center position-absolute bottom-0">
-                                <button class="add-review-btn btn btn-primary btn-sm py-0">Add review</button>
+                                <button class="add-review-btn btn btn-primary btn-sm py-0">Attend<i class="fas ps-2"></i></button>
+                                <button class="btn btn-primary btn-sm add-to-group py-0 ms-1"><i class="fas fa-plus"></i></button>
                             </div>
+                            
                         </div>
                 
                             
@@ -96,6 +97,7 @@ $(() => {
 
         let event_user_id = $('.event-page-user-id').text();
         let user_id = $('#user-id').text();
+        let event_id = $('.event-page-id').text();
 
         // if the user is the owner of the event then show the edit event button
         if (event_user_id == user_id) {
@@ -130,78 +132,35 @@ $(() => {
                 $(".modal").modal("hide");
             });
         });
+
+        isAttendingEvent(event_id);
+
+        if($("event-user-attending").text() == "true"){
+            //disable attend button
+            $(".add-review-btn").attr("disabled", true);
+        }
+        else {
+            $(".add-review-btn").attr("disabled", false);
+        }
+
     });
+
+    
+  
 
     // === Event Page reviews ===
 
     getReviews.then((reviews) => {
 
-        // if there are no reviews then show the add review button
-
-        // console.log(reviews);
+        fillReviews(reviews);
         
-        reviews.forEach((review) => {
-
-            let review_time_ago = timeAgo(review.review_time);
-            let stars = '';
-            let skip = (review.review_rating % 2 != 0) ? 1 : 0;
-
-            // Fill stars with full stars up to the rating (include half stars)
-            for (let i = skip; i < review.review_rating / 2; i++) {
-                stars += '<i class="fas fa-star"></i>';
-            }
-
-           
-            // If the rating is odd then add a half star
-            if (review.review_rating % 2 != 0) {
-                stars += '<i class="fas fa-star-half-alt"></i>';
-            }
-
-            // Fill the rest of the stars with empty stars
-            for (let i = 0; i < 5 - Math.ceil(review.review_rating / 2); i++) {
-                stars += '<i class="far fa-star"></i>';
-            }
-
-            $('.event-page-review-window').append(`
-                <!-- Profile Image --><!-- Profile Name -->
-                <!-- Star Rating -->
-                <!-- Review Text -->
-                <!-- Review Date -->
-                <div class="row event-page-review px-2">
-                    <div class="col-2 col-md-1 event-page-review-image">
-                        <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
-                    </div>
-                    <div class="col-10 col-md-6 event-page-review-name ms-2">
-                        <h4 class="m-0">${review.review_user_username}</h4>
-                    </div>
-                    <div class="col-10 col-md-11 event-page-review-info">
-                        <div class="row ">
-                            <div class="col-12 event-page-review-rating pb-2 ps-2">
-                                <span class="small">${stars}</span>
-                            </div>
-                        </div>
-                        <div class="row ps-2">
-                            <div class="col-12 event-page-review-text px-2 py-1">
-                                <p class="small m-0">${review.review_message}</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 event-page-review-date align-text-top">
-                                <small>${review_time_ago}</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            `);
-        });
-
-        fillEventImageCarousel(reviews);
     });
 
     // === Open review creation modal === 
     $(".event-container").on("click", ".add-review-btn", () => {
-        $("#eventReviewModal").modal("show");
+        if(!$("event-user-attending").text() == "true") {
+            $("eventReviewModal").modal("show");
+        }
     });
 
     // === Handle review Stars ===
@@ -278,7 +237,6 @@ $(() => {
         let file = e.originalEvent.dataTransfer.files;
         if(handleImageFile(file)){
             imageFile = file[0];
-            console.log(imageFile);
         }
     });
 
@@ -286,7 +244,7 @@ $(() => {
         let file = e.target.files;
         if(handleImageFile(file)){
             imageFile = file[0];
-            console.log(imageFile);
+
         }
     });
 
@@ -298,9 +256,12 @@ $(() => {
 
     $(".review-submit").on("click", (e) => {
         e.preventDefault();
-        console.log("submit");
-        createReview(curRating+1, $("#event-review-message").val(), imageFile);
-    }); 
+        
+        let review_message = $("#event-review-message").val();
+        
+        createReview((curRating+1), review_message, imageFile);
+        attendEvent($(".event-page-id").text());
+    });
 
     // === Event Images Bootstrap Carousel ===
 
@@ -331,14 +292,12 @@ $(() => {
     });
 
     $(".event-container").on("click", ".add-to-group", (e) => {
-        console.log("add to group");
         // Get the user's friends and return a promise
         getGroups();
         $("#showGroupsModal").modal("show");
     });
 
     $(".modal-body").on("click", ".event-group-list", (e) => {
-        console.log("Add event to group", );
         let group_id = $(e.target).children(".group_id").text();
         if(addEventToGroup(group_id));
             $("#showGroupsModal").modal("hide");
@@ -362,6 +321,7 @@ const eventPage = new Promise((resolve, reject) => {
         },
         success: (data) => {
             const event = JSON.parse(data).data;
+            console.log("AAAAAAAAAAAAAAAA", event.event_user_count);
             // Format event
             // Format the date from yyyy-mm-dd to dd/mm/yyyy
             let date = event.event_date.split("-");
@@ -371,6 +331,7 @@ const eventPage = new Promise((resolve, reject) => {
                 // remove http:// or https://
                 event.event_location = event.event_website.replace(/(^\w+:|^)\/\//, '');
             }
+        
             // Format the user image
             $('.event-container').html(EventPageObject(event));
             resolve(event);
@@ -398,8 +359,8 @@ const reviews = new Promise((resolve, reject) => {
             event_id: event_id
         },
         success: (data) => {
+            console.log(data);
             const reviews = JSON.parse(data).data;
-            console.log(reviews);
             resolve(reviews);
         },
         error: (err) => {
@@ -409,6 +370,51 @@ const reviews = new Promise((resolve, reject) => {
 });
 
 const getReviews = reviews.then(reviews);
+
+const isAttendingEvent = (event_id) => {
+    const attending = new Promise((resolve, reject) => {
+        
+        let event_id = $('.event-page-id').text();
+
+        console.log("EVENTID", event_id);
+        
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                request: "isAttendingEvent",
+                event_id: event_id
+            },
+            success: (data) => {
+                console.log(data);
+                data = JSON.parse(data);
+                
+                if(data.status === "success") {
+                    if(data.data == true) {
+                        resolve(true);
+                    }
+                    else {
+                        resolve(false);
+                    }
+                } else {
+                    resolve(false);
+                }
+            }
+        });
+        
+    }).then((data) => {
+        console.log($(".event-container add-review-btn"));
+        if(data){
+            $(".event-container .add-review-btn").text("Attending");
+            $(".event-user-attending").text("true");
+        }
+        else {
+            $(".event-container .add-review-btn").text("Attend");
+            $(".event-user-attending").text("false");
+        }
+        return data;
+    });
+};
 
 // === Helper Functions ===
 
@@ -484,9 +490,9 @@ const handleImageFile = (file) => {
 
 // === Create a new review ===
 
-const createReview = (rating, review, image) => {
+const createReview = (rating, review_message, image) => {
 
-    console.log("Creating review...", rating, review, image);
+    let message = review_message;
 
     if(rating <= 0) {
         showError("Please give a star rating");
@@ -500,10 +506,9 @@ const createReview = (rating, review, image) => {
     formData.append("review_event_id", event_id);
     formData.append("review_user_id", $('#user-id').text());
     formData.append("review_rating", rating);
-    formData.append("review_review", review);
+    formData.append("review_message", message);
     formData.append("review_image_file", image);
     formData.append("request", "createReview");
-    console.log(formData);
 
     $.ajax({
         url: "requests.php",
@@ -512,10 +517,24 @@ const createReview = (rating, review, image) => {
         contentType: false,
         processData: false,
         success: (data) => {
-            data = JSON.parse(data);
             console.log(data);
+            data = JSON.parse(data);
             if(data.status === "success") {
+                // close modal
+                $("#eventReviewModal").modal("hide");
+
+                // get reviews again
+                review = data.data;
+                console.log("Review created successfully");
+              
+                getReviews.then((reviews) => {
+                    // add review to the back of the reviews array
+                    fillReviews(reviews);
+                });
+
+                // reload the page
                 window.location.reload();
+                
             } else {
                 showError(data);
             }
@@ -530,6 +549,8 @@ const fillEventImageCarousel = (reviews) => {
     let carousel = $(".carousel-inner");
     let carouselIndicators = $(".carousel-indicators");
     carouselIndicators.empty();
+
+    console.log(reviews);
     
     carousel.empty();
     reviews.filter((review) => {
@@ -558,7 +579,6 @@ const fillEventImageCarousel = (reviews) => {
                     <p>${review.review_message}</p>
                 </div>
                 <div class="review-image-user position-absolute bottom-0 left-0 m-2 p-2 d-flex align-items-center">
-                        
                     <img src="public_html/img/user/${review.review_user_image}" class="event-carousel-user-image ms-2" alt="...">
                     <span class="h5 event-carousel-user-name px-2">${review.review_user_username}</span>
                 </div>
@@ -568,7 +588,13 @@ const fillEventImageCarousel = (reviews) => {
         carouselIndicators.append(`
             <button type="button" data-bs-target="#event-images-carousel" data-bs-slide-to="${carouselIndicators.children().length}" class="active" aria-current="true" aria-label="Slide ${carouselIndicators.children().length}"></button>
         `);
+
     });
+
+    if(carousel.children().length > 0) {
+        $(".event-carousel").removeClass("d-none");
+    }
+
     $(".carousel-item").first().addClass("active");
     // set aria attributes
     $(".carousel-indicators button").each((index, item) => {
@@ -588,7 +614,6 @@ const getGroups = () => {
             if(data.status === "success") {4
                 data = data.data;
                 // map the groups to <li class="event-group">Group Name</li>
-                console.log(data);
                 let groups = data.map((group) => { 
                     return `<li class="event-group-list fs-6 m-0"><div class="group_id d-none">${group.group_id}</div></div><i class="fas fa-border-all fs-4 me-2"></i> ${group.group_title}</li>`;
                 });
@@ -601,7 +626,6 @@ const getGroups = () => {
 }
 
 const addToGroup = (event_id, user_id) => {
-    console.log("Adding to group...", event_id, user_id);
     $.ajax({
         url: "requests.php",
         type: "POST",
@@ -612,7 +636,6 @@ const addToGroup = (event_id, user_id) => {
         },
         success: (data) => {
             data = JSON.parse(data);
-            console.log(data);
             if(data.status === "success") {
                 window.location.reload();
             } else {
@@ -627,7 +650,6 @@ const addEventToGroup = (group_id) => {
     let urlParams = new URLSearchParams(window.location.search);
     let event_id = urlParams.get('id');
 
-    console.log("Adding event to group...", group_id, event_id);
     $.ajax({
         url: "requests.php",
         type: "POST",
@@ -638,7 +660,6 @@ const addEventToGroup = (group_id) => {
         },
         success: (data) => {
             data = JSON.parse(data);
-            console.log(data);
             if(data.status === "success") {
                 return true;
             } else {
@@ -662,7 +683,6 @@ const deleteEvent = () => {
         },
         success: (data) => {
             data = JSON.parse(data);
-            console.log(data);
             if(data.status === "success") {
                 window.location.href = "index.php";
             } else {
@@ -672,4 +692,122 @@ const deleteEvent = () => {
     });
 }
 
+const fillReviews = (reviews) => {
+
+    // if there are no reviews then show the add review button
+
+    let average_rating = 0;
+
+    $('.event-page-review-window').empty();
+    reviews.reverse();
+        
+    reviews.forEach((review) => {
+
+        average_rating += review.review_rating;
+
+        let review_time_ago = timeAgo(review.review_time);
+        let stars = '';
+        let skip = (review.review_rating % 2 != 0) ? 1 : 0;
+
+        // Fill stars with full stars up to the rating (include half stars)
+        for (let i = skip; i < review.review_rating / 2; i++) {
+            stars += '<i class="fas fa-star"></i>';
+        }
+
+       
+        // If the rating is odd then add a half star
+        if (review.review_rating % 2 != 0) {
+            stars += '<i class="fas fa-star-half-alt"></i>';
+        }
+
+        // Fill the rest of the stars with empty stars
+        for (let i = 0; i < 5 - Math.ceil(review.review_rating / 2); i++) {
+            stars += '<i class="far fa-star"></i>';
+        }
+
+        $('.event-page-review-window').append(`
+            <!-- Profile Image --><!-- Profile Name -->
+            <!-- Star Rating -->
+            <!-- Review Text -->
+            <!-- Review Date -->
+            <div class="row event-page-review px-2">
+                <div class="col-2 col-md-1 event-page-review-image">
+                    <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
+                </div>
+                <div class="col-10 col-md-6 event-page-review-name ms-2">
+                    <h4 class="m-0">${review.review_user_username}</h4>
+                </div>
+                <div class="col-10 col-md-11 event-page-review-info">
+                    <div class="row ">
+                        <div class="col-12 event-page-review-rating pb-2 ps-2">
+                            <span class="small">${stars}</span>
+                        </div>
+                    </div>
+                    <div class="row ps-2">
+                        <div class="col-12 event-page-review-text px-2 py-1">
+                            <p class="small m-0">${review.review_message}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 event-page-review-date align-text-top">
+                            <small>${review_time_ago}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        `);
+    });
+
+    let stars = '';
+    
+    if(reviews.length > 0) {
+        // Calculate the average rating
+        average_rating = average_rating / reviews.length;
+       
+        let skip = (average_rating % 2 != 0) ? 1 : 0;
+        
+        // Fill stars with full stars up to the rating (include half stars)
+        for (let i = skip; i < average_rating / 2; i++) {
+            stars += '<i class="fas fa-star"></i>';
+        }
+
+        // If the rating is odd then add a half star
+        if (average_rating % 2 != 0) {
+            stars += '<i class="fas fa-star-half-alt"></i>';
+        }
+
+        // Fill the rest of the stars with empty stars
+        for (let i = 0; i < 5 - Math.ceil(average_rating / 2); i++) {
+            stars += '<i class="far fa-star"></i>';
+        }
+    } else {
+        stars = '<i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>';
+    }
+    
+    $(".event-page-rating-stars").html(stars);
+
+    fillEventImageCarousel(reviews);
+
+};
+
+const attendEvent = (event_id) => {
+
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "attendEvent",
+            event_id: event_id
+        },
+        success: (data) => {
+            data = JSON.parse(data);
+            if(data.status === "success") {
+                window.location.reload();
+            } else {
+                showError(data);
+            }
+        }
+    });
+}
 

@@ -319,6 +319,7 @@ $(() => {
                     processData: false,
                     contentType: false,
                     success: (data) => {
+                        console.log(data);
                         data = JSON.parse(data);
                         if(data.status == "success") {
                             window.location.href = "home.php";

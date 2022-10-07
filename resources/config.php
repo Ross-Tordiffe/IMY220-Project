@@ -31,6 +31,10 @@
         private static $instance = null;
         private $connection;
 
+        // private $servername = "localhost";
+        // private $username = "u21533572";
+        // private $password = "drgdxgld";
+        // private $db = "u21533572"; 
         private $servername = "localhost";
         private $username = "root";
         private $password = "";
@@ -97,29 +101,6 @@
                         if($stmt->execute()) {
                             $result = $stmt->get_result();
                             $friends = array();
-
-                            // Get friend request to the user
-                            // $friend_request_stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_2=? AND fs_accepted=0");
-                            // $friend_request_stmt->bind_param("i", $row["user_id"]);
-                            // if($friend_request_stmt->execute()) {
-                            //     $friend_request_result = $friend_request_stmt->get_result();
-                            //     while($friend_request_row = $friend_request_result->fetch_assoc()){
-                            //         $friends[] = array(
-                            //             "friend_id" => $friend_request_row["fs_user_id_1"],
-                            //             "friend_status" => false
-                            //         );
-                            //     }
-                            // }
-                            
-                            // if($result->num_rows > 0){
-                            //     while($row2 = $result->fetch_assoc()){
-                            //         $friends[] = array(
-                            //             "friend_id" => $row2["fs_user_id_2"], 
-                            //             "friend_status" => true
-                            //         );
-                            //     }
-                            // }
-                            // $row["user_friends"] = $friends;
                         }
 
                         return $row;
@@ -261,19 +242,19 @@
             foreach($tags as $tag) {
 
                 // Check if the tag already exists
-                $tagCheck = $this->getConnection()->prepare("SELECT tag_id FROM db_tags WHERE tag_name = ?");
+                $tagCheck = $this->getConnection()->prepare("SELECT * FROM `db_tags` WHERE tag_name = ?");
                 $tagCheck->bind_param("s", $tag);
                 if(!$tagCheck->execute()){
                     return false;
                 }
                 $result = $tagCheck->get_result();
                 $row = $result->fetch_assoc();
-                $tagID = $row["tag_id"];
+                $tagID = isset($row["tag_id"]) ? $row["tag_id"] : null;
                 $tagCheck->close();
 
                 // If the tag does not exist, create it
                 if($tagID == null) {
-                    $tagCreate = $this->getConnection()->prepare("INSERT INTO db_tags (tag_name) VALUES (?)");
+                    $tagCreate = $this->getConnection()->prepare("INSERT INTO db_tags (`tag_name`) VALUES (?)");
                     $tagCreate->bind_param("s", $tag);
                     if(!$tagCreate->execute()){
                         return false;
@@ -282,13 +263,15 @@
                     $tagCreate->close();
                 }
 
-                // Insert the tag into the event
-                $tagInsert = $this->getConnection()->prepare("INSERT INTO db_event_tags (event_id, tag_id) VALUES (?, ?)");
+                
+
+                $tagInsert = $this->getConnection()->prepare("INSERT INTO db_event_tag (`evttag_event_id`, `evttag_tag_id`) VALUES (?, ?)");
                 $tagInsert->bind_param("ii", $eventID, $tagID);
                 if(!$tagInsert->execute()){
                     return false;
                 }
                 $tagInsert->close();
+                
             }
 
             return true;
@@ -473,6 +456,19 @@
                     $events[] = $row;
                 }
                 $stmt->close();
+
+                // Get the user count for each event from the db_booking table
+                foreach($events as $key => $event) {
+                
+                    $stmt = $this->getConnection()->prepare("SELECT * FROM db_booking WHERE bk_event_id = ?");
+                    $stmt->bind_param("i", $event["event_id"]);
+                    if(!$stmt->execute()){
+                        return false;
+                    }
+                    $result = $stmt->get_result();
+                    $events[$key]["event_user_count"] = $result->num_rows;
+                    $stmt->close();
+                }
             }
 
             if(isset($events)) {
@@ -532,6 +528,19 @@
                         $stmt->close();
                     }
                     $events[$key]["event_tags"] = $tags;
+                }
+
+                // Get the user count for each event from the db_booking table
+                foreach($events as $key => $event) {
+                
+                    $stmt = $this->getConnection()->prepare("SELECT * FROM db_booking WHERE bk_event_id = ?");
+                    $stmt->bind_param("i", $event["event_id"]);
+                    if(!$stmt->execute()){
+                        return false;
+                    }
+                    $result = $stmt->get_result();
+                    $events[$key]["event_user_count"] = $result->num_rows;
+                    $stmt->close();
                 }
 
                 return $events;
@@ -605,8 +614,22 @@
                         $stmt->close();
                     }
                     $events[$key]["event_tags"] = $tags;
+                   
                 }
-  
+            
+                // Get the user count for each event from the db_booking table
+                foreach($events as $key => $event) {
+                
+                    $stmt = $this->getConnection()->prepare("SELECT * FROM db_booking WHERE bk_event_id = ?");
+                    $stmt->bind_param("i", $event["event_id"]);
+                    if(!$stmt->execute()){
+                        return false;
+                    }
+                    $result = $stmt->get_result();
+                    $events[$key]["event_user_count"] = $result->num_rows;
+                    $stmt->close();
+                }
+
                 return $events;
             }
             else { // If the scope is not set or is invalid then return false
@@ -678,6 +701,15 @@
                 $stmt->close();
             }
             $event["event_tags"] = $tags;
+
+            // Get the user count for the event
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_booking WHERE bk_event_id = ?");
+            $stmt->bind_param("i", $event["event_id"]);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $event["event_user_count"] = $result->num_rows;
 
             return $event;
         }
@@ -902,7 +934,7 @@
         */
         public function fetchReviews($event_id) {
 
-            $stmt = $this->getConnection()->prepare("SELECT * FROM db_review WHERE review_event_id = ?");
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_review WHERE review_event_id = ? ORDER BY review_id DESC");
             $stmt->bind_param("i", $event_id);
             if(!$stmt->execute()){
                 return false;
@@ -957,11 +989,21 @@
             }
             $stmt->close();
 
-            if(isset($review_image)){
+            $review_id = $this->getConnection()->insert_id;
+            $review_time = time();
+
+            if(isset($review_image)) {
                 move_uploaded_file($review_image["tmp_name"], $review_image_path);
             }
 
-            return true;
+            // return the created review
+            
+
+            $review[] = array("review_id" => $review_id, "review_user_id" => $review_user, "review_event_id" => $review_event_id, "review_message" => $review_review, "review_rating" => $review_rating, "review_time" => $review_time, "review_image" => $review_image_name);
+            $review[0]["review_user_username"] = $_SESSION["user_username"];
+            $review[0]["review_user_image"] = $_SESSION["user_image"];
+
+            return $review;
         }
 
         /**
@@ -1096,6 +1138,44 @@
 
             return true;
 
+        }
+
+        /**
+         * Method attend (book) an event
+         */
+        public function attendEvent($event_id) {
+
+            $user_id = $_SESSION["user_id"];
+
+            $stmt = $this->getConnection()->prepare("INSERT INTO db_booking (bk_user_id, bk_event_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $user_id, $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            return true;
+    
+        }
+
+        /**
+         * Method to check if a user is attending an event
+         */
+        public function isAttendingEvent($event_id) {
+
+            $user_id = $_SESSION["user_id"];
+
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_booking WHERE bk_user_id = ? AND bk_event_id = ?");
+            $stmt->bind_param("ii", $user_id, $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            if($result->num_rows > 0) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

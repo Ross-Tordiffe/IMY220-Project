@@ -137,22 +137,34 @@
     cursor: pointer;
 }
 
-.event-page-add-to-group:hover button
+.event-page-add-review .add-to-group
 {
-    background-color: var(--bg-orange);
-    color: var(--bg-light);
-    font-size: 1em;
+    background-color: var(--bg-light);
+    transition: all 0.2s ease-in-out;
 }
 
-.event-page-add-to-group:hover 
+.event-page-add-review .add-to-group:hover
 {
+    background-color: var(--bg-blue);
+}
+
+.event-page-add-review .add-to-group i
+{
+    color: var(--bg-blue);
+    transition: all 0.2s ease-in-out;
+}
+
+.event-page-add-review .add-to-group:hover i
+{
+    color: var(--bg-light);
+    font-size: 1em;
     cursor: pointer;
 }
 
 .event-page-user-count
 {
 
-    color: var(--bg-light);
+    color: var(--bg-blue);
 }
 
 .event-page-join-header i
@@ -267,9 +279,8 @@
 
 .event-page-review-text {
     color: var(--bg-blue);
-    border: solid 2px var(--d-bg-main-05);
     border-radius: 10px;
- 
+    background-color: white;
 }
 
 .event-page-location:hover
@@ -316,16 +327,30 @@
 {
     position: absolute;
     left: -0.5em;
-    background-color: var(--d-bg-main-05);
     width: 10%;
     border-radius: 10px 0 0 10px;
+}
+
+.carousel-control-prev-icon
+{
+    background-color: var(--d-bg-main-05);
+    border-radius: 50px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.carousel-control-next-icon
+{
+    background-color: var(--d-bg-main-05);
+    border-radius: 50px;
+    padding: 5px;
+    margin: 5px;
 }
 
 .carousel-control-next
 {
     position: absolute;
     right: -0.5em;
-    background-color: var(--d-bg-main-05);
     width: 10%;
     border-radius: 0 10px 10px 0;
 }
@@ -346,12 +371,34 @@
     border-radius: 10px;
     border: 2px solid var(--bg-blue);
     z-index: 50;
+
+    
+}
+
+.event-carousel-image
+{
+    filter: brightness(1);
+    transition: all 0.5s ease-in-out;
 }
 
 .carousel-caption
 {
-    /* background-color: rgba(0,0,0,0.5); */
     color: var(--bg-light);
+    opacity: 0;
+    transform: translate(0, 50px);
+    transition: all 0.5s ease-out;
+
+}
+
+.carousel-inner:hover .carousel-caption
+{
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.carousel-inner:hover .event-carousel-image
+{
+    filter: brightness(0.5);
 }
 
 /* === Event Groups List === */

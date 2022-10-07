@@ -249,6 +249,11 @@
     border: solid 1px var(--bg-light);
 }
 
+.no-friends-message
+{
+    color: var(--bg-blue);
+}
+
 /* ==== Profile Buttons ==== */
 
 /* new event button in bottom right corner */

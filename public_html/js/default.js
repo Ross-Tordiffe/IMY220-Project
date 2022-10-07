@@ -60,7 +60,9 @@ const GroupObject = ({group_id, group_user_id, group_title, group_description, g
     ];
 
     let groupEvents = group_events.map((event, index) => {
-        return `<div class="col-6 group-event-img p-0 position-absolute m-2 ${classes[index]}"/><img src="public_html/img/event/${event.event_image}"/></div>`
+        if(index < 4) {
+            return `<div class="col-6 group-event-img p-0 position-absolute m-2 ${classes[index]}"/><img src="public_html/img/event/${event.event_image}"/></div>`
+        }
     }).join('');
 
 
@@ -70,8 +72,6 @@ const GroupObject = ({group_id, group_user_id, group_title, group_description, g
             groupEvents += `<div class="col-6 group-event-img p-0 position-absolute m-2 ${classes[i]}"></div>`;
         }
     }
-
-    console.log("groupEvents", groupEvents);
 
     return `
         <div class="event-group">
@@ -104,13 +104,9 @@ const showError = (msg) => {
 
 $(() => {
 
-    // console.log("default.js loaded");
-    // on logout button click
     $('#profile-logout').on('click', (e) => {
 
         e.preventDefault();
-    
-        console.log("logout clicked");
     
         $.ajax({
             type: "POST",
@@ -119,7 +115,6 @@ $(() => {
                 request: "logout"
             },
             success: (data, status) => {
-                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -156,9 +151,7 @@ $(".event-box").on("click", ".event-join", (e) => {
     e.stopPropagation();
     e.preventDefault();
     let event_id = $(e.target).parent().parent().parent().parent().find(".event-id").text();
-    let user_id = $("#user-id").text();
-    console.log(e.target);  
-    console.log("event id: ", event_id, "user id: ", user_id);
+    let user_id = $("#user-id").text();  
     // bookUser(e);
 });
     

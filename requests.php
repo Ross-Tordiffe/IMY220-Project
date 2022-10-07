@@ -250,12 +250,11 @@
         if(isset($_POST['request']) && $_POST['request'] === "createReview") {
             $review_event_id = $_POST['review_event_id'];
             $review_user = $_POST['review_user_id'];
-            $review_review = $_POST['review_review'];
+            $review_message = $_POST['review_message'];
             $review_rating = $_POST['review_rating'];
             $review_image = $_FILES['review_image_file'] ?? null;
 
-
-            $message = $db->createReview($review_event_id, $review_user, $review_review, $review_rating, $review_image);
+            $message = $db->createReview($review_event_id, $review_user, $review_message, $review_rating, $review_image);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
         };
 
@@ -313,6 +312,24 @@
             $group_id = $_POST['group_id'];
             $event_id = $_POST['event_id'];
             $message = $db->removeEventFromGroup($group_id, $event_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle attending of an event
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "attendEvent") {
+            $event_id = $_POST['event_id'];
+            $message = $db->attendEvent($event_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle checking if user is attending an event
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "isAttendingEvent") {
+            $event_id = $_POST['event_id'];
+            $message = $db->isAttendingEvent($event_id);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
         };
     }

@@ -21,7 +21,7 @@
             <div class="row event-container justify-content-center"></div>
             <!-- images carousel -->
             <div class="row py-5 m-0">
-                <div class="col-12 event-carousel px-2">
+                <div class="col-12 event-carousel px-0 d-none">
                     
                     <div id="event-images-carousel" class="carousel slide position-relative" data-bs-ride="carousel">
                         <div class="carousel-indicators">

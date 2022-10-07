@@ -13,7 +13,6 @@ $(() => {
     getEvents(user, profile_user);
     getFriends(profile_user);
     
-    console.log("profile.js loaded");
 
     $(".friend-text").on("click", (e) => {
 
@@ -27,7 +26,6 @@ $(() => {
         e.preventDefault();
         e.stopPropagation();
         let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
-        console.log(friendId);
         acceptFriend(friendId, profile_user);
     });
 
@@ -37,14 +35,12 @@ $(() => {
             e.target = e.target.parentElement;
         }
         let friendId = $(e.target).find(".profile-friend-id").text();
-        console.log("friend target", $(e.target).find(".profile-friend-id"));
         window.location.href = `profile.php?user_id=${friendId}`;
     });
 
     $("#profile-add-friend").on("click", (e) => {
         
         // print profile-add-friend classes
-        console.log($("#profile-add-friend").attr("class"));
         // if the profile-add-friend class is "add-friend"
         if($("#profile-add-friend").hasClass("friend")) {
             $(".confirmation-modal-text p").text("Do you want to unfriend this user?");
@@ -52,25 +48,25 @@ $(() => {
 
             $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
                 removeFriend(profile_user);
+                getFriends(profile_user);
                 $(".modal").modal("hide");
             });
 
         }
         else {
             friendRequest(profile_user);
+            getFriends(profile_user);
         }
     });
 
     // // --- Cancel Friend Request ---
     // $("#friendsModal").on("click", ".cancel-request", (e) => {
     //     let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
-    //     console.log(friendId);
     //     cancelFriend(friendId, profile_user);
     // });
 
     // --- Change profile image ---
     $(".profile-img-container").on("click", (e) => {
-        console.log("clicked");
         e.stopPropagation();
         $("#profile-img-input").click();
         // do not propogate to parent
@@ -82,7 +78,6 @@ $(() => {
     });
 
     $("#profile-img-input").on("change", (e) => {
-        console.log("changed");
         let file = e.target.files[0];
         let formData = new FormData();
         formData.append("request", "changeProfileImage");
@@ -96,7 +91,6 @@ $(() => {
             processData: false,
             contentType: false,
             success: (data) => {
-                console.log(data);
                 let response = JSON.parse(data);
                 if (response.success) {
                     $(".profile-img").attr("src", response.url);
@@ -106,13 +100,11 @@ $(() => {
     });
 
     $("#bkm-my-events").on("click", (e) => {
-        console.log("bkm-my-events clicked");
         if(!$("#bkm-my-events").hasClass("bkm-current")) {
             $("#bkm-groups").removeClass("bkm-current");
             $("#bkm-my-events").addClass("bkm-current");
         }
         if(displaying === "groups") {
-            console.log("displaying my-events");
             displaying = "my-events";
             getEvents();
         }
@@ -124,14 +116,12 @@ $(() => {
     });
 
     $("#bkm-groups").on("click", (e) => {
-        console.log("bkm-groups clicked");
         if(!$("#bkm-groups").hasClass("bkm-current")) {
             $("#bkm-my-events").removeClass("bkm-current");
             $("#bkm-groups").addClass("bkm-current");
         }
         if(displaying === "my-events") {
             displaying = "groups";
-            console.log("displaying groups");
             getGroups();
         }
         else if (displaying === "group") {
@@ -143,12 +133,10 @@ $(() => {
 
     $(".profile-container").on("click", ".group-card-template", () =>{
         
-        console.log("group card clicked");
         // Show create group modal
         $("#createGroupModal").modal("show");
 
         $(".create-group-form-container").on("click", ".create-group-submit", (e) => {
-            console.log("create group submit clicked");
             let name = $("#group-title").val();
             let description = $("#group-description").val();
             let formData = new FormData();
@@ -163,10 +151,9 @@ $(() => {
                 processData: false,
                 contentType: false,
                 success: (data) => {
-                    console.log(data);
+
                     let response = JSON.parse(data);
                     if (response.status === "success") {
-                        console.log("group created");
                         $("#createGroupModal").modal("hide");
                         getGroups();
                     }
@@ -186,7 +173,6 @@ $(() => {
 
     $(".profile-container").on("mouseenter", ".event-group", (e) => {
         // float the description up
-        console.log("hovered");
         $(e.currentTarget).find(".group-description").removeClass("d-none");
         $(e.currentTarget).find(".group-description").removeClass("reverse-animate");
         $(e.currentTarget).find(".group-description").addClass("animate");
@@ -196,7 +182,6 @@ $(() => {
     $(".profile-container").on("mouseleave", ".event-group", (e) => {
         // float the description down
         let event_group = $(e.currentTarget);
-        console.log("hovered", event_group);
         $(event_group).css("pointer-events", "none");
         setTimeout(() => {
             $(e.currentTarget).find(".group-description").addClass("d-none");
@@ -235,7 +220,9 @@ $(() => {
 
     });
 
-    
+    $(".modal").on("click", ".goHome", (e) => {
+        window.location.href = ("home.php?user_id=" + user);
+    });
 
 });
 
@@ -243,8 +230,20 @@ $(() => {
 // === Helper Functions ===
 
 const displayFriends = (friends) => {
+
+    let user = $("#user-id").text();
+    let profile_user = $("#profile-user-id").text();
+
     $(".profile-friends").empty();
     let friendsHTML = "";
+
+    if(!(user === profile_user)) {
+        // Remove all not accepted friends
+        friends = friends.filter((friend) => {
+            return friend.status === "accepted";
+        });
+    }
+
     for(let i = 0; i < friends.length; i++) {
         let userImage = "public_html/img/user/" + friends[i].user_image;
         let requested = friends[i].accepted === false ? 
@@ -272,16 +271,27 @@ const displayFriends = (friends) => {
         `;
     }
     $(".profile-friends").append(friendsHTML);
-    if(friends.length === 0) {
+    if(friends.length === 0 && user === profile_user) {
         $(".profile-friends").html(
             `
                 <div class="no-friends-message w-100 text-center p-4">
                     <span>No friends to show. Go out and make some!</span>
-                    <button class="btn" onclick="window.location.href='home.php?<?=$_SESSION['user_id']?>'">Home</button>
+                    <button class="btn goHome">Home</button>
                 </div>
             `
         )
     }
+    else if (friends.length === 0) {
+        $(".profile-friends").html(
+            `
+                <div class="no-friends-message w-100 text-center p-4">
+                    <span>No friends to show.</span>
+                </div>
+            `
+        )
+    }
+
+  
 }
 
 
@@ -297,7 +307,6 @@ const getFriends = (profile_user) => {
                 "profile_user": profile_user
             },
             success: (data) => {
-                // console.log(data);
                 return data;
             },
             error: (err) => {
@@ -311,15 +320,12 @@ const getFriends = (profile_user) => {
         if(data.status === "success") {
             displayFriends(data.data);
             updateFriendHeader(data.data);
-            console.log("friends", data.data);
             let user = $("#user-id").text();
 
             // look for the user in the friends list
             let friend = data.data.filter((friend) => {
                 return friend.user_id == user;
             });
-
-            console.log("friend", friend);
 
             // if the user is not the profile user, but is friends with the profile user, show the message button and change the friend icon to a checkmark
             if(user !== profile_user && friend.length > 0) {
@@ -328,9 +334,6 @@ const getFriends = (profile_user) => {
                 $("#profile-add-friend i").addClass("fa-check");
                 $("#profile-add-friend").addClass("friend");
             }
-        }
-        else {
-            console.log(data);
         }
     }).catch((err) => {
         console.log(err);
@@ -348,7 +351,6 @@ const getEvents = (user, profile_user) => {
                 scope: "profile"
             },
             success: (data, status) => {
-                // console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -375,7 +377,6 @@ const getEvents = (user, profile_user) => {
             }
         });
     }).then((data) => {
-        console.log(data);
         // Clear previous events from event-col classes
         $(".event-col").empty();
 
@@ -414,7 +415,6 @@ const getEvents = (user, profile_user) => {
         // Based on the screen size distribute events between event-cols
         if($(window).width() >= 1200) {
             for(let j = 0; j < data.length; i++, j++) {
-                console.log(i);
                 if(i % 3 === 0) {
                     $(".event-col-1").append(EventObject(data[j]));
                 }
@@ -443,7 +443,6 @@ const getEvents = (user, profile_user) => {
         }
 
     }).catch((data) => {
-        console.log(data);
         showError(data);
     });
 }
@@ -459,7 +458,6 @@ getGroups = (user, profile_user) => {
                 scope: "profile"
             },
             success: (data, status) => {
-                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -472,7 +470,6 @@ getGroups = (user, profile_user) => {
             }
         });
     }).then((data) => {
-        console.log(data);
         // Clear previous groups from group-col classes
         $(".event-col").empty();
 
@@ -535,7 +532,6 @@ getGroups = (user, profile_user) => {
             }
         }
     }).catch((data) => {
-        console.log(data);
         showError(data);
     });
 }
@@ -550,7 +546,6 @@ const acceptFriend = (friendId, profile_user) => {
                 friend_id: friendId
             },
             success: (data, status) => {
-                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -563,10 +558,8 @@ const acceptFriend = (friendId, profile_user) => {
             }
         });
     }).then((data) => {
-        console.log(data);
         getFriends(profile_user);
     }).catch((data) => {
-        console.log(data);
         showError(data);
     });
 }
@@ -581,7 +574,6 @@ const rejectFriend = (friendId, profile_user) => {
                 friendId: friendId
             },
             success: (data, status) => {
-                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -594,16 +586,17 @@ const rejectFriend = (friendId, profile_user) => {
             }
         });
     }).then((data) => {
-        console.log(data);
         getFriends(profile_user);
     }).catch((data) => {
-        console.log(data);
         showError(data);
     });
 }
                 
 
 const updateFriendHeader = (friends) => {
+
+    let user = $("#user-id").text();
+    let profile_user = $("#profile-user-id").text();
 
     let friend_accepted = friends.filter((friend) => {
         return friend.accepted === true;
@@ -615,8 +608,8 @@ const updateFriendHeader = (friends) => {
 
     $(".friend-count").html(friend_accepted.length);
     
-    if(friend_requests.length > 0) {
-        console.log("friend requests Here");	
+    if(friend_requests.length > 0 && profile_user === user) {
+        console.log("profile_user: " + profile_user + " user: " + user);
         $(".friend-request-count").html(friend_requests.length);
         $(".friend-request-count").removeClass("d-none");
     }
@@ -639,10 +632,8 @@ const setUser = (user, profile_user) => {
                 user_id: profile_user
             },
             success: (data, status) => {
-                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success") {
-                    console.log("profile-user", data.data);
                     let profile_user = data.data;
                     let profile_user_image = "public_html/img/user/" + profile_user.user_image;
                     
@@ -669,10 +660,8 @@ const friendRequest = (profile_user) => {
             friend_id: profile_user
         },
         success: (data, status) => {
-            console.log(data);
             data = JSON.parse(data);
             if(data.status === "success") {
-                console.log(data.data);
                 $(".profile-add-friend").addClass("friend")
                 $(".profile-add-friend i").removeClass("fa-user-plus");
                 $(".profile-add-friend i").addClass("fa-user-check");
@@ -695,10 +684,8 @@ const removeFriend = (profile_user) => {
             friend_id: profile_user
         },
         success: (data, status) => {
-            console.log(data);
             data = JSON.parse(data);
             if(data.status === "success") {
-                console.log(data.data);
                 $(".profile-add-friend").removeClass("friend")
                 $(".profile-add-friend i").removeClass("fa-user-check");
                 $(".profile-add-friend i").addClass("fa-user-plus");
@@ -720,7 +707,6 @@ const showGroupEvents = (group_id) => {
                 group_id: group_id
             },
             success: (data, status) => {
-                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -774,8 +760,6 @@ const showGroupEvents = (group_id) => {
 
         data = data.group_events;
 
-        console.log("scerm", data);
-
         if($(window).width() >= 1200) {
             for(let j = 0, i = 0; j < data.length; i++, j++) {
                 if(data[j].event_location === ""){
@@ -793,7 +777,7 @@ const showGroupEvents = (group_id) => {
             }
         }
         else if($(window).width() >= 992) {
-            for(let j = 0; j < data.length; i++, j++) {
+            for(let j = 0, i = 0; j < data.length; i++, j++) {
                 if(i % 2 === 0) {
                     $(".event-col-1").append(EventObject(data[j]));
                 }
@@ -819,7 +803,6 @@ const showGroupEvents = (group_id) => {
         });
 
     }).catch((data) => {
-        console.log(data);
         showError(data);
     });
 }
@@ -836,11 +819,9 @@ const deleteGroup = (group_id) => {
             group_id: group_id
         },
         success: (data, status) => {
-            console.log(data);
             data = JSON.parse(data);
             if(data.status === "success")
             {
-                console.log(data.data);
                 window.location.href = `profile.php?user_id=${user}`;
             }
             else
@@ -861,11 +842,9 @@ const removeEventFromGroup = (event_id, group_id) => {
             group_id: group_id
         },
         success: (data, status) => {
-            console.log(data);
             data = JSON.parse(data);
             if(data.status === "success")
             {
-                console.log(data.data);
                 showGroupEvents(group_id);
             }
             else
