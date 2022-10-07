@@ -5,7 +5,7 @@
     $header_display = $header_display ?? "d-block";
     $styles = $styles ?? "";
     // $theme = $_SESSION['user_theme'] ?? "light";
-    $theme = "dark";
+    $theme = "light";
     $logo_style = ($theme === "dark") ? "DarkLogo" : "LightLogo";
     $icon_style = ($theme === "dark") ? "Icon-Dark" : "Icon-Light";
     $content_offset = $content_offset ?? "col offset-3 offset-xl-2 table-main"; 
@@ -65,7 +65,44 @@
                     
                 </header>
                 <footer class="<?=$header_display?> hd-footer col-xl-2 col-md-3 col-0 px-1">
-                    <span class="event-icon d-flex justify-content-center align-items-center h-100">~FOOTER~</span>
+                    <div class="col-md-12 d-flex align-items-center justify-content-center">
+                        <div class="row">
+                            <div class="col-md-12 mb-md-0 pt-2 pb-3 text-center">
+                                <!-- <small class="text-uppercase small-bigger">Links</small> -->
+                                <div class="d-flex justify-content-around">
+                                    <small class="small-bigger"><a href="home.php">Home</a></small>                                 
+                                    <small class="small-bigger"><a href="games.php">Explore</a></small>  
+                                    <small class="small-bigger"><a href="collections.php">Profile</a></small>  
+                                </div>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-center">
+                                <i class="fa-solid fa-house"></i>
+                            </div>
+                            <div class="col-md-3 d-flex flex-column align-items-left p-0">
+                                <ul class="list-unstyled">
+                                    <li class="text-left"><small>782 Schoeman St</small></li>
+                                    <li class="text-left"><small>Pretoria</small></li>
+                                    <li class="text-left"><small>Gauteng</small></li>
+                                    <li><small>0059</small></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6 d-flex flex-column justify-content-center">
+                                <div>
+                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                    <small><a href="tel:+0848969017">+084 896 9017</a></small>
+                                </div>
+                                <div>
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <small><a href="mailto:" class="text-decoration-none">support@tabletap.com</a></small>
+                                </div>
+                            </div>
+                            <div class="col-md-12 d-flex align-items-center justify-content-center pe-4">
+                                <div class="footer-copyright text-center py-1"><small>© 2020 Copyright TableTap.com</small></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
                 </footer>
                 <div class="<?=$content_offset?> w-100 h-100 table-box position-relative">
                         <!-- ... Content  -->

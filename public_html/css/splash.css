@@ -113,6 +113,7 @@
 {
     transform: rotate(-17deg); 
     padding: 0 30px 30px 30px ;
+    object-fit: contain;
 }
 
 /* -------- Splash Table Right Side -------- */

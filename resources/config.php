@@ -1177,6 +1177,115 @@
                 return false;
             }
         }
+
+        /**
+         * Method to change users profile picture
+         */
+        public function changeProfilePicture($file_name, $image) {
+
+            $image_path = "public_html/img/user/" . $file_name;
+
+            $user_id = $_SESSION["user_id"];
+
+            $stmt = $this->getConnection()->prepare("UPDATE db_users SET user_image = ? WHERE user_id = ?");
+            $stmt->bind_param("si", $file_name, $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+            
+            move_uploaded_file($image["tmp_name"], $image_path);
+            
+            // Look for any pictures with the same user id but different file type and delete them
+            $files = glob("public_html/img/user/" . $user_id . ".*");
+            foreach($files as $file) {
+                if($file != $image_path) {
+                    unlink($file);
+                }
+            }
+
+            $_SESSION["user_image"] = $file_name;
+
+            return $image_path;
+
+        }
+
+        // === Messages ===
+
+        /**
+         * Method to get all messages for a friendship
+         */
+        public function getMessages($other_user_id) {
+
+            $user_id = (int)$_SESSION["user_id"];
+
+            // Get both friendship ids
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE (fs_user_id_1 = ? AND fs_user_id_2 = ?) OR (fs_user_id_1 = ? AND fs_user_id_2 = ?)");
+            $stmt->bind_param("iiii", $user_id, $other_user_id, $other_user_id, $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            // If friendship doesn't exist, return false
+            if($result->num_rows == 0) {
+                return ($user_id . " " . $other_user_id);
+            }
+
+            $row = $result->fetch_assoc();
+            $friendship_id_1 = $row["fs_id"];
+            $row = $result->fetch_assoc();
+            $friendship_id_2 = $row["fs_id"];
+
+            // Get both users' usernames
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ? OR user_id = ?");
+            $stmt->bind_param("ii", $user_id, $other_user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            $row = $result->fetch_assoc();
+            $user_name = $row["user_username"];
+            $row = $result->fetch_assoc();
+            $other_user_name = $row["user_username"];
+
+            // Get all messages for the forward and backwards friendships
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_message WHERE msg_fs_id = ? OR msg_fs_id = ?");
+            $stmt->bind_param("ii", $friendship_id_1, $friendship_id_2);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            $messages = array();
+            // if the friendship was forwards, add the user id to the message, otherwise add the other user id
+
+            
+            while($row = $result->fetch_assoc()) {
+                
+                if($row["msg_fs_id"] == $friendship_id_1) {
+                    $msg_user_id = $user_id;
+                    $msg_user_name = $user_name;
+                    $msg_user_id = $user_id;
+                } else {
+                    $msg_user_id = $other_user_id;
+                    $msg_user_name = $other_user_name;
+                    $msg_user_id = $other_user_id;
+                }
+
+                $messages[] = array(
+                    "msg_id" => $row["msg_id"],
+                    "msg_user_id" => $msg_user_id,
+                    "msg_message" => $row["msg_content"],
+                    "msg_username" => $msg_user_name,
+                    "msg_time" => $row["msg_time"]
+                );
+            }
+
+            return $messages;
+            
+        }
     }
 
     $db = Database::getInstance(); 

@@ -1,0 +1,65 @@
+.message-box
+{
+    
+}
+
+.message
+{
+    width: 45%;
+}
+
+.message-sent
+{
+    align-self: flex-start
+}
+
+.message-received
+{
+    align-self: flex-end;
+}
+
+.message-sent .message-content
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border : 2px solid var(--bg-blue);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.message-received .message-content
+{
+    background-color: var(--bg-blue);
+    color: var(--bg-light);
+    border : 2px solid var(--bg-blue);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.message-body
+{
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.message-header
+{
+    font-weight: 600;
+    padding-left: 10px;
+}
+
+.message-footer
+{
+    font-size: 0.8em;
+    padding-left: 10px;
+}
+
+.message-sent  .message-time
+{
+   align-self: flex-start;
+}
+
+.message-received .message-time
+{
+    align-self: flex-end;
+}

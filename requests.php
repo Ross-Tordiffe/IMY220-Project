@@ -332,5 +332,26 @@
             $message = $db->isAttendingEvent($event_id);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
         };
+
+        /**
+         * Handle changing of user profile picture
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "changeProfilePicture") {
+            $profile_picture = $_FILES['file'];
+            // Make the file name the user id and the file extension
+            $file_name = $_SESSION['user_id'] . "." . pathinfo($profile_picture['name'], PATHINFO_EXTENSION);
+            $message = $db->changeProfilePicture($file_name, $profile_picture);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle getting of messages
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getMessages") {
+
+            $other_user_id = $_POST['other_user_id'];
+            $messages = $db->getMessages($other_user_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$messages]));
+        };
     }
 ?>

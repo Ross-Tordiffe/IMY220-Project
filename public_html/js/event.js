@@ -135,13 +135,13 @@ $(() => {
 
         isAttendingEvent(event_id);
 
-        if($("event-user-attending").text() == "true"){
-            //disable attend button
-            $(".add-review-btn").attr("disabled", true);
-        }
-        else {
-            $(".add-review-btn").attr("disabled", false);
-        }
+        // if($("event-user-attending").text() == "true"){
+        //     //disable attend button
+        //     $(".add-review-btn").attr("disabled", true);
+        // }
+        // else {
+        //     $(".add-review-btn").attr("disabled", false);
+        // }
 
     });
 
@@ -158,8 +158,9 @@ $(() => {
 
     // === Open review creation modal === 
     $(".event-container").on("click", ".add-review-btn", () => {
-        if(!$("event-user-attending").text() == "true") {
-            $("eventReviewModal").modal("show");
+        console.log($(".event-user-attending").text());
+        if($(".event-user-attending").text() == "false") {
+            $("#eventReviewModal").modal("show");
         }
     });
 
@@ -251,7 +252,6 @@ $(() => {
     $(".event-review-image-box").on("click", (e) => {
         $("#event-review-file").click();
         // do not propegate to parent 
-
     });
 
     $(".review-submit").on("click", (e) => {
@@ -705,58 +705,63 @@ const fillReviews = (reviews) => {
 
         average_rating += review.review_rating;
 
-        let review_time_ago = timeAgo(review.review_time);
-        let stars = '';
-        let skip = (review.review_rating % 2 != 0) ? 1 : 0;
+        if(review.review_message != null && review.review_message != "") {
 
-        // Fill stars with full stars up to the rating (include half stars)
-        for (let i = skip; i < review.review_rating / 2; i++) {
-            stars += '<i class="fas fa-star"></i>';
-        }
+            console.log(review.review_message);
 
-       
-        // If the rating is odd then add a half star
-        if (review.review_rating % 2 != 0) {
-            stars += '<i class="fas fa-star-half-alt"></i>';
-        }
+            let review_time_ago = timeAgo(review.review_time);
+            let stars = '';
+            let skip = (review.review_rating % 2 != 0) ? 1 : 0;
 
-        // Fill the rest of the stars with empty stars
-        for (let i = 0; i < 5 - Math.ceil(review.review_rating / 2); i++) {
-            stars += '<i class="far fa-star"></i>';
-        }
+            // Fill stars with full stars up to the rating (include half stars)
+            for (let i = skip; i < review.review_rating / 2; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
 
-        $('.event-page-review-window').append(`
-            <!-- Profile Image --><!-- Profile Name -->
-            <!-- Star Rating -->
-            <!-- Review Text -->
-            <!-- Review Date -->
-            <div class="row event-page-review px-2">
-                <div class="col-2 col-md-1 event-page-review-image">
-                    <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
-                </div>
-                <div class="col-10 col-md-6 event-page-review-name ms-2">
-                    <h4 class="m-0">${review.review_user_username}</h4>
-                </div>
-                <div class="col-10 col-md-11 event-page-review-info">
-                    <div class="row ">
-                        <div class="col-12 event-page-review-rating pb-2 ps-2">
-                            <span class="small">${stars}</span>
+        
+            // If the rating is odd then add a half star
+            if (review.review_rating % 2 != 0) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+
+            // Fill the rest of the stars with empty stars
+            for (let i = 0; i < 5 - Math.ceil(review.review_rating / 2); i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+
+            $('.event-page-review-window').append(`
+                <!-- Profile Image --><!-- Profile Name -->
+                <!-- Star Rating -->
+                <!-- Review Text -->
+                <!-- Review Date -->
+                <div class="row event-page-review px-2">
+                    <div class="col-2 col-md-1 event-page-review-image">
+                        <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
+                    </div>
+                    <div class="col-10 col-md-6 event-page-review-name ms-2">
+                        <h4 class="m-0">${review.review_user_username}</h4>
+                    </div>
+                    <div class="col-10 col-md-11 event-page-review-info">
+                        <div class="row ">
+                            <div class="col-12 event-page-review-rating pb-2 ps-2">
+                                <span class="small">${stars}</span>
+                            </div>
+                        </div>
+                        <div class="row ps-2">
+                            <div class="col-12 event-page-review-text px-2 py-1">
+                                <p class="small m-0">${review.review_message}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 event-page-review-date align-text-top">
+                                <small>${review_time_ago}</small>
+                            </div>
                         </div>
                     </div>
-                    <div class="row ps-2">
-                        <div class="col-12 event-page-review-text px-2 py-1">
-                            <p class="small m-0">${review.review_message}</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12 event-page-review-date align-text-top">
-                            <small>${review_time_ago}</small>
-                        </div>
-                    </div>
                 </div>
-            </div>
 
-        `);
+            `);
+        }
     });
 
     let stars = '';
@@ -783,6 +788,12 @@ const fillReviews = (reviews) => {
         }
     } else {
         stars = '<i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>';
+        // State that there are no reviews
+        $('.event-page-review-window').append(`
+            <div class="row event-page-review px-2 d-flex flex-column justify-content-center h-100 text-center">
+                <span class="">There are no reviews for this event yet.</span>
+            </div>
+        `);
     }
     
     $(".event-page-rating-stars").html(stars);

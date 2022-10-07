@@ -65,39 +65,54 @@ $(() => {
     //     cancelFriend(friendId, profile_user);
     // });
 
-    // --- Change profile image ---
-    $(".profile-img-container").on("click", (e) => {
-        e.stopPropagation();
-        $("#profile-img-input").click();
-        // do not propogate to parent
+    if(user === profile_user) {
+        // --- Change profile image ---
+        $(".profile-img-container").on("click", (e) => {
+            e.stopPropagation();
+            $("#profile-img-input").click();
+            // do not propogate to parent
 
-    });
+        });
 
-    $("#profile-img-input").on("click", (e) => {
-        e.stopPropagation();
-    });
+        $("#profile-img-input").on("click", (e) => {
+            e.stopPropagation();
+        });
 
-    $("#profile-img-input").on("change", (e) => {
-        let file = e.target.files[0];
-        let formData = new FormData();
-        formData.append("request", "changeProfileImage");
-        formData.append("file", file);
-        formData.append("user_id", profile_user);
-        
-        $.ajax({
-            url: "requests.php",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: (data) => {
-                let response = JSON.parse(data);
-                if (response.success) {
-                    $(".profile-img").attr("src", response.url);
-                }
+        $("#profile-img-input").on("change", (e) => {
+            let file = e.target.files[0];
+            if(handleImageFile(file)){
+
+            
+            let formData = new FormData();
+            formData.append("request", "changeProfilePicture");
+            formData.append("file", file);
+                
+                $.ajax({
+                    url: "requests.php",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (data) => {
+                        console.log(data);
+                        let response = JSON.parse(data);
+                        if (response.status === "success") {
+                            url = response.data;
+                            $(".profile-img-container img").attr("src", url);
+                        }
+                    }
+                });
+
+            }
+            else {
+                alert("Invalid file type");
             }
         });
-    });
+    }
+    else {
+        $(".profile-img-container").css("cursor", "default");
+        $(".profile-img-container").css("pointer-events", "none");
+    }
 
     $("#bkm-my-events").on("click", (e) => {
         if(!$("#bkm-my-events").hasClass("bkm-current")) {
@@ -137,6 +152,7 @@ $(() => {
         $("#createGroupModal").modal("show");
 
         $(".create-group-form-container").on("click", ".create-group-submit", (e) => {
+          
             let name = $("#group-title").val();
             let description = $("#group-description").val();
             let formData = new FormData();
@@ -224,6 +240,11 @@ $(() => {
         window.location.href = ("home.php?user_id=" + user);
     });
 
+    $(".message-btn").on("click", (e) => {
+        // Go to messages page
+        window.location.href = ("messages.php?user_id=" + user + "&other_user=" + profile_user);
+    });
+
 });
 
 
@@ -240,9 +261,11 @@ const displayFriends = (friends) => {
     if(!(user === profile_user)) {
         // Remove all not accepted friends
         friends = friends.filter((friend) => {
-            return friend.status === "accepted";
+            return (friend.accepted === true);
         });
     }
+
+    console.log(friends);
 
     for(let i = 0; i < friends.length; i++) {
         let userImage = "public_html/img/user/" + friends[i].user_image;
@@ -318,6 +341,7 @@ const getFriends = (profile_user) => {
     }).then((data) => {
         data = JSON.parse(data);
         if(data.status === "success") {
+            console.log(data.data);
             displayFriends(data.data);
             updateFriendHeader(data.data);
             let user = $("#user-id").text();
@@ -445,6 +469,30 @@ const getEvents = (user, profile_user) => {
     }).catch((data) => {
         showError(data);
     });
+}
+
+const handleImageFile = (file) => {
+    console.log(file);
+    // Check if the file is one of the allowed types (jpg, jpeg, png)
+    if(file.type === "image/jpeg" || file.type === "image/png") {
+        // Check if the file is less than 2MB
+        if(file.size < 2000000) {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                $(".event-image-box").css("background-image", `url(${e.target.result})`);
+                $(".event-image-btn").addClass("event-image-hidden");
+            }
+            return true;
+        } else {
+            showError("File size is too large. Please upload a file less than 2MB.");
+            return false;
+        }
+    } else {
+        showError("File type not supported");
+        return false;
+    }
+
 }
 
 getGroups = (user, profile_user) => {
