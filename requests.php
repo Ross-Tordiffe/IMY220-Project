@@ -353,5 +353,20 @@
             $messages = $db->getMessages($other_user_id);
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$messages]));
         };
+
+        /**
+         * Handle sending of messages
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "sendMessage") {
+            $other_user_id = $_POST['other_user_id'];
+            $message = $_POST['message'];
+            $message = $db->sendMessage($other_user_id, $message);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
+        /**
+         * Handle getting of friend profile
+         */
+        
     }
 ?>

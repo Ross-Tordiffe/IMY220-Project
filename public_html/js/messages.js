@@ -14,69 +14,125 @@ const messageObject = ({msg_id, msg_user_id, msg_message, msg_username, msg_time
         <div class="message">
             <div class="message-id d-none">${msg_id}</div>
             <div class="message-user-id d-none">${msg_user_id}</div>
-            <div class="message-content">
+            <div class="message-content position-relative">
                 <div class="message-header">
-                    <div class="message-sender">${msg_username}</div>
-                
                 </div>
                 <div class="message-body">
                     ${msg_message}
                 </div>
+                <div class="message-footer position-absolute">
+                    <div class="message-time">${msg_time}</div>
+                </div>
             </div>
-            <div class="message-footer d-flex flex-column">
-                <div class="message-time">${msg_time}</div>
-            </div>
+            
         </div>
     
     `;
 };
 
-$(() => {
+//  <div class="message-sender">${msg_username}</div>
 
+$(() => {
     getMessages();
+    fetchUser(other_user_id).then((data) => {
+        $('#other-user').text(data.user_username);
+    });
 });
 
 // === Promise Functions
 
 const getMessages = async () => {
 
-    try {
-        const data = await new Promise((resolve, reject) => {
-            $.ajax({
-                url: "requests.php",
-                type: "POST",
-                data: {
-                    request: "getMessages",
-                    other_user_id: other_user_id
-                },
-                success: (data) => {
-                    resolve(data);
-                },
-                error: (error) => {
-                    reject(error);
-                }
-            }).then (data => {
-                $(".message-box").empty();
-                    // For each message, create a new message element
-                    let messages = JSON.parse(data).data;
-                    console.log(messages);
+    const data = await new Promise((resolve, reject) => {
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                request: "getMessages",
+                other_user_id: other_user_id
+            },
+            success: (data) => {
+                resolve(data);
+            },
+            error: (error) => {
+                reject(error);
+            }
+        }).then (data => {
+            $(".message-box").empty();
+            if(data.length > 0) {
+                // For each message, create a new message element
+                console.log(data);
+                let messages = JSON.parse(data).data;
+                console.log(messages);
 
-                    // For each message element, if the user is the sender, add the "message-sent" class
-                    // Otherwise, add the "message-received" class
+                // For each message element, if the user is the sender, add the "message-sent" class
+                // Otherwise, add the "message-received" class
 
-                    messages.forEach((message) => {
-                        let messageElement = messageObject(message);
-                        if (message.msg_user_id == user_id) {
-                            messageElement = $(messageElement).addClass("message-sent");
-                        } else {
-                            messageElement = $(messageElement).addClass("message-received");
-                        }
-                        $(".message-box").append(messageElement);
-                    });
-                    return data;
-            });
+                messages.forEach((message) => {
+                    let messageElement = messageObject(message);
+                    if (message.msg_user_id == user_id) {
+                        messageElement = $(messageElement).addClass("message-sent");
+                        console.log(message.msg_user_id, " and ", user_id);
+                    } else {
+                        console.log(message.msg_user_id, " and ", user_id);
+                        messageElement = $(messageElement).addClass("message-received");
+                    }
+                    $(".message-box").append(messageElement);
+                });
+                return data;
+            }
+
+            
         });
-    } catch (error_2) {
-        console.log(error_2);
-    }
+    });
 }
+
+const fetchUser = async (user_id) => {
+    const data = await new Promise((resolve, reject) => {
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                request: "fetchUserData",
+                user_id: user_id
+            },
+            success: (data) => {
+                resolve(data);
+            },
+            error: (error) => {
+                reject(error);
+            }
+        });
+    });
+    return data;
+}
+
+
+// === Ajax Requests ===
+
+// --- Handle sending a message ---
+
+$("#send-message").on("click", () => {
+    let message = $(".message-input .message-text-input").val();
+    if (message.length > 0) {
+        $.ajax({
+            url: "requests.php",
+            type: "POST",
+            data: {
+                request: "sendMessage",
+                message: message,
+                other_user_id: other_user_id
+            },
+            success: (data) => {
+                console.log(data);d
+                getMessages();
+            },
+            error: (error) => {
+                showError("There was a problem sending your message");
+            }
+        });
+
+        $("#message").val("");
+    }
+});
+

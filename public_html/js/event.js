@@ -522,7 +522,7 @@ const createReview = (rating, review_message, image) => {
             if(data.status === "success") {
                 // close modal
                 $("#eventReviewModal").modal("hide");
-
+                
                 // get reviews again
                 review = data.data;
                 console.log("Review created successfully");
@@ -533,7 +533,7 @@ const createReview = (rating, review_message, image) => {
                 });
 
                 // reload the page
-                window.location.reload();
+                // window.location.reload();
                 
             } else {
                 showError(data);
@@ -767,6 +767,7 @@ const fillReviews = (reviews) => {
     let stars = '';
     
     if(reviews.length > 0) {
+        console.log(reviews.length);
         // Calculate the average rating
         average_rating = average_rating / reviews.length;
        

@@ -893,7 +893,6 @@
                 if(!$stmt->execute()){
                     return false;
                 }
-                
                 return true;
 
             }
@@ -965,7 +964,7 @@
             $stmt = $this->getConnection()->prepare("SELECT COUNT(*) FROM db_review WHERE review_event_id = ?");
             $stmt->bind_param("i", $review_event_id);
             if(!$stmt->execute()){
-                return false;
+                return "didn't get review";
             }
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
@@ -985,7 +984,7 @@
             $stmt = $this->getConnection()->prepare("INSERT INTO db_review (review_event_id, review_user_id, review_message, review_rating, review_image) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("iisss", $review_event_id, $review_user, $review_review, $review_rating, $review_image_name);
             if(!$stmt->execute()){
-                return false;
+                return "didn't get review 2";
             }
             $stmt->close();
 
@@ -1228,14 +1227,21 @@
             $result = $stmt->get_result();
 
             // If friendship doesn't exist, return false
-            if($result->num_rows == 0) {
+            if($result->num_rows <= 1) {
                 return ($user_id . " " . $other_user_id);
             }
 
             $row = $result->fetch_assoc();
-            $friendship_id_1 = $row["fs_id"];
-            $row = $result->fetch_assoc();
-            $friendship_id_2 = $row["fs_id"];
+            // $friendship_id_1 = $row["fs_id"];
+            if($row["fs_user_id_1"] == $user_id) {
+                $friendship_id_1 = $row["fs_id"];
+                $row = $result->fetch_assoc();
+                $friendship_id_2 = $row["fs_id"];
+            } else {
+                $friendship_id_2 = $row["fs_id"];
+                $row = $result->fetch_assoc();
+                $friendship_id_1 = $row["fs_id"];
+            }
 
             // Get both users' usernames
             $stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ? OR user_id = ?");
@@ -1267,11 +1273,9 @@
                 if($row["msg_fs_id"] == $friendship_id_1) {
                     $msg_user_id = $user_id;
                     $msg_user_name = $user_name;
-                    $msg_user_id = $user_id;
                 } else {
                     $msg_user_id = $other_user_id;
                     $msg_user_name = $other_user_name;
-                    $msg_user_id = $other_user_id;
                 }
 
                 $messages[] = array(
@@ -1279,12 +1283,48 @@
                     "msg_user_id" => $msg_user_id,
                     "msg_message" => $row["msg_content"],
                     "msg_username" => $msg_user_name,
-                    "msg_time" => $row["msg_time"]
+                    "msg_time" => $row["msg_time"],
+                    "msg_fs_id" => $row["msg_fs_id"],
+                    "fs1" => $friendship_id_1,
                 );
             }
 
             return $messages;
             
+        }
+
+        /**
+         * Method to send a message
+         */
+        public function sendMessage($other_user_id, $message) {
+
+            $user_id = (int)$_SESSION["user_id"];
+
+            // Get the just this user's friendship id
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1 = ? AND fs_user_id_2 = ?");
+            $stmt->bind_param("ii", $user_id, $other_user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            // If friendship doesn't exist, return false
+            if($result->num_rows <= 0) {
+                return false;
+            }
+
+            $row = $result->fetch_assoc();
+            $friendship_id = $row["fs_id"];
+
+            // Insert the message
+            $stmt = $this->getConnection()->prepare("INSERT INTO db_message (msg_fs_id, msg_content, msg_time) VALUES (?, ?, NOW())");
+            $stmt->bind_param("is", $friendship_id, $message);
+            if(!$stmt->execute()){
+                return false;
+            }
+
+            return true;
+
         }
     }
 

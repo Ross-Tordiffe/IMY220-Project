@@ -5,41 +5,43 @@
 
 .message
 {
-    width: 45%;
+    max-width: 70%;
+    min-width: 40%;
+    margin-bottom: 0.3em;
 }
 
 .message-sent
 {
-    align-self: flex-start
+    align-self: flex-end;
 }
 
 .message-received
 {
-    align-self: flex-end;
+    align-self: flex-start;
 }
 
 .message-sent .message-content
-{
-    background-color: var(--bg-light);
-    color: var(--bg-blue);
-    border : 2px solid var(--bg-blue);
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.message-received .message-content
 {
     background-color: var(--bg-blue);
     color: var(--bg-light);
     border : 2px solid var(--bg-blue);
     border-radius: 10px;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
+}
+
+.message-received .message-content
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border : 2px solid var(--bg-blue);
+    border-radius: 10px;
 }
 
 .message-body
 {
     padding: 10px;
-    margin-bottom: 10px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
 .message-header
@@ -50,16 +52,26 @@
 
 .message-footer
 {
-    font-size: 0.8em;
+    font-size: 0.7em;
     padding-left: 10px;
+    z-index: 1;
+    bottom:0.3em;
+    right:0.5em;
 }
 
-.message-sent  .message-time
+.message-sent  .message-footer
 {
-   align-self: flex-start;
+    color: var(--bg-light);
 }
 
-.message-received .message-time
+.message-received .message-footer
 {
-    align-self: flex-end;
+    color: var(--bg-blue);
+}
+
+/* === Message Input Styles === */
+
+.message-text-input 
+{
+    height: 3em;
 }

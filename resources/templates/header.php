@@ -5,7 +5,7 @@
     $header_display = $header_display ?? "d-block";
     $styles = $styles ?? "";
     // $theme = $_SESSION['user_theme'] ?? "light";
-    $theme = "light";
+    $theme = "dark";
     $logo_style = ($theme === "dark") ? "DarkLogo" : "LightLogo";
     $icon_style = ($theme === "dark") ? "Icon-Dark" : "Icon-Light";
     $content_offset = $content_offset ?? "col offset-3 offset-xl-2 table-main"; 
