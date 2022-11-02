@@ -1,9 +1,144 @@
 /* ==== Main Explore Styling ==== */
 
-.explore-container
+/* .explore-container
 {
     z-index: 2;
     width: 80%;
     padding: 1em;
     color: var(--text-main);
+} */
+
+
+/* ==== Search Bar ==== */
+
+.explore .form-control
+{
+    background-color: var(--bg-light) !important;
+    color: var(--bg-blue) !important;
+    border: solid 2px var(--bg-blue) !important;
+    border-right: none !important;
+    border-top-left-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+}
+
+.explore .form-control:focus
+{
+    box-shadow: none !important;
+    border: solid 2px var(--bg-blue) !important;
+    border-right: solid 1px var(--bg-blue) !important;
+}
+
+.search-tips
+{
+    color: var(--text-main);
+    font-size: 0.8em;
+}
+
+.search-bar-row
+{
+    transform: translateY(0%);
+    transition: all 0.5s ease;
+}
+
+/* ==== Search Events ==== */
+
+@keyframes fadein
+{
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.explore-box-container .event
+{
+    animation: fadein 0.5s;
+}
+
+.explore-box-user-list
+{
+    display:none;
+    border: solid 2px var(--bg-blue);
+    border-radius: 10px;
+}
+
+/* ==== Search Users ==== */
+
+.user
+{
+    animation: fadein 0.5s;
+    padding: 0.5em;
+    padding-right: 0;
+    border-bottom: var(--bg-blue) 2px solid;
+    transition: all 0.1s ease-in-out;
+    background-color: var(--bg-light);
+}
+
+.user:hover
+{
+    background-color: var(--bg-blue);
+    cursor: pointer;
+
+}
+
+.user:hover .user-name
+{
+    color: var(--bg-light);
+}
+
+.user:hover .user-image
+{
+    border-color: var(--bg-light);
+}
+
+.user:first-child
+{
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.user:last-child
+{
+    border-bottom: none;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.user-image
+{
+    pointer-events: none;
+    border-radius: 50%;
+    border: var(--bg-blue) 2px solid;
+}
+
+.user-image img
+{
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+}
+
+.user-name
+{
+    color: var(--bg-blue);
+    font-family: "Poppins", sans-serif;
+    font-size: 1.2em;
+    margin-left: 1em;
+}
+
+/* === Other === */
+
+.no-results
+{
+    color: var(--text-main);
+    font-size: 1.2em;
+    font-family: "Poppins", sans-serif;
+    display: none;
+}
+
+.no-search
+{
+    transform: translateY(80%);
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    padding-bottom: 200px;
 }

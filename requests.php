@@ -177,6 +177,16 @@
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$event]));
         };
 
+        /**
+         * Handle getting of all users
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "getUsers") {
+            
+            $users = $db->getUsers();
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$users]));
+            
+        };
+
         // === Secondary POST requests ===
 
         /**
