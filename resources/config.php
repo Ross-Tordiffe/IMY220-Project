@@ -778,6 +778,25 @@
         }
 
         /**
+         * method to get all users from the database
+         */
+        public function getUsers() {
+
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_users");
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $users = array();
+            while($row = $result->fetch_assoc()) {
+                $users[] = $row;
+            }
+            $stmt->close();
+
+            return $users;
+        }
+
+        /**
          * Method to get the ids, names and images of the users friends
          */
         public function getFriends($profile_user) {

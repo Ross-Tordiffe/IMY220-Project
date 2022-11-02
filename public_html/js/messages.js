@@ -24,9 +24,7 @@ const messageObject = ({msg_id, msg_user_id, msg_message, msg_username, msg_time
                     <div class="message-time">${msg_time}</div>
                 </div>
             </div>
-            
         </div>
-    
     `;
 };
 
@@ -35,8 +33,16 @@ const messageObject = ({msg_id, msg_user_id, msg_message, msg_username, msg_time
 $(() => {
     getMessages();
     fetchUser(other_user_id).then((data) => {
-        $('#other-user').text(data.user_username);
+        console.log(data);
+        let profile_user_image = "public_html/img/user/" + data.user_image;
+        $('.other-name').text(data.user_username)
+        $('.other-img img').attr("src", profile_user_image);
     });
+
+    $(".back-btn").click(() => {
+        window.location.href = "profile.php?user_id=" + other_user_id;
+    });
+
 });
 
 // === Promise Functions
@@ -77,8 +83,30 @@ const getMessages = async () => {
                         console.log(message.msg_user_id, " and ", user_id);
                         messageElement = $(messageElement).addClass("message-received");
                     }
+
+                    let newMessage = message.msg_message;
+                    let oldMessage = newMessage;
+                    let link = null;
+                    console.log(newMessage);
+                    do {
+            
+                        link = oldMessage.match(/((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/);
+                        if(link != null) 
+                        {
+                            console.log(link);
+                            oldMessage = oldMessage.replace(link[0], "");
+                            console.log(oldMessage);
+                            newMessage = newMessage.replace(link[0], `<iframe class="yt-embed pb-3" src="https://www.youtube.com/embed/${link[5]}" allow="fullscreen;"></iframe>`);
+                            console.log(newMessage);
+                        }
+                    } while(link)
+                    $(messageElement).find(".message-body").html(newMessage);
+                    
                     $(".message-box").append(messageElement);
                 });
+
+                $('.message-box-container').scrollTop($('.message-box-container')[0].scrollHeight);
+
                 return data;
             }
 
@@ -97,7 +125,8 @@ const fetchUser = async (user_id) => {
                 user_id: user_id
             },
             success: (data) => {
-                resolve(data);
+                data = JSON.parse(data);
+                resolve(data.data);
             },
             error: (error) => {
                 reject(error);
@@ -124,14 +153,14 @@ $("#send-message").on("click", () => {
                 other_user_id: other_user_id
             },
             success: (data) => {
-                console.log(data);d
+                console.log(data);
                 getMessages();
             },
             error: (error) => {
                 showError("There was a problem sending your message");
             }
         });
-
+        
         $("#message").val("");
     }
 });

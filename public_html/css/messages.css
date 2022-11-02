@@ -1,6 +1,17 @@
+.message-box-container
+{
+    overflow-y: scroll;
+    max-height: calc(100vh - 219px);
+}
+
 .message-box
 {
-    
+   
+}
+
+.message-header
+{
+    border-radius: 10px
 }
 
 .message
@@ -69,9 +80,90 @@
     color: var(--bg-blue);
 }
 
+.yt-embed
+{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    /* center the video */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* === Message Input Styles === */
 
 .message-text-input 
 {
-    height: 3em;
+    height: 3.2em;
+}
+
+.message-input .form-control
+{
+    background-color: var(--bg-light) !important;
+    color: var(--bg-blue) !important;
+    border: solid 2px var(--bg-blue) !important;
+    border-radius: 10px !important;
+}
+
+.message-input .form-control:focus
+{
+    box-shadow: none !important;
+    border: solid 2px var(--bg-blue) !important;
+}
+
+
+/* === Message Other user styles === */
+
+.other-user
+{
+    width: 100%;
+    font-size: 0.8em;
+    color: var(--bg-blue);
+    padding-left: 10px;
+    margin: 0.5em;
+    background-color: var(--bg-logo-back);
+    border-radius: 10px;
+}
+
+.other-img 
+{
+    width: 75px;
+    height: 75px;
+    position: relative;
+}
+
+.other-img img
+{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: var(--text-main) 2px solid;
+    object-fit: cover;
+}
+
+.other-name
+{
+    font-weight: 500;
+    font-size: 2em;
+    color: var(--bg-light);
+    margin: 0;
+}
+
+.back-btn
+{
+    color: var(--bg-light);
+    font-size: 1.5em;
+    transition: all 0.5s ease;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+}
+
+.back-btn:hover
+{
+    cursor: pointer;
+    color: var(--bg-blue);
+    background-color: var(--bg-light);
 }
