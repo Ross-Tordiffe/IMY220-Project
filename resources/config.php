@@ -441,12 +441,21 @@
                 }
                 $stmt->close();
 
-                // Impolde friend ids into a string to be used in the query
-                $friendIDs = implode(",", $friendIDs); 
+                // if the user has friends
 
-                // Get the events from the user and their friends
-                $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_user_id = ? OR event_user_id IN (?) ORDER BY event_date DESC");
-                $stmt->bind_param("is", $_SESSION["user_id"], $friendIDs);
+                // Get the user's events and the events of their friends
+                if(count($friendIDs) > 0)
+                {
+                    $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_user_id = ? OR event_user_id IN (" . implode(',', array_fill(0, count($friendIDs), '?')) . ") ORDER BY event_date DESC");
+                    $stmt->bind_param("i" . str_repeat("i", count($friendIDs)), $_SESSION["user_id"], ...$friendIDs);
+                }
+                else 
+                {
+                    $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_user_id = ? ORDER BY event_date DESC");
+                    $stmt->bind_param("i", $_SESSION["user_id"]);
+                }
+             
+                    
                 if(!$stmt->execute()){
                     return false;
                 }
@@ -719,8 +728,19 @@
          */
         public function deleteEvent($event_id) {
 
+            $reviews = $this->fetchReviews($event_id);
+            $reviewImages = array();
+            foreach($reviews as $review) {
+                if($review["review_image"] != null) {
+                    unlink("public_html/img/review/".$review["review_image"]);
+                }
+            }
+        
             // Delete the image from the server
             $image = $this->getEvent($event_id)["event_image"];
+
+            // Delete review images from the server
+        
 
             if($image != null) {
                 unlink("public_html/img/event/".$image);
@@ -814,7 +834,7 @@
 
             $stmt->close();
 
-            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1 = ?");
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1 = ? AND fs_accepted = 1");
             $stmt->bind_param("i", $user_id);
             if(!$stmt->execute()){
                 return false;
@@ -993,7 +1013,7 @@
             // prepare upload image to server
             if(isset($review_image)){
                 $review_image_type = $review_image["type"];
-                $review_image_name = $review_user."_".$review_number.".".explode("/", $review_image_type)[1];
+                $review_image_name = $review_user."_".$review_event_id.".".explode("/", $review_image_type)[1];
                 $review_image_path = "public_html/img/review/".$review_image_name;
             }
             else {
@@ -1262,6 +1282,14 @@
                 $friendship_id_1 = $row["fs_id"];
             }
 
+            // Update the messages to be read
+            $stmt = $this->getConnection()->prepare("UPDATE db_message SET msg_read = 1 WHERE msg_fs_id = ? AND msg_read = 0");
+            $stmt->bind_param("i", $friendship_id_2);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
             // Get both users' usernames
             $stmt = $this->getConnection()->prepare("SELECT * FROM db_users WHERE user_id = ? OR user_id = ?");
             $stmt->bind_param("ii", $user_id, $other_user_id);
@@ -1308,6 +1336,7 @@
                 );
             }
 
+
             return $messages;
             
         }
@@ -1343,6 +1372,47 @@
             }
 
             return true;
+        }
+
+        /**
+         * Method to get the read/unread status of a user's friend's messages
+         */
+        public function getUnreadMessages() {
+
+            $user_id = (int)$_SESSION["user_id"];
+            // Get all friendships where the user is the second user
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_2 = ?");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            $unread_messages = array();
+            // For each friendship, get any unread messages
+            while($row = $result->fetch_assoc()) {
+                $friendship_id = $row["fs_id"];
+                $friend_id = $row["fs_user_id_1"];
+
+                $stmt = $this->getConnection()->prepare("SELECT * FROM db_message WHERE msg_fs_id = ? AND msg_read = 0");
+                $stmt->bind_param("i", $friendship_id);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $result2 = $stmt->get_result();
+
+                // If there are unread messages, add the friend id to the array with the number of unread messages
+                
+                if($result2->num_rows > 0) {
+                    $unread_messages[] = array(
+                        "friend_id" => $friend_id,
+                        "unread_messages" => $result2->num_rows,
+                    );
+                }
+            }
+
+            return $unread_messages;
+            // return an array of friend ids with the count of unread messages
 
         }
     }

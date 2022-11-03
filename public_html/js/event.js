@@ -321,7 +321,6 @@ const eventPage = new Promise((resolve, reject) => {
         },
         success: (data) => {
             const event = JSON.parse(data).data;
-            console.log("AAAAAAAAAAAAAAAA", event.event_user_count);
             // Format event
             // Format the date from yyyy-mm-dd to dd/mm/yyyy
             let date = event.event_date.split("-");
@@ -373,11 +372,7 @@ const getReviews = reviews.then(reviews);
 
 const isAttendingEvent = (event_id) => {
     const attending = new Promise((resolve, reject) => {
-        
         let event_id = $('.event-page-id').text();
-
-        console.log("EVENTID", event_id);
-        
         $.ajax({
             url: "requests.php",
             type: "POST",
@@ -682,12 +677,14 @@ const deleteEvent = () => {
             event_id: event_id
         },
         success: (data) => {
+            console.log(data);
             data = JSON.parse(data);
-            if(data.status === "success") {
-                window.location.href = "index.php";
-            } else {
-                showError(data);
-            }
+            console.log(data);
+            // if(data.status === "success") {
+            //     window.location.href = "index.php";
+            // } else {
+            //     showError(data);
+            // }
         }
     });
 }
@@ -700,10 +697,14 @@ const fillReviews = (reviews) => {
 
     $('.event-page-review-window').empty();
     reviews.reverse();
+
+    let review_elements = [];
         
     reviews.forEach((review) => {
 
         average_rating += review.review_rating;
+
+        // array of review html elements
 
         if(review.review_message != null && review.review_message != "") {
 
@@ -729,11 +730,8 @@ const fillReviews = (reviews) => {
                 stars += '<i class="far fa-star"></i>';
             }
 
-            $('.event-page-review-window').append(`
-                <!-- Profile Image --><!-- Profile Name -->
-                <!-- Star Rating -->
-                <!-- Review Text -->
-                <!-- Review Date -->
+            // push the review html and each rating score to the review_elements array
+            review_elements.push({rating: review.review_rating, html: `
                 <div class="row event-page-review px-2">
                     <div class="col-2 col-md-1 event-page-review-image">
                         <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
@@ -759,10 +757,16 @@ const fillReviews = (reviews) => {
                         </div>
                     </div>
                 </div>
-
-            `);
+            `});
         }
     });
+
+    // sort the review elements by nearest to the average rating above or below
+
+    // append the review elements to the review window
+   
+
+    console.log("r elements: ", review_elements);
 
     let stars = '';
     
@@ -770,6 +774,16 @@ const fillReviews = (reviews) => {
         console.log(reviews.length);
         // Calculate the average rating
         average_rating = average_rating / reviews.length;
+
+        console.log("average rating: " + average_rating);
+        review_elements.sort((a, b) => {
+            return Math.abs(b.rating - average_rating) - Math.abs(a.rating - average_rating);
+        }).reverse();
+
+        $('.event-page-review-window').append(review_elements.map((review) => {
+            return review.html;
+        }));
+    
        
         let skip = (average_rating % 2 != 0) ? 1 : 0;
         

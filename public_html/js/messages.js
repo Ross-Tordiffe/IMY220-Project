@@ -43,6 +43,8 @@ $(() => {
         window.location.href = "profile.php?user_id=" + other_user_id;
     });
 
+    
+
 });
 
 // === Promise Functions

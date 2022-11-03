@@ -8,11 +8,18 @@ $(() => {
 
     let user = $("#user-id").text();
     let profile_user = $("#profile-user-id").text();
+    let unreadMessages = [];
 
     setUser(user, profile_user);
     getEvents(user, profile_user);
-    getFriends(profile_user);
-    
+    getFriends(profile_user).then((data) => {
+        let friends = data.data;
+        getUnreadMessages().then((data) => {
+            unreadMessages = data;
+            updateFriendHeader(friends, unreadMessages);
+            displayFriends(friends, unreadMessages);
+        });
+    });
 
     $(".friend-text").on("click", (e) => {
 
@@ -27,6 +34,14 @@ $(() => {
         e.stopPropagation();
         let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
         acceptFriend(friendId, profile_user);
+        getFriends(profile_user);
+    });
+
+    $("#friendsModal").on("click", ".cancel-request", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
+        rejectFriend(friendId, profile_user);
     });
 
     // --- Go to the friend's profile ---
@@ -38,8 +53,18 @@ $(() => {
         window.location.href = `profile.php?user_id=${friendId}`;
     });
 
+    // when the model closes, update the friends list
+    $("#friendsModal").on("hidden.bs.modal", (e) => {
+        getFriends(profile_user).then((data) => {
+            let friends = data.data;
+            getUnreadMessages().then((data) => {
+                unreadMessages = data;
+                updateFriendHeader(friends, unreadMessages);
+            });
+        });
+    });
+
     $("#profile-add-friend").on("click", (e) => {
-        
         // print profile-add-friend classes
         // if the profile-add-friend class is "add-friend"
         if($("#profile-add-friend").hasClass("friend")) {
@@ -244,13 +269,19 @@ $(() => {
         // Go to messages page
         window.location.href = ("messages.php?user_id=" + user + "&other_user=" + profile_user);
     });
+    
+    $(".modal").on("click", ".unread-message-icon", (e) => {
+        e.stopPropagation();
+        let other_user = $(e.currentTarget).parent().parent().parent().find(".profile-friend-id").text();
+        window.location.href = ("messages.php?user_id=" + user + "&other_user=" + other_user);
+    });
 
 });
 
 
 // === Helper Functions ===
 
-const displayFriends = (friends) => {
+const displayFriends = (friends, unreadMessages) => {
 
     let user = $("#user-id").text();
     let profile_user = $("#profile-user-id").text();
@@ -265,18 +296,40 @@ const displayFriends = (friends) => {
         });
     }
 
-    console.log(friends);
+    let unreadIds = unreadMessages.map((message) => {
+        return message.friend_id;
+    });
 
     for(let i = 0; i < friends.length; i++) {
+        console.log(unreadIds, unreadIds.includes(friends[i].user_id), friends[i].user_id);
         let userImage = "public_html/img/user/" + friends[i].user_image;
-        let requested = friends[i].accepted === false ? 
-        `
-            <!-- inline accept button or cancel request -->
-            <div class="d-inline">
-                <button class="btn btn-sm accept-request px-2 py-0 d-inline">accept</button>
-                <i class="fas fa-times ps-2 cancel-request"></i>
-            </div>
-        ` : "";
+
+        let requested = "";
+        let unread = "";
+
+        if(profile_user === user) {
+        
+            requested = friends[i].accepted === false ? 
+            `
+                <!-- inline accept button or cancel request -->
+                <div class="d-flex justify-content-center align-items-center">
+                    <button class="btn btn-sm accept-request px-2 py-0 d-inline">accept</button>
+                    <i class="fas fa-times ms-1 px-2 py-1 cancel-request"></i>
+                </div>
+            ` : "";
+            // check if the friend_id is one of the unread message ids and if so show a message icon with the number of unread messages
+            unread = unreadIds.includes(friends[i].user_id) ?
+            `
+                <div class="d-flex justify-content-center align-items-center">
+                    <span class="unread-message-count mx-2">${unreadMessages[unreadIds.indexOf(friends[i].user_id)].unread_messages}</span>
+                    <i class="unread-message-icon fas fa-envelope px-2 py-1"></i>
+                </div>
+            ` : "";
+
+        } else {
+            requested = "";
+            unread = "";
+        }
 
         friendsHTML += `
             <li class="profile-friend">
@@ -286,12 +339,16 @@ const displayFriends = (friends) => {
                 <div class="profile-friend-name ps-2 d-flex justify-content-between align-items-center w-100 me-3">
                     <span>${friends[i].user_username}</span>
                     ${
-                       requested
+                    requested
+                    }
+                    ${
+                    unread
                     }
                 </div>
                 <div class="d-none profile-friend-id">${friends[i].user_id}</div>
             </li>
         `;
+
     }
     $(".profile-friends").append(friendsHTML);
     if(friends.length === 0 && user === profile_user) {
@@ -313,7 +370,6 @@ const displayFriends = (friends) => {
             `
         )
     }
-
   
 }
 
@@ -342,26 +398,33 @@ const getFriends = (profile_user) => {
         data = JSON.parse(data);
         if(data.status === "success") {
             console.log(data.data);
-            displayFriends(data.data);
-            updateFriendHeader(data.data);
             let user = $("#user-id").text();
-
+            console.log("data.data", data.data);
             // look for the user in the friends list
             let friend = data.data.filter((friend) => {
                 return friend.user_id == user;
             });
+            console.log("friend(s)? ", friend);
 
             // if the user is not the profile user, but is friends with the profile user, show the message button and change the friend icon to a checkmark
             if(user !== profile_user && friend.length > 0) {
                 $("#profile-message").removeClass("d-none");
                 $("#profile-add-friend i").removeClass("fa-user-plus");
-                $("#profile-add-friend i").addClass("fa-check");
+                if(friend[0].accepted === true) {
+                    $("#profile-add-friend i").addClass("fa-check");
+                }
+                else {
+                    $("#profile-add-friend i").addClass("fa-user-clock");
+                }
                 $("#profile-add-friend").addClass("friend");
             }
         }
+        return data;
     }).catch((err) => {
         console.log(err);
     });
+
+    return friends;
 };
 
 const getEvents = (user, profile_user) => {
@@ -471,6 +534,38 @@ const getEvents = (user, profile_user) => {
     });
 }
 
+const getUnreadMessages = () => {
+    const unreadMessages = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: "requests.php",
+            data: {
+                request: "getUnreadMessages"
+            },
+            success: (data, status) => {
+                console.log("unreads ", data);
+                data = JSON.parse(data);
+                console.log("unreads json ", data);
+                if(data.status === "success")
+                {
+                    resolve(data.data);
+                }
+                else
+                {
+                    reject(data.data);
+                }
+            }
+        });
+    }).then((data) => {
+        return data;
+    }).catch((data) => {
+        showError(data);
+    });
+
+    return unreadMessages;
+};
+
+
 const handleImageFile = (file) => {
     console.log(file);
     // Check if the file is one of the allowed types (jpg, jpeg, png)
@@ -495,7 +590,7 @@ const handleImageFile = (file) => {
 
 }
 
-getGroups = (user, profile_user) => {
+const getGroups = (user, profile_user) => {
     let groups = new Promise((resolve, reject) => {
         $.ajax({
             type: "POST",
@@ -619,9 +714,10 @@ const rejectFriend = (friendId, profile_user) => {
             url: "requests.php",
             data: {
                 request: "rejectFriend",
-                friendId: friendId
+                friend_id: friendId
             },
             success: (data, status) => {
+                console.log(data);
                 data = JSON.parse(data);
                 if(data.status === "success")
                 {
@@ -641,7 +737,10 @@ const rejectFriend = (friendId, profile_user) => {
 }
                 
 
-const updateFriendHeader = (friends) => {
+const updateFriendHeader = (friends, unreadMessages) => {
+
+    console.log("fs", friends);
+    console.log("um", unreadMessages);
 
     let user = $("#user-id").text();
     let profile_user = $("#profile-user-id").text();
@@ -656,9 +755,9 @@ const updateFriendHeader = (friends) => {
 
     $(".friend-count").html(friend_accepted.length);
     
-    if(friend_requests.length > 0 && profile_user === user) {
+    if((friend_requests.length > 0 || unreadMessages.length > 0) && profile_user === user) {
         console.log("profile_user: " + profile_user + " user: " + user);
-        $(".friend-request-count").html(friend_requests.length);
+        $(".friend-request-count").html(friend_requests.length+unreadMessages.length);
         $(".friend-request-count").removeClass("d-none");
     }
     else {
@@ -779,7 +878,6 @@ const showGroupEvents = (group_id) => {
             $(`<div></div>`, {
                 html: 
                 `
-                
                     <div class="d-flex align-items-center">
                         <div class="group-header-back-arrow pe-4 ps-2 fs-2">
                             <i class="fas fa-arrow-left"></i>

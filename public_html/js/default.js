@@ -154,6 +154,14 @@ $(".event-box").on("click", ".event-join", (e) => {
     let user_id = $("#user-id").text();  
     // bookUser(e);
 });
+
+$(".event-container").on("click", ".event-hashtag", (e) => {
+    console.log("clicked");
+    e.stopPropagation();
+    e.preventDefault();
+    let hashtag = $(e.target).text().substring(1);
+    window.location.href = "explore.php?q=" + hashtag;
+});
     
 
 $(".event-box").on("click", ".event", (e) => {

@@ -375,8 +375,11 @@
         };
 
         /**
-         * Handle getting of friend profile
-         */
-        
+         * Handle getting unread status of messages from friends
+        */
+        if(isset($_POST['request']) && $_POST['request'] === "getUnreadMessages") {
+            $messages = $db->getUnreadMessages();
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$messages]));
+        };
     }
 ?>

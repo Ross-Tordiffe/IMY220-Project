@@ -220,6 +220,13 @@ h2
 
 }
 
+.h2 
+{
+    font-family: 'Poppins', sans-serif;
+    font-size: 2em;
+    color: var(--bg-light);
+}
+
 .text-std 
 {
     color: var(--text-main);

@@ -13,16 +13,20 @@
 
     require_once("resources/templates/header.php");
 
+    $q = isset($_GET["q"]) ? "#".$_GET["q"] : "";
+
 ?>
 
     <div class="row table-events position-absolute h-100 m-0">
+        <div class="explore-query d-none"><?=$q?></div>
         <div class="col-12 explore position-relative h-100">
             <div class="row search-bar-row no-search">
                 <div class="col-12 explore-search-bar pt-3 ">
                     <div class="row justify-content-center h-100 align-items-start">
                         <div class="col-10">
                             <div class="explore-title">
-                                <h1>Explore</h1>
+                                <span class="h1">Search</span>
+                                <span class="h2 px-1">for anything...</span>
                             </div>
                             <!-- uses jquery autocomplete -->
                             
@@ -34,7 +38,7 @@
                     </div>
                 </div> 
             </div>
-            <div class="row">
+            <div class="row overflow-scroll">
                 <div class="col-12 explore-box-container">
                     <div class="col-12 explore-box d-flex flex-column w-100">
                         <div class="row explore-box-events event-box">

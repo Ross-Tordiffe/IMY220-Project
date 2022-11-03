@@ -108,7 +108,7 @@ const getAll = async () => {
     console.log(data);
     return data;
 
-}
+}   
 
 
 // === Jquery Autocomplete & Fuzzy Search ===
@@ -197,13 +197,29 @@ const makeSearch = (search, type) => {
         filtered = events.filter((event) => event.event_date.includes(date));
     }   
     else {
-        filtered = events.filter((event) => event.event_title.toLowerCase().includes(search.toLowerCase()));
+        // filter by event name or description
+        filtered = events.filter((event) => event.event_title.toLowerCase().includes(search.toLowerCase()) || event.event_description.toLowerCase().includes(search.toLowerCase()));
+        // remove duplicates
+        filtered = filtered.filter((event, index, self) => index === self.findIndex((t) => (t.event_title === event.event_title && t.event_description === event.event_description)));
+        if(search.length > 10) {
+            search = search.substring(0, 10);
+        }
         if (filtered.length === 0 ) {
             events.forEach((event) => {
                 let words = event.event_title.split(" ");
                 words.forEach((word) => {
                     if (levenshteinDistance(word, search) <= 3) {
-                        filtered.push(event);
+                        if(!filtered.includes(event)) {
+                            filtered.push(event);
+                        }
+                    }
+                });
+                let words2 = event.event_description.split(" ");
+                words2.forEach((word) => {
+                    if (levenshteinDistance(word, search) <= 3) {
+                        if(!filtered.includes(event)) {
+                            filtered.push(event);
+                        }
                     }
                 });
             });
@@ -319,33 +335,6 @@ let eventTags = [];
 
 $(() => {
 
-    getAll().then((data) => {
-        events = data[0].data;
-        users = data[1].data;
-        let user_id = $("#user-id").text();
-        users = users.filter((user) => user.user_id != user_id);
-        
-        eventNames = events.map((event) => event.event_title);
-        eventTags = events.map((event) => event.event_tags).flat();
-        userNames = users.map((user) => "@" + user.user_username);
-        all = eventNames.concat(eventTags, userNames);
-
-        // --- Autocomplete on focus ---
-        $(".explore-search").autocomplete({
-            source: (request, response) => {
-                const results = $.ui.autocomplete.filter(all, request.term);
-                response(results.slice(0, 5));
-            },
-            maxLength: 5,
-            select: (event, ui) => {
-                console.log(ui.item.value)
-            },
-            focus: (event, ui) => {
-                $(".explore-search").val(ui.item.value);
-            }
-        });
-    });
-
     $(".explore-search").on("keyup", (e) => {
 
         const search = $(".explore-search").val().trim();
@@ -380,11 +369,44 @@ $(() => {
         window.location.href = `profile.php?user_id=${userId}`;
     });
 
-    $(".explore-submit").on("click", () => {
+    $(".explore-submit").on("click", (e) => {
+        e.preventDefault();
         const search = $(".explore-search").val().trim();
-        let type = handleSearch(search);
         if(search.length > 0) {
-            makeSearch(search);
+            let type = handleSearch(search);
+            makeSearch(search, type);
+        }
+    });
+
+    getAll().then((data) => {
+        events = data[0].data;
+        users = data[1].data;
+        let user_id = $("#user-id").text();
+        users = users.filter((user) => user.user_id != user_id);
+        
+        eventNames = events.map((event) => event.event_title);
+        eventTags = events.map((event) => event.event_tags).flat();
+        userNames = users.map((user) => "@" + user.user_username);
+        all = eventNames.concat(eventTags, userNames);
+
+        // --- Autocomplete on focus ---
+        $(".explore-search").autocomplete({
+            source: (request, response) => {
+                const results = $.ui.autocomplete.filter(all, request.term);
+                response(results.slice(0, 5));
+            },
+            maxLength: 5,
+            select: (event, ui) => {
+                console.log(ui.item.value)
+            },
+            focus: (event, ui) => {
+                $(".explore-search").val(ui.item.value);
+            }
+        });
+
+        if($(".explore-query").text() != "") {
+            $(".explore-search").val($(".explore-query").text());
+            $(".explore-submit").trigger("click");
         }
     });
 

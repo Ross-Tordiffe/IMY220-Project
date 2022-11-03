@@ -40,9 +40,11 @@ $(() => {
                     scope: displaying
                 },
                 success: (data, status) => {
+                    console.log(data);
                     data = JSON.parse(data);
                     if(data.status === "success")
-                    {
+                    {   
+                        console.log(data);
                         // Formatting events
                         for(let i = 0; i < data.data.length; i++) {
                             // Check entry for an empty location. if empty replace with event_website

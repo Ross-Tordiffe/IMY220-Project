@@ -136,7 +136,7 @@
 
 .no-search
 {
-    transform: translateY(80%);
+    transform: translateY(20%);
     transition: all 0.5s ease-in-out;
     display: flex;
     align-items: center;

@@ -247,7 +247,33 @@
 .accept-request:hover
 {
     font-size: 1em;
-    border: solid 1px var(--bg-light);
+    border: solid 2px var(--bg-light);
+}
+
+.cancel-request
+{
+    border-radius: 15px;
+    transition: all 0.2s ease-in-out;
+    /* height: 2em;
+    width: 2em; */
+}
+
+.cancel-request:hover
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+}
+
+.unread-message-icon
+{
+    font-size: 1.5em;
+    transition: all 0.2s ease-in-out;
+}
+
+.unread-message-icon:hover
+{
+    transform: scale(1.2);
+    cursor: pointer;
 }
 
 .no-friends-message
