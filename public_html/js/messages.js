@@ -3,9 +3,11 @@
 const urlParams = new URLSearchParams(window.location.search);
 const user_id = urlParams.get('user_id');
 const other_user_id = urlParams.get('other_user');
+let currentMessages = null;
+let first = true;
 
 
-const messageObject = ({msg_id, msg_user_id, msg_message, msg_username, msg_time}) => {
+const messageObject = ({msg_id, msg_user_id, msg_message, msg_time}) => {
 
     // Format the time
     msg_time = timeAgo(msg_time);
@@ -17,7 +19,7 @@ const messageObject = ({msg_id, msg_user_id, msg_message, msg_username, msg_time
             <div class="message-content position-relative">
                 <div class="message-header">
                 </div>
-                <div class="message-body">
+                <div class="message-body pb-3">
                     ${msg_message}
                 </div>
                 <div class="message-footer position-absolute">
@@ -28,12 +30,12 @@ const messageObject = ({msg_id, msg_user_id, msg_message, msg_username, msg_time
     `;
 };
 
-//  <div class="message-sender">${msg_username}</div>
-
 $(() => {
+
     getMessages();
+    setInterval(getMessages, 2000);
+
     fetchUser(other_user_id).then((data) => {
-        console.log(data);
         let profile_user_image = "public_html/img/user/" + data.user_image;
         $('.other-name').text(data.user_username)
         $('.other-img img').attr("src", profile_user_image);
@@ -43,7 +45,22 @@ $(() => {
         window.location.href = "profile.php?user_id=" + other_user_id;
     });
 
-    
+    // --- Handle sending a message ---
+
+    $("#send-message").on("click", () => {
+        sendMessage();
+    });
+
+    $(".message-input .message-text-input").on("keyup", (e) => {
+        if (e.keyCode === 13) {
+            sendMessage();
+        }
+    }
+    );
+
+
+
+    // --- get messages every second ---
 
 });
 
@@ -66,53 +83,67 @@ const getMessages = async () => {
                 reject(error);
             }
         }).then (data => {
-            $(".message-box").empty();
-            if(data.length > 0) {
-                // For each message, create a new message element
-                console.log(data);
-                let messages = JSON.parse(data).data;
-                console.log(messages);
+            if(currentMessages === null || currentMessages != data) {
+                $(".message-box").empty();
 
-                // For each message element, if the user is the sender, add the "message-sent" class
-                // Otherwise, add the "message-received" class
-
-                messages.forEach((message) => {
-                    let messageElement = messageObject(message);
-                    if (message.msg_user_id == user_id) {
-                        messageElement = $(messageElement).addClass("message-sent");
-                        console.log(message.msg_user_id, " and ", user_id);
+                if(data.length > 0) {
+                    let messages;
+                    if(currentMessages != null) {
+                        // For each message, create a new message element
+                        let allMessages = (JSON.parse(data).data).reverse();
+                        // make messages only the new messages not in the current messages
+                        // add from the last message to the first message until a message is found that is in the current messages
+                        let oldMessages = currentMessages.reverse();
+                        let last = true;
+                        messages = allMessages.filter((message) => {
+                            if(oldMessages.includes(message) || last == false) {
+                                last = false;
+                                return false;
+                            }
+                            return true;
+                        });
+                        messages = messages.reverse();
                     } else {
-                        console.log(message.msg_user_id, " and ", user_id);
-                        messageElement = $(messageElement).addClass("message-received");
+                        messages = JSON.parse(data).data;
                     }
 
-                    let newMessage = message.msg_message;
-                    let oldMessage = newMessage;
-                    let link = null;
-                    console.log(newMessage);
-                    do {
-            
-                        link = oldMessage.match(/((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/);
-                        if(link != null) 
-                        {
-                            console.log(link);
-                            oldMessage = oldMessage.replace(link[0], "");
-                            console.log(oldMessage);
-                            newMessage = newMessage.replace(link[0], `<iframe class="yt-embed pb-3" src="https://www.youtube.com/embed/${link[5]}" allow="fullscreen;"></iframe>`);
-                            console.log(newMessage);
+                    // For each message element, if the user is the sender, add the "message-sent" class
+                    // Otherwise, add the "message-received" class
+
+                    messages.forEach((message) => {
+                        let messageElement = messageObject(message);
+                        if (message.msg_user_id == user_id) {
+                            messageElement = $(messageElement).addClass("message-sent");
+                        } else {
+                            messageElement = $(messageElement).addClass("message-received");
                         }
-                    } while(link)
-                    $(messageElement).find(".message-body").html(newMessage);
-                    
-                    $(".message-box").append(messageElement);
-                });
 
-                $('.message-box-container').scrollTop($('.message-box-container')[0].scrollHeight);
+                        let newMessage = message.msg_message;
+                        let oldMessage = newMessage;
+                        let link = null;
+                        do {
+                
+                            link = oldMessage.match(/((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/);
+                            if(link != null) 
+                            {
+                                oldMessage = oldMessage.replace(link[0], "");
+                                newMessage = newMessage.replace(link[0], `<iframe class="yt-embed pb-3" src="https://www.youtube.com/embed/${link[5]}" allow="fullscreen;"></iframe>`);
+                            }
+                        } while(link)
+                        $(messageElement).find(".message-body").html(newMessage);
+                        
+                        $(".message-box").append(messageElement);
+                    });
 
-                return data;
+                    if(first || atBottom) {
+                        $('.message-box-container').scrollTop($('.message-box-container')[0].scrollHeight);
+                        first = false;  
+                    }
+
+                    currentMessages = JSON.parse(data).data;
+                    return data;
+                }
             }
-
-            
         });
     });
 }
@@ -138,12 +169,9 @@ const fetchUser = async (user_id) => {
     return data;
 }
 
-
 // === Ajax Requests ===
 
-// --- Handle sending a message ---
-
-$("#send-message").on("click", () => {
+const sendMessage = () => {
     let message = $(".message-input .message-text-input").val();
     if (message.length > 0) {
         $.ajax({
@@ -155,7 +183,6 @@ $("#send-message").on("click", () => {
                 other_user_id: other_user_id
             },
             success: (data) => {
-                console.log(data);
                 getMessages();
             },
             error: (error) => {
@@ -163,7 +190,8 @@ $("#send-message").on("click", () => {
             }
         });
         
-        $("#message").val("");
+        $(".message-input .message-text-input").val("");
     }
-});
+}
 
+// === Helper Functions ===

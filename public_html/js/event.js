@@ -97,10 +97,12 @@ $(() => {
 
         let event_user_id = $('.event-page-user-id').text();
         let user_id = $('#user-id').text();
+        let user_role = $('#user-admin').text();
         let event_id = $('.event-page-id').text();
 
+
         // if the user is the owner of the event then show the edit event button
-        if (event_user_id == user_id) {
+        if (event_user_id == user_id || user_role == "1") {
             $('.event-page-content').append(`
                 <div class="col-12 event-page-edit position-absolute">
                     <button class="btn"><i class="fas fa-edit"></i></button>
