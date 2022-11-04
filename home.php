@@ -2,7 +2,6 @@
 
     require_once("resources/config.php");
     
-
     if($_SESSION["logged_in"] === false){
         header("Location: index.php");
     }
@@ -55,8 +54,6 @@
             <div class="col-xl-4 col-lg-6 col-12 event-col-1 event-col"></div>
             <div class="col-xl-4 col-lg-6 col-0 event-col-2 event-col"></div>
             <div class="col-xl-4 col-lg-0 col-0 event-col-3 event-col"></div>
-            
-
         <!-- Create events -->
 
 

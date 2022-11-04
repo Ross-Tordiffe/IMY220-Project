@@ -148,3 +148,53 @@
         </div>
     </div>
 </div>
+
+<!-- Show profile settings modal -->
+<div class="modal" id="profileSettingsModal" tabindex="-1" aria-labelledby="profileSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title ms-3" id="profileSettingsModalLabel">Settings</h3>
+                <button type="button" class="btn modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body p-2 pb-0 d-flex justify-content-center">
+                <div class="profile-settings-container d-flex flex-column">
+                    <div class="profile-settings-form-container">
+                        <form action="" method="post" class="profile-settings-form d-flex flex-column w-100 p-3">
+                            <div class="form-group pt-3 pb-1 has-counter w-100">
+                                <label for="profile-username" class="review-label fs-6 mb-1">Username</label>
+                                <input type="text" class="form-control input-alt" id="profile-username" placeholder=" " name="profile-username" maxlength="50"/>
+                            </div>
+                            <!-- Profile email -->
+                            <div class="form-group pt-3 pb-1 has-counter w-100">
+                                <label for="profile-email" class="review-label fs-6 mb-1">Email</label>
+                                <input type="email" class="form-control input-alt" id="profile-email" placeholder=" " name="profile-email" maxlength="50"/>
+                            </div>
+                            <!-- Profile theme (lightbulb icon) -->
+                            
+                            <div class="form-group pt-3 pb-1 has-counter w-100 d-flex justify-content-between">
+                                <div id="profile-theme">
+                                    <label for="profile-theme" class="review-label fs-5 mb-1"><i class="fas fa-lightbulb profile-settings-icon pe-2"></i>Theme</label>
+                                </div>
+                                <button type="button" class="btn btn-primary profile-theme-btn py-0"></button>
+                            </div>
+                            <!-- Profile delete -->
+                            <div class="form-group pt-3 pb-1 has-counter w-100 d-flex justify-content-between">
+                                <div id="profile-delete">
+                                    <label for="profile-delete" class="review-label fs-5 mb-1"><i class="fas fa-trash-alt profile-settings-icon pe-2"></i>Delete account</label>
+                                </div>
+                                <button type="button" class="btn btn-primary profile-delete-btn py-0">DELETE</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary settings-submit py-0">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>

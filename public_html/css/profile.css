@@ -281,6 +281,78 @@
     color: var(--bg-blue);
 }
 
+.profile-settings-container
+{
+    background-color: var(--bg-light);
+    border-radius: 20px;
+    width: 95%;
+    border: var(--bg-blue) 2px solid;
+    margin-bottom: 1em;
+    max-height: 500px;
+    overflow: auto;
+}
+
+.profile-settings-icon
+{
+    color: var(--bg-blue);
+}
+
+.profile-delete-btn
+{
+    color: var(--bg-red);
+    border: solid 2px var(--bg-red);
+}
+
+.profile-delete-btn:hover
+{
+    background-color: var(--bg-red);
+    color: var(--bg-light);
+    border: solid 2px var(--bg-red);
+}
+
+.profile-theme-btn.btn-light
+{
+    color: var(--bg-blue);
+    border: solid 2px var(--bg-blue);
+}
+
+.profile-theme-btn.btn-light:hover
+{
+    background-color: var(--bg-blue);
+    color: var(--bg-light);
+    border: solid 2px var(--bg-blue);
+}
+
+.profile-theme-btn.btn-dark
+{
+    color: var(--bg-light);
+    border: solid 2px var(--bg-light);
+    background-color: var(--bg-blue);
+}
+
+.profile-theme-btn.btn-dark:hover
+{
+    background-color: var(--bg-light);
+    color: var(--bg-blue);
+    border: solid 2px var(--bg-blue);
+}
+
+.dark .profile-delete-btn
+{
+    color: var(--bg-light);
+    border: solid 2px var(--bg-light);
+    background-color: var(--bg-red);
+}
+
+.dark .profile-delete-btn:hover
+{
+    background-color: var(--bg-light);
+    color: var(--bg-red);
+    border: solid 2px var(--bg-red);
+}
+
+
+
 /* ==== Profile Buttons ==== */
 
 /* new event button in bottom right corner */

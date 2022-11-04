@@ -187,6 +187,15 @@
             
         };
 
+        /**
+         * Handle the deleting of a user account
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "deleteAccount") {
+            $user_id = $_POST['user_id'];
+            $message = $db->deleteAccount($user_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+
         // === Secondary POST requests ===
 
         /**
@@ -254,6 +263,17 @@
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$reviews]));
         };
 
+        /**
+         * Handle deleting reviews for event and associated booking
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "deleteReview") {
+            $review_id = $_POST['review_id'];
+            $user_id = $_POST['user_id'];
+            $event_id = $_POST['event_id'];
+            $message = $db->deleteReview($review_id, $user_id, $event_id);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+        
         /**
          * Handle create review
          */
@@ -381,5 +401,17 @@
             $messages = $db->getUnreadMessages();
             echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$messages]));
         };
+
+        /**
+         * Handle updating of settings for a user
+         */
+        if(isset($_POST['request']) && $_POST['request'] === "updateSettings") {
+            $username = $_POST['username'];
+            $email = $_POST['email'];
+            $theme = $_POST['theme'];
+            $message = $db->updateSettings($username, $email, $theme);
+            echo(json_encode(["status"=>"success", "timestamp"=>time(), "data"=>$message]));
+        };
+    
     }
 ?>

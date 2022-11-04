@@ -57,9 +57,6 @@ $(() => {
         }
     }
     );
-
-
-
     // --- get messages every second ---
 
 });
@@ -83,9 +80,8 @@ const getMessages = async () => {
                 reject(error);
             }
         }).then (data => {
-            if(currentMessages === null || currentMessages != data) {
+            if(currentMessages === null || currentMessages.length != data.length) {
                 $(".message-box").empty();
-
                 if(data.length > 0) {
                     let messages;
                     if(currentMessages != null) {
@@ -135,7 +131,7 @@ const getMessages = async () => {
                         $(".message-box").append(messageElement);
                     });
 
-                    if(first || atBottom) {
+                    if(first) {
                         $('.message-box-container').scrollTop($('.message-box-container')[0].scrollHeight);
                         first = false;  
                     }

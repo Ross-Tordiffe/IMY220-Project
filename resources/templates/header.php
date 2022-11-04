@@ -4,8 +4,8 @@
     $title = $title ?? "";
     $header_display = $header_display ?? "d-block";
     $styles = $styles ?? "";
-    // $theme = $_SESSION['user_theme'] ?? "light";
-    $theme = "dark";
+    $theme = $_SESSION['user_theme'] ?? "dark";
+    // $theme = "dark";
     $logo_style = ($theme === "dark") ? "DarkLogo" : "LightLogo";
     $icon_style = ($theme === "dark") ? "Icon-Dark" : "Icon-Light";
     $content_offset = $content_offset ?? "col offset-3 offset-xl-2 table-main"; 
@@ -26,7 +26,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="Ross Tordiffe u21533572">
         
-        <link rel="icon" type="image/x-icon" href="public_html/img/page/<?=$icon_style?>.svg">
+        <link rel="icon" type="image/x-icon" href="public_html/img/page/<?=$icon_style?>.svg" id="favicon">
 
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
@@ -47,7 +47,7 @@
             <div class="row p-0 m-0">
                 <header class="header col-xl-2 col-md-3 col-0 px-1 <?=$header_display?> sticky-sidebar"> <!-- Header -->
                     <div class="hd-logo">
-                        <img src="public_html/img/page/<?=$logo_style?>.svg" alt="header logo" class="img-fluid">
+                        <img src="public_html/img/page/<?=$logo_style?>.svg" alt="header logo" class="img-fluid" id="main-logo">
                     </div>
                     <nav class="col hd-nav">
                         <h2 class="hd-nav-link">

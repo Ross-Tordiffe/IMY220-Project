@@ -740,8 +740,6 @@
             $image = $this->getEvent($event_id)["event_image"];
 
             // Delete review images from the server
-        
-
             if($image != null) {
                 unlink("public_html/img/event/".$image);
             }
@@ -917,7 +915,7 @@
          */
         public function handleFriendRequests($friend_id, $accepted)
         {
-
+            
             // Friend request accepted
             if($accepted) {
 
@@ -962,7 +960,7 @@
             $row = $result->fetch_assoc();
             $stmt->close();
 
-            $user = array("user_id" => $row["user_id"], "user_username" => $row["user_username"], "user_image" => $row["user_image"]);
+            $user = array("user_id" => $row["user_id"], "user_username" => $row["user_username"], "user_email" => $row["user_email"], "user_image" => $row["user_image"], "user_theme" => $row["user_theme"]);
             
             return $user;
         }
@@ -1217,6 +1215,40 @@
         }
 
         /**
+         * Method to remove a review and associated booking
+         */
+        public function deleteReview($review_id, $user_id, $event_id) {
+
+            // delete associated image if it exists
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_review WHERE review_id = ?");
+            $stmt->bind_param("i", $review_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            if($row["review_image"] != null) {
+                unlink("public_html/img/review/".$row["review_image"]);
+            }
+
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_review WHERE review_id = ?");
+            $stmt->bind_param("i", $review_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_booking WHERE bk_user_id = ? AND bk_event_id = ?");
+            $stmt->bind_param("ii", $user_id, $event_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $stmt->close();
+
+            return true;
+        }
+
+        /**
          * Method to change users profile picture
          */
         public function changeProfilePicture($file_name, $image) {
@@ -1414,6 +1446,113 @@
             return $unread_messages;
             // return an array of friend ids with the count of unread messages
 
+        }
+
+        /**
+         * Method to update the user's settings
+         */
+        public function updateSettings($username, $email, $theme) {
+
+            $user_id = (int)$_SESSION["user_id"];
+
+            // don't update the username or email if either is ""
+            if($username != "") {
+                $stmt = $this->getConnection()->prepare("UPDATE db_users SET user_username = ? WHERE user_id = ?");
+                $stmt->bind_param("si", $username, $user_id);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $_SESSION["user_username"] = $username;
+            }
+
+            if($email != "") {
+                $stmt = $this->getConnection()->prepare("UPDATE db_users SET user_email = ? WHERE user_id = ?");
+                $stmt->bind_param("si", $email, $user_id);
+                if(!$stmt->execute()){
+                    return false;
+                }
+                $_SESSION["user_email"] = $email;
+            }
+
+            $stmt = $this->getConnection()->prepare("UPDATE db_users SET user_theme = ? WHERE user_id = ?");
+            $stmt->bind_param("si", $theme, $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $_SESSION["user_theme"] = $theme;
+
+            $result = array(
+                "username" => $_SESSION["user_username"],
+                "email" => $_SESSION["user_email"],
+                "theme" => $_SESSION["user_theme"],
+            );
+            return $result;
+
+        }
+
+        /**
+         * Method to permanently delete a user's account
+         */
+        public function deleteAccount($user_id) {
+
+            // Get the ids of all user's events
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_events WHERE event_user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            // Delete all events using this->deleteEvent()
+            while($row = $result->fetch_assoc()) {
+                $event_id = $row["event_id"];
+                $this->deleteEvent($event_id);
+            }
+
+            // Find all reviews where the user is the reviewer and delete them (unlink the images from the server)
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_review WHERE review_user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            while($row = $result->fetch_assoc()) {
+                $review_id = $row["review_id"];
+                $event_id = $row["review_event_id"];
+                $this->deleteReview($review_id, $user_id, $event_id);
+            }
+
+            // friendships will be deleted automatically by the database
+            // but we need to delete the messages
+            $stmt = $this->getConnection()->prepare("SELECT * FROM db_friendships WHERE fs_user_id_1 = ? OR fs_user_id_2 = ?");
+            $stmt->bind_param("ii", $user_id, $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }
+            $result = $stmt->get_result();
+
+            while($row = $result->fetch_assoc()) {
+                $friendship_id = $row["fs_id"];
+                $stmt = $this->getConnection()->prepare("DELETE FROM db_message WHERE msg_fs_id = ?");
+                $stmt->bind_param("i", $friendship_id);
+                if(!$stmt->execute()){
+                    return false;
+                }
+            }
+
+            // Delete the user
+            $stmt = $this->getConnection()->prepare("DELETE FROM db_users WHERE user_id = ?");
+            $stmt->bind_param("i", $user_id);
+            if(!$stmt->execute()){
+                return false;
+            }   
+
+            // log the user out
+            
+
+            return true;
+            
         }
     }
 

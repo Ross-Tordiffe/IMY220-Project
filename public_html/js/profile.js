@@ -8,6 +8,7 @@ $(() => {
 
     let user = $("#user-id").text();
     let profile_user = $("#profile-user-id").text();
+    let user_role = $('#user-admin').text();
     let unreadMessages = [];
 
     setUser(user, profile_user);
@@ -20,6 +21,10 @@ $(() => {
             displayFriends(friends, unreadMessages);
         });
     });
+
+    if(user === profile_user || user_role === "1") {
+        fillSettingsModal(profile_user);
+    }
 
     $(".friend-text").on("click", (e) => {
 
@@ -34,7 +39,12 @@ $(() => {
         e.stopPropagation();
         let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
         acceptFriend(friendId, profile_user);
+        $("#friendsModal").modal("hide");
         getFriends(profile_user);
+        // refresh the modal 
+        $("#friendsModal").modal("show");
+        
+
     });
 
     $("#friendsModal").on("click", ".cancel-request", (e) => {
@@ -84,13 +94,7 @@ $(() => {
         }
     });
 
-    // // --- Cancel Friend Request ---
-    // $("#friendsModal").on("click", ".cancel-request", (e) => {
-    //     let friendId = $(e.target).parent().parent().parent().find(".profile-friend-id").text();
-    //     cancelFriend(friendId, profile_user);
-    // });
-
-    if(user === profile_user) {
+    if(user === profile_user || user_role === "1") {
         // --- Change profile image ---
         $(".profile-img-container").on("click", (e) => {
             e.stopPropagation();
@@ -274,6 +278,65 @@ $(() => {
         e.stopPropagation();
         let other_user = $(e.currentTarget).parent().parent().parent().find(".profile-friend-id").text();
         window.location.href = ("messages.php?user_id=" + user + "&other_user=" + other_user);
+    });
+
+    // Show profile settings modal
+
+   
+
+    $(".profile-header").on("click", "#profile-settings", (e) => {
+        $("#profileSettingsModal").modal("show");
+        let username = $("#profile-username").val();
+        let email = $("#profile-email").val();
+        $(".settings-submit").on("click", (e) => {
+            if($("#profile-username").val() == username) {
+                username = "";
+            } else {
+                username = $("#profile-username").val();
+            }
+            if($("#profile-email").val() == email) {
+                email = "";
+            } else {
+                email = $("#profile-email").val();
+            }
+            let theme = ($(".profile-theme-btn").text()).toLowerCase();
+            updateSettings(username, email, theme);
+        });
+        // Get user info
+    });
+
+    $(".profile-theme-btn").on("click", (e) => {
+        let theme = $(e.currentTarget).text();
+        if(theme === "Light") {
+            $(e.currentTarget).text("Dark");
+            $(e.currentTarget).removeClass("btn-light");
+            $(e.currentTarget).addClass("btn-dark");
+            $("body").removeClass("light");
+            $("body").addClass("dark");
+            $("#main-logo").attr("src", "public_html/img/page/DarkLogo.svg");
+            $("#favicon").attr("href", "public_html/img/page/Icon-Dark.svg");
+        } else {
+            $(e.currentTarget).text("Light");
+            $(e.currentTarget).removeClass("btn-dark");
+            $(e.currentTarget).addClass("btn-light");
+            $("body").removeClass("dark");
+            $("body").addClass("light");
+            $("#main-logo").attr("src", "public_html/img/page/LightLogo.svg");
+            $("#favicon").attr("href", "public_html/img/page/Icon-Light.svg");
+        }
+        
+    });
+
+    $(".profile-delete-btn").on("click", (e) => {
+        console.log("delete");
+        $("#profileSettingsModal").modal("hide");
+        $(".confirmation-modal-text p").html("<span class='text-danger h4 d-flex justify-content-center'><i class='fas fa-exclamation-triangle pe-2'></i>WARNING!</span><p class='text-center'>This will delete your account and all of your data. Are you sure you want to continue?</p>");
+        $("#confirmationModal").modal("show");
+
+        $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
+            deleteAccount(profile_user);
+            $(".modal").modal("hide");
+        });
     });
 
 });
@@ -998,5 +1061,119 @@ const removeEventFromGroup = (event_id, group_id) => {
                 showError(data.data);
             }
         }
+    });
+}
+
+const fillSettingsModal = (profile_user) => {
+
+    $.ajax({
+        type: "POST",
+        url: "requests.php",
+        data: {
+            request: "fetchUserData",
+            user_id: profile_user
+        },
+        success: (data, status) => {
+            data = JSON.parse(data);
+            if(data.status === "success")
+            {
+                console.log("filesettings", data.data);
+                data = data.data;
+                // fill settings modal with user data
+                $("#profile-username").val(data.user_username);
+                $("#profile-email").val(data.user_email);
+                if(data.user_theme === "dark")
+                {
+                    $(".profile-theme-btn").text("Dark");
+                    $(".profile-theme-btn").addClass("btn-dark");
+                }
+                else
+                {
+                    $(".profile-theme-btn").text("Light");
+                    $(".profile-theme-btn").addClass("btn-light");
+                }
+            }
+            else
+            {
+                showError(data.data);
+            }
+        }
+    });
+}
+   
+const updateSettings = (username, email, theme) => {
+    $.ajax({
+        type: "POST",
+        url: "requests.php",
+        data: {
+            request: "updateSettings",
+            username: username,
+            email: email,
+            theme: theme
+        },
+        success: (data, status) => {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status === "success")
+            {
+                window.location.reload();
+            }
+            else
+            {
+                showError(data.data);
+            }
+        }
+    });
+}
+
+const deleteAccount = (user_id) => {
+    const deleteAccountPromise = new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: "requests.php",
+            data: {
+                request: "deleteAccount",
+                user_id: user_id
+            },
+            success: (data, status) => {
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.status === "success")
+                {
+                    console.log(data);
+                }
+                else
+                {
+                    showError(data.data);
+                }
+            }
+        }).then((data) => {
+            let user_role = $('#user-admin').text();
+            if(user_role !== "1"){
+                // make logout request
+                $.ajax({
+                    type: "POST",
+                    url: "requests.php",
+                    data: {
+                        request: "logout"
+                    },
+                    success: (data, status) => {
+                        console.log(data);
+                        data = JSON.parse(data);
+                        if(data.status === "success")
+                        {
+                            
+                        }
+                        else
+                        {
+                            showError(data.data);
+                        }
+                    }
+                });
+            }
+            resolve(data);
+        });
+    }).then((data) => {
+        window.location.href = "index.php";
     });
 }

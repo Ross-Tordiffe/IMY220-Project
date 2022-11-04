@@ -81,12 +81,18 @@
                                 
                             </div>
                             <?php if($_SESSION["user_id"] == $profile_user_id){ ?>
-                            <div class="col-2 me-5 profile-options d-flex align-items-center">
+                            <div class="col-xxl-2 col-lg-3 col-4 me-xxl-5 me-3 profile-options d-flex align-items-center">
                                 <div><i class="profile-btn fas fa-cog me-3" id="profile-settings"></i></div>
                                 <div><i class="profile-btn fas fa-sign-out-alt" id="profile-logout"></i></div>
                             </div>
+                            <?php } else if($_SESSION["user_role"] == "1") { ?>
+                            <div class="col-xxl-4 col-lg-5 col-6 me-xxl-5 me-3 profile-options d-flex">
+                                <div class="profile-btn btn py-0 me-2 d-flex align-items-center fs-5" id="profile-add-friend">Friend<i class="fas fa-user-plus ms-2 fs-6"></i></div>
+                                <div class="message-btn profile-btn btn py-0 d-flex align-items-center fs-5 d-none" id="profile-message">Message<i class="fas fa-envelope ms-2 fs-6"></i></div>
+                                <div><i class="profile-btn fas fa-cog mx-3" id="profile-settings"></i></div>
+                            </div>
                             <?php } else { ?>
-                            <div class="col-3 me-5 profile-options d-flex">
+                            <div class="col-xxl-3 col-lg-4 col-5 me-xxl-5 me-3 profile-options d-flex">
                                 <div class="profile-btn btn py-0 me-2 d-flex align-items-center fs-5" id="profile-add-friend">Friend<i class="fas fa-user-plus ms-2 fs-6"></i></div>
                                 <div class="message-btn profile-btn btn py-0 d-flex align-items-center fs-5 d-none" id="profile-message">Message<i class="fas fa-envelope ms-2 fs-6"></i></div>
                             </div>

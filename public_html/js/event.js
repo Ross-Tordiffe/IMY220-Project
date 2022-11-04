@@ -120,11 +120,11 @@ $(() => {
             </div>
         `);
 
-        $('.event-page-edit').click(() => {
+        $('.event-page-edit').on("click", () => {
             window.location.href = 'create-event.php?event_id=' + event.event_id;
         });
 
-        $('.event-page-delete').click(() => {
+        $('.event-page-delete').on("click", () => {
             // Show confirmation modal
             $(".confirmation-modal-text p").text("Are you sure you want to delete this event?");
             $("#confirmationModal").modal("show");
@@ -135,20 +135,24 @@ $(() => {
             });
         });
 
+        $(".event-page-review-window").on("click", ".event-page-review-delete-button", (e) => {
+            // Show confirmation modal
+            e.stopPropagation();
+            $(".confirmation-modal-text p").text("Are you sure you want to delete this review?");
+            $("#confirmationModal").modal("show");
+
+            let review_id = $(e.target).parent().parent().parent().parent().parent().find(".event-page-review-id").text();
+            let review_user_id = $(e.target).parent().parent().parent().parent().parent().find(".event-page-review-user-id").text();
+
+            $("#confirmationModal").on("click", ".confirmation-modal-btn", (e) => {
+                deleteReview(review_id, review_user_id);
+                $(".modal").modal("hide");
+            });
+        });
+
         isAttendingEvent(event_id);
 
-        // if($("event-user-attending").text() == "true"){
-        //     //disable attend button
-        //     $(".add-review-btn").attr("disabled", true);
-        // }
-        // else {
-        //     $(".add-review-btn").attr("disabled", false);
-        // }
-
     });
-
-    
-  
 
     // === Event Page reviews ===
 
@@ -160,7 +164,6 @@ $(() => {
 
     // === Open review creation modal === 
     $(".event-container").on("click", ".add-review-btn", () => {
-        console.log($(".event-user-attending").text());
         if($(".event-user-attending").text() == "false") {
             $("#eventReviewModal").modal("show");
         }
@@ -400,7 +403,6 @@ const isAttendingEvent = (event_id) => {
         });
         
     }).then((data) => {
-        console.log($(".event-container add-review-btn"));
         if(data){
             $(".event-container .add-review-btn").text("Attending");
             $(".event-user-attending").text("true");
@@ -514,7 +516,6 @@ const createReview = (rating, review_message, image) => {
         contentType: false,
         processData: false,
         success: (data) => {
-            console.log(data);
             data = JSON.parse(data);
             if(data.status === "success") {
                 // close modal
@@ -522,7 +523,6 @@ const createReview = (rating, review_message, image) => {
                 
                 // get reviews again
                 review = data.data;
-                console.log("Review created successfully");
               
                 getReviews.then((reviews) => {
                     // add review to the back of the reviews array
@@ -546,8 +546,6 @@ const fillEventImageCarousel = (reviews) => {
     let carousel = $(".carousel-inner");
     let carouselIndicators = $(".carousel-indicators");
     carouselIndicators.empty();
-
-    console.log(reviews);
     
     carousel.empty();
     reviews.filter((review) => {
@@ -682,17 +680,51 @@ const deleteEvent = () => {
             console.log(data);
             data = JSON.parse(data);
             console.log(data);
-            // if(data.status === "success") {
-            //     window.location.href = "index.php";
-            // } else {
-            //     showError(data);
-            // }
+            if(data.status === "success") {
+                window.location.href = "index.php";
+            } else {
+                showError(data);
+            }
         }
     });
 }
 
+const deleteReview = (review_id, user_id) => {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const event_id = urlParams.get('id');
+
+    $.ajax({
+        url: "requests.php",
+        type: "POST",
+        data: {
+            request: "deleteReview",
+            review_id: review_id,
+            user_id: user_id,
+            event_id: event_id
+        },
+        success: (data) => {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.status === "success") {
+                getReviews.then((reviews) => {
+                    fillReviews(reviews);
+                });
+                window.location.reload();
+            } else {
+                showError(data);
+            }
+        }
+    });
+
+
+}
+
 const fillReviews = (reviews) => {
 
+    let user_id = $('#user-id').text();
+    let user_role = $('#user-admin').text();
+    let event_user_id = $('.event-page-user-id').text();
     // if there are no reviews then show the add review button
 
     let average_rating = 0;
@@ -732,19 +764,31 @@ const fillReviews = (reviews) => {
                 stars += '<i class="far fa-star"></i>';
             }
 
+            let delete_element = 
+            `<div class="event-page-review-delete-button flex-shrink-1">
+                <i class="fas fa-trash-alt"></i>
+            </div>`;
+
             // push the review html and each rating score to the review_elements array
             review_elements.push({rating: review.review_rating, html: `
                 <div class="row event-page-review px-2">
-                    <div class="col-2 col-md-1 event-page-review-image">
-                        <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
-                    </div>
-                    <div class="col-10 col-md-6 event-page-review-name ms-2">
-                        <h4 class="m-0">${review.review_user_username}</h4>
+                    <div class="event-page-review-id d-none">${review.review_id}</div>
+                    <div class="event-page-review-user-id d-none">${review.review_user_id}</div>
+                    <div class="col-12 c.event-page-review-delete-buttonol-md-12 event-page-review-top d-flex align-items-center">
+                        <div class="event-page-review-image flex-shrink-1">
+                            <img class="img-fluid" src="public_html/img/user/${review.review_user_image}" alt="${review.review_user_image}"/>
+                        </div>
+                        <div class="event-page-review-name ms-2 flex-grow-1">
+                            <h4 class="m-0">${review.review_user_username}</h4>
+                        </div>
                     </div>
                     <div class="col-10 col-md-11 event-page-review-info">
-                        <div class="row ">
-                            <div class="col-12 event-page-review-rating pb-2 ps-2">
-                                <span class="small">${stars}</span>
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-12 d-flex align-items-center justify-content-between">
+                                <div class="event-page-review-rating pb-2 ps-2">
+                                    <span class="small">${stars}</span>
+                                </div>
+                                ${(event_user_id == user_id || user_role == 1) ? delete_element : ""}
                             </div>
                         </div>
                         <div class="row ps-2">
@@ -766,18 +810,12 @@ const fillReviews = (reviews) => {
     // sort the review elements by nearest to the average rating above or below
 
     // append the review elements to the review window
-   
-
-    console.log("r elements: ", review_elements);
 
     let stars = '';
     
     if(reviews.length > 0) {
-        console.log(reviews.length);
         // Calculate the average rating
         average_rating = average_rating / reviews.length;
-
-        console.log("average rating: " + average_rating);
         review_elements.sort((a, b) => {
             return Math.abs(b.rating - average_rating) - Math.abs(a.rating - average_rating);
         }).reverse();
